@@ -1,0 +1,110 @@
+TYPO3:
+  PackageBuilder:
+    backport:
+      targetFolder:
+    extendIceSettings: TRUE
+    userinterfaceSettings:
+      title: Package Builder
+
+    handlebarsTemplates:
+      ElementOptionsPanel-TextEditor:  resource://TYPO3.Ice/Private/HandlebarTemplates/ElementOptionsPanel/TextEditor.html
+      ElementOptionsPanel-TextareaEditor:  resource://TYPO3.Ice/Private/HandlebarTemplates/ElementOptionsPanel/TextareaEditor.html
+
+    projectElementGroups:
+      packageElements:
+        sorting: 200
+        label: 'Package elements'
+
+      model:
+        sorting: 400
+        label: 'Model'
+        enableType: 'Model'
+
+
+    projectElementTypes:
+      'TYPO3.PackageBuilder:Base':
+        options:
+          editors:
+            elementType:
+              sorting: 100
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.TextOutput'
+              templateName: 'ElementOptionsPanel-PropertyPanelTitle'
+
+      'TYPO3.PackageBuilder:Container':
+        options:
+          label: ''
+          _isCompositeRenderable: true
+
+      'TYPO3.PackageBuilder:Package':
+        options:
+          label: ''
+          _isCompositeRenderable: false
+          _isTopLevel: true
+          editors:
+            label:
+              label: 'Package Name'
+              propertyPath: 'label'
+              sorting: 120
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.TextEditor'
+            packageKey:
+              sorting: 200
+              label: 'Package key'
+              propertyPath: 'identifier'
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.TextEditor'
+
+      # group packageElements
+      'TYPO3.PackageBuilder:Model':
+        label: ''
+        options:
+          label: 'Domain Object'
+          group: packageElements
+          sorting: 100
+          editors:
+            label:
+              label: 'Name'
+              propertyPath: 'label'
+              sorting: 120
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.TextEditor'
+
+      'TYPO3.PackageBuilder:Plugin':
+        options:
+          label: 'Plugin'
+          group: packageElements
+          sorting: 110
+          editors:
+            label:
+              label: 'Plugin Name'
+              propertyPath: 'label'
+              sorting: 120
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.TextEditor'
+
+      'TYPO3.PackageBuilder:Module':
+        options:
+          label: 'Backend-Module'
+          group: packageElements
+          sorting: 120
+
+      'TYPO3.PackageBuilder:Service':
+        options:
+          label: 'Service'
+          group: packageElements
+          sorting: 130
+
+      'TYPO3.PackageBuilder:Scheduler':
+        options:
+          label: 'Scheduler'
+          group: packageElements
+          sorting: 140
+
+      'TYPO3.PackageBuilder:Property':
+        options:
+          label: 'Property'
+          group: 'model'
+          sorting: 120
+
+      'TYPO3.PackageBuilder:Relation':
+        options:
+          label: 'Relation'
+          group: 'model'
+          sorting: 120
+
