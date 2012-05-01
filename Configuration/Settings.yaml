@@ -2,7 +2,9 @@ TYPO3:
   PackageBuilder:
     javaScripts:
       application:
-        files: ['resource://TYPO3.Ice/Public/JavaScript/app.js','resource://TYPO3.PackageBuilder/Public/JavaScript/app.js']
+        files:
+          - 'resource://TYPO3.Ice/Public/JavaScript/app.js'
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/app.js'
         sorting: 100
 
     backport:
@@ -19,7 +21,10 @@ TYPO3:
       model:
         sorting: 400
         label: 'Model'
-        enableType: 'Model'
+        enableTypes:
+          - Model
+          - Property
+          - Relation'
 
 
     projectElementTypes:
@@ -57,8 +62,9 @@ TYPO3:
       'TYPO3.PackageBuilder:Model':
         label: ''
         options:
-          label: 'Domain Object'
+          label: 'Model'
           group: packageElements
+          _isCompositeRenderable: true
           sorting: 100
           editors:
             label:
@@ -119,10 +125,73 @@ TYPO3:
           label: 'Property'
           group: 'model'
           sorting: 120
+          editors:
+            label:
+              label: 'Name'
+              propertyPath: 'label'
+              sorting: 120
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.TextEditor'
+            propertyType:
+              sorting: 200
+              label: 'Property Type'
+              propertyPath: 'propertyType'
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.SelectEditor'
+              availableElements:
+                0:
+                  value: ['string']
+                  label: 'String'
+                1:
+                  value: ['text']
+                  label: 'Text'
+                2:
+                  value: ['RichText']
+                  label: 'RichText'
+                3:
+                  value: ['Integer']
+                  label: 'Integer'
+                4:
+                  value: ['Float']
+                  label: 'Float'
+                5:
+                  value: ['Boolean']
+                  label: 'Boolean'
+                6:
+                  value: ['DateTime']
+                  label: 'DateTime'
+                7:
+                  value: ['Select']
+                  label: 'Select'
+                8:
+                  value: ['Image']
+                  label: 'Image'
 
       'TYPO3.PackageBuilder:Relation':
         options:
           label: 'Relation'
           group: 'model'
           sorting: 120
+          editors:
+            label:
+              label: 'Name'
+              propertyPath: 'label'
+              sorting: 120
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.TextEditor'
+            relationType:
+              sorting: 200
+              label: 'Relation Type'
+              propertyPath: 'relationType'
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.SelectEditor'
+              availableElements:
+                0:
+                  value: ['zeroToOne']
+                  label: '1:1'
+                1:
+                  value: ['manyToOne']
+                  label: 'n:1'
+                2:
+                  value: ['oneToMany']
+                  label: '1:n'
+                3:
+                  value: ['manyToMany']
+                  label: 'm:n'
 

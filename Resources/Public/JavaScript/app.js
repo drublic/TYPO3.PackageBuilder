@@ -1,6 +1,25 @@
 
 
 TYPO3.Ice.View.InsertElementsPanel.Element = TYPO3.Ice.View.InsertElementsPanel.Element.extend({
+	enabled: (function() {
+		var currentlySelectedRenderable;
+		currentlySelectedRenderable = this.get('currentlySelectedElement');
+		if (this.getPath('projectElementType.options._isTopLevel')) {
+			return true;
+		}
+		if(this.getPath('projectElementType.enableTypes').indexOf('all') > -1) {
+			return true;
+		}
+		if (!currentlySelectedRenderable) {
+			return false;
+		}
+		if(this.getPath('projectElementType.enableTypes').indexOf(currentlySelectedRenderable.get('type').split(':')[1])>-1) {
+
+			return true;
+		}
+		return false;
+
+	}).property('projectElementType', 'currentlySelectedElement').cacheable(),
 	click:function () {
 		var currentlySelectedRenderable, defaultValues, identifier, indexInParent, newRenderable, parentRenderablesArray, referenceRenderable,
 				_this = this;
@@ -21,22 +40,16 @@ TYPO3.Ice.View.InsertElementsPanel.Element = TYPO3.Ice.View.InsertElementsPanel.
 		if (this.getPath('projectElementType.group') == 'packageElements') {
 			topLevelContainer = this.addTopLevelContainer(this.getPath('projectElementType.label'));
 			topLevelContainer.get('renderables').pushObject(newRenderable);
-		} else if (!this.getPath('projectElementType.options._isTopLevel') && currentlySelectedRenderable.getPath('typeDefinition.options._isCompositeRenderable')) {
-			currentlySelectedRenderable.get('renderables').pushObject(newRenderable);
 		} else {
-			referenceRenderable = currentlySelectedRenderable;
-			if (referenceRenderable === TYPO3.Ice.Model.Project.get('projectDefinition')) {
-				referenceRenderable = referenceRenderable.getPath('renderables.0');
-			} else if (this.getPath('projectElementType.options._isTopLevel') && !currentlySelectedRenderable.getPath('typeDefinition.options._isTopLevel')) {
-				referenceRenderable = referenceRenderable.findEnclosingPage();
-			} else if (this.getPath('projectElementType.options._isCompositeRenderable')) {
+			if(currentlySelectedRenderable.getPath('typeDefinition.options._isCompositeRenderable')) {
+				currentlySelectedRenderable.get('renderables').pushObject(newRenderable);
+			} else {
+				referenceRenderable = currentlySelectedRenderable;
 				if (referenceRenderable.findEnclosingCompositeRenderableWhichIsNotOnTopLevel()) {
 					referenceRenderable = referenceRenderable.findEnclosingCompositeRenderableWhichIsNotOnTopLevel();
+					referenceRenderable.get('renderables').pushObject(newRenderable);
 				}
 			}
-			parentRenderablesArray = referenceRenderable.getPath('parentRenderable.renderables');
-			indexInParent = parentRenderablesArray.indexOf(referenceRenderable);
-			parentRenderablesArray.replace(indexInParent + 1, 0, [newRenderable]);
 		}
 		return window.setTimeout(function () {
 			return _this.set('currentlySelectedElement', newRenderable);
