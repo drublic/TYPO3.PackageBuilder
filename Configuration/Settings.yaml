@@ -1,14 +1,15 @@
 TYPO3:
   PackageBuilder:
+    javaScripts:
+      application:
+        files: ['resource://TYPO3.Ice/Public/JavaScript/app.js','resource://TYPO3.PackageBuilder/Public/JavaScript/app.js']
+        sorting: 100
+
     backport:
       targetFolder:
     extendIceSettings: TRUE
     userinterfaceSettings:
       title: Package Builder
-
-    handlebarsTemplates:
-      ElementOptionsPanel-TextEditor:  resource://TYPO3.Ice/Private/HandlebarTemplates/ElementOptionsPanel/TextEditor.html
-      ElementOptionsPanel-TextareaEditor:  resource://TYPO3.Ice/Private/HandlebarTemplates/ElementOptionsPanel/TextareaEditor.html
 
     projectElementGroups:
       packageElements:
@@ -83,12 +84,29 @@ TYPO3:
           label: 'Backend-Module'
           group: packageElements
           sorting: 120
+          editors:
+            label:
+              label: 'Name'
+              propertyPath: 'label'
+              sorting: 120
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.TextEditor'
+            key:
+              label: 'Key'
+              propertyPath: 'key'
+              sorting: 120
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.TextEditor'
 
       'TYPO3.PackageBuilder:Service':
         options:
           label: 'Service'
           group: packageElements
           sorting: 130
+          editors:
+            label:
+              label: 'Name'
+              propertyPath: 'label'
+              sorting: 120
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanel.Editor.TextEditor'
 
       'TYPO3.PackageBuilder:Scheduler':
         options:
