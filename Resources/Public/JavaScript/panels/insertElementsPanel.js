@@ -1,20 +1,11 @@
-
-
-TYPO3.Ice.View.InsertElementsPanel.Element = TYPO3.Ice.View.InsertElementsPanel.Element.extend({
+TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsPanelClass.Element.extend({
 	enabled: (function() {
-		var currentlySelectedRenderable;
-		currentlySelectedRenderable = this.get('currentlySelectedElement');
-		if (this.getPath('projectElementType.options._isTopLevel')) {
+		if (this.getPath('projectElementType.options._isTopLevel') ||
+			this.getPath('projectElementType.enableTypes').indexOf('all') > -1) {
 			return true;
 		}
-		if(this.getPath('projectElementType.enableTypes').indexOf('all') > -1) {
-			return true;
-		}
-		if (!currentlySelectedRenderable) {
-			return false;
-		}
-		if(this.getPath('projectElementType.enableTypes').indexOf(currentlySelectedRenderable.get('type').split(':')[1])>-1) {
-
+		var currentlySelectedRenderable = this.get('currentlySelectedElement');
+		if(currentlySelectedRenderable && this.getPath('projectElementType.enableTypes').indexOf(currentlySelectedRenderable.get('type').split(':')[1])>-1) {
 			return true;
 		}
 		return false;
@@ -70,7 +61,17 @@ TYPO3.Ice.View.InsertElementsPanel.Element = TYPO3.Ice.View.InsertElementsPanel.
 		TYPO3.Ice.Model.Project.get('projectDefinition').get('renderables').pushObject(newContainer);
 		return newContainer;
 	}
-	});
+});
 
 
 
+
+window.setTimeout(
+  function() {
+	  console.log('Setting empty default package');
+	  if(!TYPO3.Ice.Model.Project.get('projectDefinition')) {
+		TYPO3.Ice.Model.Project.set('projectDefinition', TYPO3.Ice.Model.Renderable.create({identifier:'package1',label:'My Package',type:'TYPO3.PackageBuilder:Package'}));
+	  }
+  },
+  200
+);
