@@ -5,7 +5,13 @@ TYPO3:
         files:
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/panels/insertElementsPanel.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/view/stage.js'
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/debugHelper.js'
         sorting: 200
+
+    stylesheets:
+      packageBuilder:
+        sorting: 10
+        files: ['resource://TYPO3.PackageBuilder/Public/Css/PackageBuilder.css']
 
     backport:
       targetFolder:
@@ -36,6 +42,23 @@ TYPO3:
               viewName: 'TYPO3.Ice.View.ElementOptionsPanelClass.Editor.TextOutput'
               templateName: 'ElementOptionsPanel-PropertyPanelTitle'
 
+      'TYPO3.PackageBuilder:RemovableMixin':
+        options:
+          editors:
+            removeButton:
+              sorting: 999
+              viewName: 'TYPO3.Ice.View.ElementOptionsPanelClass.Editor.RemoveElementEditor'
+
+      'TYPO3.PackageBuilder:ProjectElement':
+        superTypes: ['TYPO3.PackageBuilder:Base', 'TYPO3.PackageBuilder:RemovableMixin']
+        options:
+          editors:
+            label:
+              label: 'Label'
+              propertyPath: 'label'
+              sorting: 120
+              viewName: 'TYPO3.Ice.ElementOptionsPanelClass.Editor.TextEditor'
+
       'TYPO3.PackageBuilder:Container':
         options:
           label: ''
@@ -60,7 +83,7 @@ TYPO3:
 
       # group packageElements
       'TYPO3.PackageBuilder:Model':
-        label: ''
+        superTypes: ['TYPO3.PackageBuilder:ProjectElement']
         options:
           label: 'Model'
           group: packageElements
@@ -74,6 +97,7 @@ TYPO3:
               viewName: 'TYPO3.Ice.View.ElementOptionsPanelClass.Editor.TextEditor'
 
       'TYPO3.PackageBuilder:Plugin':
+        superTypes: ['TYPO3.PackageBuilder:ProjectElement']
         options:
           label: 'Plugin'
           group: packageElements
@@ -86,6 +110,7 @@ TYPO3:
               viewName: 'TYPO3.Ice.View.ElementOptionsPanelClass.Editor.TextEditor'
 
       'TYPO3.PackageBuilder:Module':
+        superTypes: ['TYPO3.PackageBuilder:ProjectElement']
         options:
           label: 'Backend-Module'
           group: packageElements
@@ -103,6 +128,7 @@ TYPO3:
               viewName: 'TYPO3.Ice.View.ElementOptionsPanelClass.Editor.TextEditor'
 
       'TYPO3.PackageBuilder:Service':
+        superTypes: ['TYPO3.PackageBuilder:ProjectElement']
         options:
           label: 'Service'
           group: packageElements
@@ -115,12 +141,14 @@ TYPO3:
               viewName: 'TYPO3.Ice.View.ElementOptionsPanelClass.Editor.TextEditor'
 
       'TYPO3.PackageBuilder:Scheduler':
+        superTypes: ['TYPO3.PackageBuilder:ProjectElement']
         options:
           label: 'Scheduler'
           group: packageElements
           sorting: 140
 
       'TYPO3.PackageBuilder:Property':
+        superTypes: ['TYPO3.PackageBuilder:ProjectElement']
         options:
           label: 'Property'
           group: 'model'
@@ -166,6 +194,7 @@ TYPO3:
                   label: 'Image'
 
       'TYPO3.PackageBuilder:Relation':
+        superTypes: ['TYPO3.PackageBuilder:ProjectElement']
         options:
           label: 'Relation'
           group: 'model'
