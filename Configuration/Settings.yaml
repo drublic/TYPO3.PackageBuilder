@@ -1,9 +1,8 @@
 TYPO3:
-  Ice:
-    handlebarsTemplates:
-       ElementOptionsPanel-SelectEditor:  'resource://TYPO3.PackageBuilder/Private/HandlebarTemplates/Editors/SelectEditor.html'
-
   PackageBuilder:
+    handlebarTemplatePaths:
+      'TYPO3.PackageBuilder': 'resource://TYPO3.PackageBuilder/Private/HandlebarTemplates'
+
     javaScripts:
       packageBuilder:
         files:
@@ -36,7 +35,6 @@ TYPO3:
           - Property
           - Relation'
 
-
     projectElementTypes:
       'TYPO3.PackageBuilder:Base':
         options:
@@ -44,7 +42,7 @@ TYPO3:
             elementType:
               sorting: 100
               viewName: 'TYPO3.Ice.View.ElementOptionsPanelClass.Editor.TextOutput'
-              templateName: 'ElementOptionsPanel-PropertyPanelTitle'
+              templateName: 'Editors-PropertyPanelTitle'
 
       'TYPO3.PackageBuilder:RemovableMixin':
         options:

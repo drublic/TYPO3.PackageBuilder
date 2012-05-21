@@ -28,7 +28,6 @@ class StandardController extends \TYPO3\Ice\Controller\StandardController {
 				$this->settings
 			);
 		}
-		//\TYPO3\FLOW3\var_dump($this->settings['projectElementTypes']);
 	}
 
 }

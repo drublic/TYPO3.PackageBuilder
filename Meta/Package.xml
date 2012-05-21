@@ -7,6 +7,7 @@
 	<constraints>
 		<depends>
 			<package minVersion="0.1.1" maxVersion="0.9.9">TYPO3.Ice</package>
+			<package minVersion="1.0.0" maxVersion="1.9.9">TYPO3.Backporter</package>
 		</depends>
 	</constraints>
 </package>
