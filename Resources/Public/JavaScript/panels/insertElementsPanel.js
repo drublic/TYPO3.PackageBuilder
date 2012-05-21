@@ -4,18 +4,18 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 			this.getPath('projectElementType.enableTypes').indexOf('all') > -1) {
 			return true;
 		}
-		var currentlySelectedRenderable = this.get('currentlySelectedElement');
-		if(currentlySelectedRenderable && this.getPath('projectElementType.enableTypes').indexOf(currentlySelectedRenderable.get('type').split(':')[1])>-1) {
+		var currentlySelectedElement = this.get('currentlySelectedElement');
+		if(currentlySelectedElement && this.getPath('projectElementType.enableTypes').indexOf(currentlySelectedElement.get('type').split(':')[1])>-1) {
 			return true;
 		}
 		return false;
 
 	}).property('projectElementType', 'currentlySelectedElement').cacheable(),
 	click:function () {
-		var currentlySelectedRenderable, defaultValues, identifier, indexInParent, newRenderable, parentRenderablesArray, referenceRenderable,
+		var currentlySelectedElement, defaultValues, identifier, indexInParent, newElement, parentElementsArray, referenceElement,
 				_this = this;
-		currentlySelectedRenderable = this.get('currentlySelectedElement');
-		if (!currentlySelectedRenderable) {
+		currentlySelectedElement = this.get('currentlySelectedElement');
+		if (!currentlySelectedElement) {
 			return
 		}
 		if (!this.get('enabled')) {
@@ -23,54 +23,52 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 		}
 		defaultValues = this.getPath('projectElementType.options.predefinedDefaults') || {};
 		identifier = this.getNextFreeIdentifier();
-		newRenderable = TYPO3.Ice.Model.Renderable.create($.extend({
+		newElement = TYPO3.Ice.Model.Element.create($.extend({
 		   type:this.getPath('projectElementType.key'),
 		   identifier:identifier,
 		   label:identifier
 		}, defaultValues));
 		if (this.getPath('projectElementType.group') == 'packageElements') {
 			topLevelContainer = this.addTopLevelContainer(this.getPath('projectElementType.label'));
-			topLevelContainer.get('renderables').pushObject(newRenderable);
+			topLevelContainer.get('children').pushObject(newElement);
 		} else {
-			if(currentlySelectedRenderable.getPath('typeDefinition.options._isCompositeRenderable')) {
-				currentlySelectedRenderable.get('renderables').pushObject(newRenderable);
+			if(currentlySelectedElement.getPath('typeDefinition.options._isCompositeElement')) {
+				currentlySelectedElement.get('children').pushObject(newElement);
 			} else {
-				referenceRenderable = currentlySelectedRenderable;
-				if (referenceRenderable.findEnclosingCompositeRenderableWhichIsNotOnTopLevel()) {
-					referenceRenderable = referenceRenderable.findEnclosingCompositeRenderableWhichIsNotOnTopLevel();
-					referenceRenderable.get('renderables').pushObject(newRenderable);
+				referenceElement = currentlySelectedElement;
+				if (referenceElement.findEnclosingCompositeElementWhichIsNotOnTopLevel()) {
+					referenceElement = referenceElement.findEnclosingCompositeElementWhichIsNotOnTopLevel();
+					referenceElement.get('children').pushObject(newElement);
 				}
 			}
 		}
 		return window.setTimeout(function () {
-			return _this.set('currentlySelectedElement', newRenderable);
+			return _this.set('currentlySelectedElement', newElement);
 		}, 10);
 	},
 	addTopLevelContainer:function (containerIdentifier) {
-		var topLevelContainers = TYPO3.Ice.Model.Project.get('projectDefinition').get('renderables');
+		var topLevelContainers = TYPO3.Ice.Model.Project.get('projectDefinition').get('children');
 		for (var i = 0; i < topLevelContainers.length; i++) {
 		   if (topLevelContainers[i].get('identifier') == containerIdentifier) {
 			   return topLevelContainers[i];
 		   }
 		}
-		newContainer = TYPO3.Ice.Model.Renderable.create($.extend({
+		newContainer = TYPO3.Ice.Model.Element.create($.extend({
 			 type:'TYPO3.PackageBuilder:Container',
 			 identifier:containerIdentifier,
 			 label:containerIdentifier + 's'
 		 }, {}));
-		TYPO3.Ice.Model.Project.get('projectDefinition').get('renderables').pushObject(newContainer);
+		TYPO3.Ice.Model.Project.get('projectDefinition').get('children').pushObject(newContainer);
 		return newContainer;
 	}
 });
-
-
 
 
 window.setTimeout(
   function() {
 	  console.log('Setting empty default package');
 	  if(!TYPO3.Ice.Model.Project.get('projectDefinition')) {
-		TYPO3.Ice.Model.Project.set('projectDefinition', TYPO3.Ice.Model.Renderable.create({identifier:'package1',label:'My Package',type:'TYPO3.PackageBuilder:Package'}));
+		TYPO3.Ice.Model.Project.set('projectDefinition', TYPO3.Ice.Model.Element.create({identifier:'package1',label:'My Package',type:'TYPO3.PackageBuilder:Package'}));
 	  }
   },
   200

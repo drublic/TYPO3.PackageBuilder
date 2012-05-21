@@ -1,4 +1,8 @@
 TYPO3:
+  Ice:
+    handlebarsTemplates:
+       ElementOptionsPanel-SelectEditor:  'resource://TYPO3.PackageBuilder/Private/HandlebarTemplates/Editors/SelectEditor.html'
+
   PackageBuilder:
     javaScripts:
       packageBuilder:
@@ -62,12 +66,12 @@ TYPO3:
       'TYPO3.PackageBuilder:Container':
         options:
           label: ''
-          _isCompositeRenderable: true
+          _isCompositeElement: true
 
       'TYPO3.PackageBuilder:Package':
         options:
           label: ''
-          _isCompositeRenderable: false
+          _isCompositeElement: false
           _isTopLevel: true
           editors:
             label:
@@ -153,6 +157,7 @@ TYPO3:
           label: 'Property'
           group: 'model'
           sorting: 120
+          typeField: 'propertyType'
           editors:
             label:
               label: 'Name'
@@ -164,10 +169,13 @@ TYPO3:
               label: 'Property Type'
               propertyPath: 'propertyType'
               viewName: 'TYPO3.Ice.View.ElementOptionsPanelClass.Editor.SelectEditor'
+              defaultValue: 'string'
+              #subEditors:
               availableElements:
                 0:
                   value: ['string']
                   label: 'String'
+
                 1:
                   value: ['text']
                   label: 'Text'
