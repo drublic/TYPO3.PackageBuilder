@@ -1,4 +1,6 @@
 jQuery(function ($) {
-	$(".FLOW3-Error-Debugger-VarDump-Floating" ).draggable();
-	$(".FLOW3-Error-Debugger-VarDump-Floating" ).on('dblclick',function(){$(this).remove()});
+	$('.FLOW3-Error-Debugger-VarDump-Floating').draggable();
+	$('.FLOW3-Error-Debugger-VarDump-Floating').live('dblclick', function () {
+		$(this).remove()
+	});
 });
