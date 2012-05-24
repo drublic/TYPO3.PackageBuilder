@@ -1,5 +1,11 @@
 TYPO3:
   PackageBuilder:
+    emberDataModel:
+      source: parseFromModelClasses
+      modelNameSpace: TYPO3.PackageBuilder.Model
+      domainObjectAnnotationClass: TYPO3\PackageBuilder\Annotations\Model
+      temporaryNamespace: PackageBuilderModel
+
     handlebarTemplatePaths:
       'TYPO3.PackageBuilder': 'resource://TYPO3.PackageBuilder/Private/HandlebarTemplates'
 
@@ -27,11 +33,11 @@ TYPO3:
         sorting: 200
         label: 'Package elements'
 
-      model:
+      DomainObject:
         sorting: 400
         label: 'Model'
         enableTypes:
-          - Model
+          - DomainObject
           - Property
           - Relation'
 
@@ -84,12 +90,12 @@ TYPO3:
               viewName: 'TYPO3.Ice.View.ElementOptionsPanelClass.Editor.TextEditor'
 
       # group packageElements
-      'TYPO3.PackageBuilder:Model':
+      'TYPO3.PackageBuilder:DomainObject':
         superTypes: ['TYPO3.PackageBuilder:ProjectElement']
         options:
-          label: 'Model'
+          label: 'DomainObject'
           group: packageElements
-          _isCompositeRenderable: true
+          _isCompositeElement: true
           sorting: 100
           editors:
             label:
@@ -153,7 +159,7 @@ TYPO3:
         superTypes: ['TYPO3.PackageBuilder:ProjectElement']
         options:
           label: 'Property'
-          group: 'model'
+          group: 'DomainObject'
           sorting: 120
           typeField: 'propertyType'
           editors:
@@ -203,7 +209,7 @@ TYPO3:
         superTypes: ['TYPO3.PackageBuilder:ProjectElement']
         options:
           label: 'Relation'
-          group: 'model'
+          group: 'DomainObject'
           sorting: 120
           editors:
             label:

@@ -68,6 +68,13 @@ window.setTimeout(
 		console.log('Setting empty default package');
 		if (!TYPO3.Ice.Model.Project.get('projectDefinition')) {
 			TYPO3.Ice.Model.Project.set('projectDefinition', TYPO3.Ice.Model.Element.create({identifier:'package1', label:'My Package', type:'TYPO3.PackageBuilder:Package'}));
+			/**
+			var projectDefinition =  TYPO3.Ice.Store.createRecord(IceModel.Project,{identifier:'package1', label:'My Package'});
+			//, type:'TYPO3.PackageBuilder:Package'
+			console.log(projectDefinition);
+			TYPO3.Ice.Model.Project.set('projectDefinition',projectDefinition);
+			 */
+
 		}
 	},
 	200

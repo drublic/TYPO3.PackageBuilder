@@ -2,8 +2,6 @@
 (function() {
 
   TYPO3.Ice.View.StageClass = TYPO3.Ice.View.StageClass.extend({
-    /**
-	'modelDefinitionBinding': 'TYPO3.Ice.Model.Project.projectDefinition'
 	didInsertElement: (function() {
 	  var object2table;
       object2table = function(o) {
@@ -21,12 +19,11 @@
         t += "</table>";
         return t;
       };
-      console.log(TYPO3.Ice.Utility.convertToSimpleObject(this.get("modelDefinition")));
-      if (this.getPath("modelDefinition")) {
-        return this.$().html("<div style=\"padding:10px\"><strong>Model Definition</strong><br /><br />" + object2table(TYPO3.Ice.Utility.convertToSimpleObject(this.get("modelDefinition"))));
+      //console.log(TYPO3.Ice.Utility.convertToSimpleObject(this.get("projectDefinition")));
+      if (this.getPath("projectDefinition")) {
+        return this.$().html("<div style=\"padding:10px\"><strong>Model Definition</strong><br /><br />" + object2table(TYPO3.Ice.Utility.convertToSimpleObject(this.get("projectDefinition"))));
       }
     }).observes('projectDefinition.__nestedPropertyChange')
-	 */
   });
 
 
