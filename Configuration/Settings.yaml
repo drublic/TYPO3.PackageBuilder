@@ -27,7 +27,7 @@ TYPO3:
     stylesheets:
       packageBuilder:
         sorting: 10
-        files: ['resource://TYPO3.PackageBuilder/Public/Css/PackageBuilder.css']
+        files: ['resource://TYPO3.PackageBuilder/Public/Css/PackageBuilder.css', 'resource://TYPO3.PackageBuilder/Public/Css/Modeller.css']
 
     backport:
       targetFolder:
