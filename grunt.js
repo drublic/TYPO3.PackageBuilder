@@ -9,7 +9,12 @@ module.exports = function (grunt) {
 			'<%= grunt.template.today("yyyy-mm-dd") %> */'
 		},
 		lint: {
-			all: ['grunt.js', 'Resources/Public/JavaScript/panels/*.js', 'Resources/Public/JavaScript/view/*.js']
+			all: [
+				'grunt.js',
+				'Resources/Public/JavaScript/jsplumb/init.js',
+				'Resources/Public/JavaScript/panels/*.js',
+				'Resources/Public/JavaScript/view/*.js'
+			]
 		},
 		jshint: {
 			options: {
