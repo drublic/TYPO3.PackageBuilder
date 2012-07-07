@@ -1,5 +1,8 @@
+
+/*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
+/*globals jQuery, $, TYPO3 */
 TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsPanelClass.Element.extend({
-	enabled:(function () {
+	enabled: function () {
 		if (this.getPath('projectElementType.options._isTopLevel') ||
 			this.getPath('projectElementType.enableTypes').indexOf('all') > -1) {
 			return true;
@@ -10,13 +13,15 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 		}
 		return false;
 
-	}).property('projectElementType', 'currentlySelectedElement').cacheable(),
+	}.property('projectElementType', 'currentlySelectedElement').cacheable(),
 	click:function () {
-		var currentlySelectedElement, defaultValues, identifier, indexInParent, newElement, parentElementsArray, referenceElement,
+		var currentlySelectedElement, defaultValues, identifier, indexInParent,
+			newElement, parentElementsArray, referenceElement, topLevelContainer,
 			_this = this;
+
 		currentlySelectedElement = this.get('currentlySelectedElement');
 		if (!currentlySelectedElement) {
-			return
+			return;
 		}
 		if (!this.get('enabled')) {
 			return;
@@ -28,7 +33,7 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 			identifier:identifier,
 			label:identifier
 		}, defaultValues));
-		if (this.getPath('projectElementType.group') == 'packageElements') {
+		if (this.getPath('projectElementType.group') === 'packageElements') {
 			topLevelContainer = this.addTopLevelContainer(this.getPath('projectElementType.label'));
 			topLevelContainer.get('children').pushObject(newElement);
 		} else {
@@ -47,9 +52,11 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 		}, 10);
 	},
 	addTopLevelContainer:function (containerIdentifier) {
-		var topLevelContainers = TYPO3.Ice.Model.Project.get('projectDefinition').get('children');
+		var newContainer,
+			topLevelContainers = TYPO3.Ice.Model.Project.get('projectDefinition').get('children');
+
 		for (var i = 0; i < topLevelContainers.length; i++) {
-			if (topLevelContainers[i].get('identifier') == containerIdentifier) {
+			if (topLevelContainers[i].get('identifier') === containerIdentifier) {
 				return topLevelContainers[i];
 			}
 		}
@@ -58,6 +65,7 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 			identifier:containerIdentifier,
 			label:containerIdentifier + 's'
 		}, {}));
+
 		TYPO3.Ice.Model.Project.get('projectDefinition').get('children').pushObject(newContainer);
 		return newContainer;
 	}
@@ -65,15 +73,22 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 
 window.setTimeout(
 	function () {
-		console.log('Setting empty default package');
+		window.console.log('Setting empty default package');
+
+		var _default = {
+			identifier:'package1',
+			label:'My Package',
+			type:'TYPO3.PackageBuilder:Package'
+		};
+
 		if (!TYPO3.Ice.Model.Project.get('projectDefinition')) {
-			TYPO3.Ice.Model.Project.set('projectDefinition', TYPO3.Ice.Model.Element.create({identifier:'package1', label:'My Package', type:'TYPO3.PackageBuilder:Package'}));
+			TYPO3.Ice.Model.Project.set('projectDefinition', TYPO3.Ice.Model.Element.create(_default));
 			/**
 			var projectDefinition =  TYPO3.Ice.Store.createRecord(IceModel.Project,{identifier:'package1', label:'My Package'});
 			//, type:'TYPO3.PackageBuilder:Package'
 			console.log(projectDefinition);
 			TYPO3.Ice.Model.Project.set('projectDefinition',projectDefinition);
-			 */
+			*/
 
 		}
 	},
