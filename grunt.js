@@ -11,7 +11,7 @@ module.exports = function (grunt) {
 		lint: {
 			all: [
 				'grunt.js',
-				'Resources/Public/JavaScript/jsplumb/init.js',
+				'Resources/Public/JavaScript/modeller/*.js',
 				'Resources/Public/JavaScript/panels/*.js',
 				'Resources/Public/JavaScript/view/*.js'
 			]
