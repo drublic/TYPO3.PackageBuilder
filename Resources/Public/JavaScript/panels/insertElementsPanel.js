@@ -14,7 +14,7 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 		return false;
 
 	}.property('projectElementType', 'currentlySelectedElement').cacheable(),
-	click:function () {
+	click: function () {
 		var currentlySelectedElement, defaultValues, identifier, indexInParent,
 			newElement, parentElementsArray, referenceElement, topLevelContainer,
 			_this = this;
@@ -51,7 +51,7 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 			return _this.set('currentlySelectedElement', newElement);
 		}, 10);
 	},
-	addTopLevelContainer:function (containerIdentifier) {
+	addTopLevelContainer: function (containerIdentifier) {
 		var newContainer,
 			topLevelContainers = TYPO3.Ice.Model.Project.get('projectDefinition').get('children');
 
@@ -83,6 +83,12 @@ window.setTimeout(
 
 		if (!TYPO3.Ice.Model.Project.get('projectDefinition')) {
 			TYPO3.Ice.Model.Project.set('projectDefinition', TYPO3.Ice.Model.Element.create(_default));
+
+			// Make components draggable
+			window.setTimeout( function () {
+				TYPO3.PackageBuilder.Modeller.jsPlumb.draggable( $('#typo3-ice-stage .component') );
+			}, 0);
+
 			/**
 			var projectDefinition =  TYPO3.Ice.Store.createRecord(IceModel.Project,{identifier:'package1', label:'My Package'});
 			//, type:'TYPO3.PackageBuilder:Package'
