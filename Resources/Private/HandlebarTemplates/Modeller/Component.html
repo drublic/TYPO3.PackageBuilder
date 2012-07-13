@@ -1,4 +1,8 @@
-{{#collection contentBinding="TYPO3.PackageBuilder.Modeller.Controller" classNames="modeller-stage" itemClass="component"}}
+{{#collection contentBinding="TYPO3.PackageBuilder.Modeller.Controller" classNames="modeller-stage"
+	itemClass="component" itemClassBinding="content.isActive"}}
+
+	<a href="#" class="component--info" rel="popover" data-content="And here's some amazing content. It's very engaging. right?">Info</a>
+
 	<h3>{{content.label}}</h3>
 	<p><i>{{content.identifier}}</i></p>
 	<dl>
