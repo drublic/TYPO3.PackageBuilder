@@ -1,6 +1,6 @@
 
 // Stage - is supposed to carry everything that has to do with the modeller
-.modeller-stage {
+#typo3-ice-stage {
 	padding: 10px;
 
 	// Each model is a component
@@ -11,11 +11,10 @@
 		z-index: 20;
 		border: 2px solid #346789;
 		padding: .5em;
-		width: 10em;
-		height: 8em;
 		background: rgba(255,255,255,.8);
 		font: .8em sans-serif;
 		color: black;
+		cursor: move;
 
 		h3 {
 			margin: 0;

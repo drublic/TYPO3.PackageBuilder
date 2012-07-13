@@ -1,19 +1,20 @@
-.modeller-stage {
+#typo3-ice-stage {
   padding: 10px; }
-  .modeller-stage .component {
+  #typo3-ice-stage .component {
     position: absolute;
     top: 30%;
     left: 50%;
     z-index: 20;
     border: 2px solid #346789;
     padding: .5em;
-    width: 10em;
-    height: 8em;
     background: rgba(255, 255, 255, 0.8);
     font: .8em sans-serif;
-    color: black; }
-    .modeller-stage .component h3 {
+    color: black;
+    cursor: move; }
+    #typo3-ice-stage .component h3 {
       margin: 0; }
+    #typo3-ice-stage .component a {
+      background: blue; }
 
 .label {
   position: relative;

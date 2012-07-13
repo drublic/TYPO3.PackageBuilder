@@ -29,7 +29,7 @@ TYPO3.PackageBuilder.Modeller.init = function () {
 	// Drag-events for components
 	var timestamp = 0;
 
-	$(document).on('drag', '.modeller-stage .component', function (e) {
+	$(document).on('drag', '#typo3-ice-stage .component', function (e) {
 
 		// Check if timestemps differ more then 100ms
 		if ((e.timeStamp - timestamp) > 100) {
