@@ -1,6 +1,6 @@
-#typo3-ice-stage {
+.modeller-stage {
   padding: 10px; }
-  #typo3-ice-stage .component {
+  .modeller-stage .component {
     position: absolute;
     top: 30%;
     left: 50%;
@@ -11,10 +11,8 @@
     font: .8em sans-serif;
     color: black;
     cursor: move; }
-    #typo3-ice-stage .component h3 {
+    .modeller-stage .component h3 {
       margin: 0; }
-    #typo3-ice-stage .component a {
-      background: blue; }
 
 .label {
   position: relative;

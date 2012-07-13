@@ -1,5 +1,5 @@
 /*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
-/*globals jQuery, $, TYPO3 */
+/*globals console, jQuery, $, TYPO3 */
 
 // Init PackageBuilder and PackageBuilder.Modeller
 TYPO3.PackageBuilder = {};
@@ -29,7 +29,7 @@ TYPO3.PackageBuilder.Modeller.init = function () {
 	// Drag-events for components
 	var timestamp = 0;
 
-	$(document).on('drag', '#typo3-ice-stage .component', function (e) {
+	$(document).on('drag', '.modeller-stage .component', function (e) {
 
 		// Check if timestemps differ more then 100ms
 		if ((e.timeStamp - timestamp) > 100) {
