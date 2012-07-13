@@ -1,18 +1,25 @@
 .modeller-stage {
   padding: 10px; }
-  .modeller-stage .component {
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    z-index: 20;
-    border: 2px solid #346789;
-    padding: .5em;
-    background: rgba(255, 255, 255, 0.8);
-    font: .8em sans-serif;
-    color: black;
-    cursor: move; }
-    .modeller-stage .component h3 {
-      margin: 0; }
+
+.component {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  z-index: 20;
+  min-width: 200px;
+  border: 2px solid #346789;
+  padding: .5em;
+  background: rgba(255, 255, 255, 0.8);
+  font: .8em sans-serif;
+  color: black;
+  cursor: move; }
+  .component h3 {
+    margin: 0; }
+  .component.is-active {
+    border-color: #ff8700; }
+
+.component--info {
+  float: right; }
 
 .label {
   position: relative;
@@ -23,3 +30,71 @@
   font-size: .9em; }
   .label:hover {
     border-color: #5d94a6; }
+
+.popover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1010;
+  display: none;
+  padding: 5px; }
+  .popover.top {
+    margin-top: -5px; }
+    .popover.top .arrow {
+      bottom: 0;
+      left: 50%;
+      margin-left: -5px;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid #000; }
+  .popover.right {
+    margin-left: 5px; }
+    .popover.right .arrow {
+      top: 50%;
+      left: 0;
+      margin-top: -5px;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-right: 5px solid #000; }
+  .popover.bottom {
+    margin-top: 5px; }
+    .popover.bottom .arrow {
+      top: 0;
+      left: 50%;
+      margin-left: -5px;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 5px solid #000; }
+  .popover.left {
+    margin-left: -5px; }
+    .popover.left .arrow {
+      top: 50%;
+      right: 0;
+      margin-top: -5px;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 5px solid #000; }
+  .popover .arrow {
+    position: absolute;
+    width: 0;
+    height: 0; }
+
+.popover-inner {
+  padding: 3px;
+  width: 280px;
+  overflow: hidden;
+  background: #000;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 6px;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3); }
+
+.popover-title {
+  margin: 0; }
+
+.popover-content {
+  padding: 14px;
+  background-color: #fff;
+  border-radius: 3px;
+  background-clip: padding-box; }
+  .popover-content p, .popover-content ul, .popover-content ol {
+    margin: 0; }
