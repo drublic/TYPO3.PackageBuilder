@@ -1,10 +1,8 @@
-{{#each TYPO3.PackageBuilder.Modeller.Controller}}
-	<div class="component">
-		<h3>{{label}}</h3>
-		<p><i>{{identifier}}</i></p>
-		<dl>
-			<dt>{{key}}</dt>
-			<dd>{{value}}</dd>
-		</dl>
-	</div>
-{{/each}}
+{{#collection contentBinding="TYPO3.PackageBuilder.Modeller.Controller" classNames="modeller-stage" itemClass="component"}}
+	<h3>{{content.label}}</h3>
+	<p><i>{{content.identifier}}</i></p>
+	<dl>
+		<dt>{{content.key}}</dt>
+		<dd>{{content.value}}</dd>
+	</dl>
+{{/collection}}
