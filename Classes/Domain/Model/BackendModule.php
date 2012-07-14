@@ -1,21 +1,35 @@
 <?php
+/***************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2011 Nico de Haen
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 namespace TYPO3\PackageBuilder\Domain\Model;
 
-/*                                                                        *
- * This script belongs to the FLOW3 package "TYPO3.PackageBuilder".       *
- *                                                                        *
- * It is free software; you can redistribute it and/or modify it under    *
- * the terms of the GNU Lesser General Public License, either version 3   *
- * of the License, or (at your option) any later version.                 *
- *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
- *                                                                        */
-
-use Doctrine\ORM\Mapping as ORM;
-use TYPO3\PackageBuilder\Annotations as PackageBuilder;
-
+/**
+ * A plugin in the extension
+ *
+ * @package PackageBuilder
+ * @version $ID:$
+ */
 class BackendModule {
-
 
 	/**
 	 * The name of the module
@@ -54,7 +68,7 @@ class BackendModule {
 
 	/**
 	 * array with configuration arrays
-	 * array('controller' => 'MyController', 'actions' => 'action1,action2')
+	array('controller' => 'MyController', 'actions' => 'action1,action2')
 	 *
 	 * @var array
 	 */
@@ -78,7 +92,6 @@ class BackendModule {
 	public function setName($name) {
 		$this->name = $name;
 	}
-
 
 	/**
 	 * Gets the Description
@@ -120,8 +133,8 @@ class BackendModule {
 
 	/**
 	 * Setter for mainModule
-	 *	 /**
-	 * Setter for key
+
+	Setter for key
 	 *
 	 * @param string $key
 	 * @return void
@@ -149,7 +162,6 @@ class BackendModule {
 
 	/**
 	 * Getter for mainModule
-	 *
 	 */
 	public function getMainModule() {
 		return $this->mainModule;
@@ -168,6 +180,6 @@ class BackendModule {
 	public function getControllerActionCombinations() {
 		return $this->controllerActionCombinations;
 	}
+
 }
 
-?>

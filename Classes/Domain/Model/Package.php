@@ -21,6 +21,124 @@ use TYPO3\PackageBuilder\Annotations as PackageBuilder;
  */
 class Package extends AbstractPackage{
 
+	/**
+	 * @var string
+	 */
+	protected $name;
+
+	/**
+	 * The package key
+	 * @var string
+	 */
+	protected $identifier;
+
+	/**
+	 * Package dir
+	 * @var string
+	 */
+	protected $packageDir;
+
+	/**
+	 * version
+	 * @var string
+	 */
+	protected $version;
+
+	/**
+	 *
+	 * @var string
+	 */
+	protected $description;
+
+
+	/**
+	 *
+	 * @var array
+	 */
+	protected $settings = array();
+
+
+	/**
+	 * @var string
+	 */
+	protected $category;
+
+	/**
+	 * @var bool
+	 */
+	protected $supportVersioning = TRUE;
+
+	/**
+	 * The extension's state. One of the STATE_* constants.
+	 * @var integer
+	 */
+	protected $state = 0;
+
+	const STATE_ALPHA = 0;
+	const STATE_BETA = 1;
+	const STATE_STABLE = 2;
+	const STATE_EXPERIMENTAL = 3;
+	const STATE_TEST = 4;
+
+
+
+	/**
+	 * All domain objects
+	 * @var array<Tx_ExtensionBuilder_Domain_Model_DomainObject>
+	 */
+	protected $domainObjects = array();
+
+	/**
+	 * The Persons working on the Extension
+	 * @var array<Tx_ExtensionBuilder_Domain_Model_Person>
+	 */
+	protected $persons = array();
+
+	/**
+	 * plugins
+	 * @var array<Tx_ExtensionBuilder_Domain_Model_Plugin>
+	 */
+	private $plugins;
+
+	/**
+	 * backend modules
+	 * @var array<Tx_ExtensionBuilder_Domain_Model_BackendModule>
+	 */
+	private $backendModules;
+
+	/**
+	 * was the extension renamed?
+	 * @var boolean
+	 */
+	private $renamed = FALSE;
+
+	/**
+	 * @var array
+	 */
+	private $dependencies = array();
+
+
+	/**
+	 * the lowest required TYPO3 version
+	 * @var float
+	 */
+	private $targetVersion = 4.5;
+
+	public function getDomainObjects(){}
+
+	/**
+	 * @param string $name
+	 */
+	public function setName($name) {
+		$this->name = $name;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getName() {
+		return $this->name;
+	}
 
 }
 ?>

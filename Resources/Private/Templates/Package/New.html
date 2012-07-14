@@ -1,0 +1,53 @@
+<!DOCTYPE html>{namespace ice=TYPO3\Ice\ViewHelpers}{namespace emberjs=Emberjs\ViewHelpers}
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>TYPO3 Ice :: Interface Construction Environment</title>
+	<f:base/>
+
+	<emberjs:include loadJQuery="true" loadEmberData="false" version="0.9.8" minified="true"/>
+	<emberjs:handlebars paths="{settings.handlebarTemplatePaths}" />
+
+	<script type="text/javascript">
+		ICE_CONFIGURATION = {ice:jsonConfiguration()};
+	</script>
+
+	<f:for each="{javaScripts}" as="script">
+		<f:for each="{script.files}" as="uri">
+			<script src="{f:uri.resource(uri:uri)}"></script>
+		</f:for>
+	</f:for>
+
+	<f:for each="{stylesheets}" as="stylesheet">
+		<f:for each="{stylesheet.files}" as="uri">
+			<link rel="stylesheet" href="{f:uri.resource(uri:uri)}"/>
+		</f:for>
+	</f:for>
+	<emberjs:handlebars paths="{settings.handlebarTemplatePaths}" />
+</head>
+<body>
+<div class="ui-layout-center" id="typo3-ice-stage">
+
+</div>
+<div class="ui-layout-north" id="typo3-ice-header">
+
+</div>
+<div class="ui-layout-east" id="typo3-ice-rightSidebar">
+	<f:for each="{panels.right}" as="panel" key="panelName">
+		<section id="typo3-ice-{panel.elementId}">
+			<h2>{panel.header}</h2>
+		</section>
+	</f:for>
+</div>
+<div class="ui-layout-west" id="typo3-ice-leftSidebar">
+	<f:for each="{panels.left}" as="panel" key="panelName">
+		<section id="typo3-ice-{panel.elementId}">
+			<h2>{panel.header}</h2>
+		</section>
+	</f:for>
+</div>
+<div class="ui-layout-south"  id="typo3-ice-footer">
+	<p>Powered by FLOW3</p>
+</div>
+</body>
+</html>

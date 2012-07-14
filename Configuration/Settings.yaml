@@ -109,6 +109,11 @@ TYPO3:
               propertyPath: 'label'
               sorting: 120
               viewName: 'TYPO3.Ice.View.Editor.TextEditor'
+            modelType:
+              label: 'Name'
+              propertyPath: 'label'
+              sorting: 120
+              viewName: 'TYPO3.Ice.View.Editor.TextEditor'
 
       'TYPO3.PackageBuilder:Plugin':
         superTypes: ['TYPO3.PackageBuilder:ProjectElement']

@@ -22,7 +22,50 @@ use TYPO3\PackageBuilder\Annotations as PackageBuilder;
 class AbstractPackage extends AbstractModel{
 
 	/**
-	 * The development state. One of the STATE_* constants.
+	 * @var string
+	 */
+	protected $name;
+
+	/**
+	 * The package key
+	 * @var string
+	 */
+	protected $identifier;
+
+	/**
+	 * Package dir
+	 * @var string
+	 */
+	protected $packageDir;
+
+	/**
+	 * version
+	 * @var string
+	 */
+	protected $version;
+
+	/**
+	 *
+	 * @var string
+	 */
+	protected $description;
+
+
+	/**
+	 *
+	 * @var array
+	 */
+	protected $settings = array();
+
+
+	/**
+	 * @var string
+	 */
+	protected $category;
+
+
+	/**
+	 * The extension's state. One of the STATE_* constants.
 	 * @var integer
 	 */
 	protected $state = 0;
@@ -33,79 +76,46 @@ class AbstractPackage extends AbstractModel{
 	const STATE_EXPERIMENTAL = 3;
 	const STATE_TEST = 4;
 
-	/**
-	 * The package key
-	 * @var string
-	 */
-	protected $key;
+
 
 	/**
 	 * All domain objects
-	 * @var array<\TYPO3\PackageBuilder\Domain\Model\DomainObject>
-	 * @ORM\OneToMany
+	 * @var array<Tx_ExtensionBuilder_Domain_Model_DomainObject>
 	 */
 	protected $domainObjects = array();
 
 	/**
 	 * The Persons working on the Extension
-	 * @var array<\TYPO3\PackageBuilder\Domain\Model\Person>
-	 * @ORM\OneToMany
+	 * @var array<Tx_ExtensionBuilder_Domain_Model_Person>
 	 */
 	protected $persons = array();
 
 	/**
-	 *
-	 * @var string
+	 * was the extension renamed?
+	 * @var boolean
 	 */
-	protected $description;
+	private $renamed = FALSE;
 
 	/**
-	 * The original package key (if a package was renamed)
-	 * @var string
+	 * @var array
 	 */
-	protected $originalKey;
+	private $dependencies = array();
+
+
+	public function getDomainObjects(){}
 
 	/**
-	 * @param string $description
+	 * @param string $name
 	 */
-	public function setDescription($description) {
-		$this->description = $description;
+	public function setName($name) {
+		$this->name = $name;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getDescription() {
-		return $this->description;
-	}
-
-	/**
-	 * @param string $key
-	 */
-	public function setKey($key) {
-		$this->key = $key;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getKey() {
-		return $this->key;
-	}
-
-
-	/**
-	 * @param string $originalKey
-	 */
-	public function setOriginalKey($originalKey) {
-		$this->originalKey = $originalKey;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getOriginalKey() {
-		return $this->originalKey;
+	public function getName() {
+		return $this->name;
 	}
 }
 ?>

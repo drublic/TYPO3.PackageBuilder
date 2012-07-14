@@ -1,0 +1,6 @@
+name: 'Static default route'
+  uriPattern: ''
+  defaults:
+    '@package':    'TYPO3.PackageBuilder'
+    '@controller': 'Package'
+    '@action':     'list'

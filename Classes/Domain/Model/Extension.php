@@ -171,7 +171,7 @@ class Extension extends AbstractPackage{
 	public function getExtensionDir() {
 		if (empty($this->extensionDir)) {
 			if (empty($this->extensionKey)) {
-				throw new Exception('ExtensionDir can only be created if an extensionKey is defined first');
+				throw new \TYPO3\PackageBuilder\Exception('ExtensionDir can only be created if an extensionKey is defined first');
 			}
 			$this->extensionDir = PATH_typo3conf . 'ext/' . $this->extensionKey . '/';
 		}
@@ -353,7 +353,7 @@ class Extension extends AbstractPackage{
 	public function addDomainObject(Tx_ExtensionBuilder_Domain_Model_DomainObject $domainObject) {
 		$domainObject->setExtension($this);
 		if (in_array($domainObject->getName(), array_keys($this->domainObjects))) {
-			throw new Tx_ExtensionBuilder_Domain_Exception_ExtensionException('Duplicate domain object name "' . $domainObject->getName() . '".', Tx_ExtensionBuilder_Domain_Validator_ExtensionValidator::ERROR_DOMAINOBJECT_DUPLICATE);
+			throw new \TYPO3\PackageBuilder\Exception('Duplicate domain object name "' . $domainObject->getName() . '".', Tx_ExtensionBuilder_Domain_Validator_ExtensionValidator::ERROR_DOMAINOBJECT_DUPLICATE);
 		}
 		if ($domainObject->getNeedsUploadFolder()) {
 			$this->needsUploadFolder = TRUE;
