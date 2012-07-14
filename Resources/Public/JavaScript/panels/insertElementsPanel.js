@@ -33,6 +33,17 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 			identifier:identifier,
 			label:identifier
 		}, defaultValues));
+
+		// If we deal with Modeller
+		if (this.getPath('projectElementType.label') === "DomainObject") {
+
+			// Activate last element
+			newElement.set('isActive', true);
+
+			// and append it to the collection
+			TYPO3.PackageBuilder.Modeller.Collection.createModel(newElement);
+		}
+
 		if (this.getPath('projectElementType.group') === 'packageElements') {
 			topLevelContainer = this.addTopLevelContainer(this.getPath('projectElementType.label'));
 			topLevelContainer.get('children').pushObject(newElement);
@@ -61,9 +72,9 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 			}
 		}
 		newContainer = TYPO3.Ice.Model.Element.create($.extend({
-			type:'TYPO3.PackageBuilder:Container',
-			identifier:containerIdentifier,
-			label:containerIdentifier + 's'
+			type: 'TYPO3.PackageBuilder:Container',
+			identifier: containerIdentifier,
+			label: containerIdentifier + 's'
 		}, {}));
 
 		TYPO3.Ice.Model.Project.get('projectDefinition').get('children').pushObject(newContainer);
