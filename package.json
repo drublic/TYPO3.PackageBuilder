@@ -18,9 +18,9 @@
 	"license": "MIT",
 	"dependencies": {},
 	"devDependencies": {
-		"grunt": "~0.3.9",
-		"grunt-css": "~0.2.0",
-		"grunt-sass": "0.1.0"
+		"grunt": "https://nodeload.github.com/cowboy/grunt/tarball/0ba6d4b529",
+		"grunt-sass": "https://nodeload.github.com/sindresorhus/grunt-sass/tarball/5242bf38b04a",
+		"grunt-imagine": "~0.2.0"
 	},
 	"keywords": []
 }
