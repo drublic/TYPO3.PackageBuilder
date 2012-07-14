@@ -15,7 +15,7 @@
 		// If anything changes in this model, this Storage is updated
 		modellChanged: function () {
 			var model = TYPO3.PackageBuilder.Modeller.Storage.update(this);
-		}.observes('position')
+		}.observes('identifier', 'title', 'position')
 	});
 
 
