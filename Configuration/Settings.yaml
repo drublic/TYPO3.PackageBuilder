@@ -28,6 +28,7 @@ TYPO3:
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/view/stage.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/ember.storage.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/models/model.js'
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/models/connection.js'
         sorting: 200
 
     stylesheets:
