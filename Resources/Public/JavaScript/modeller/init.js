@@ -20,6 +20,11 @@
 					// @TODO Generate models
 				});
 			}
+		},
+
+		connect: {
+			start: null,
+			end: null
 		}
 	};
 
