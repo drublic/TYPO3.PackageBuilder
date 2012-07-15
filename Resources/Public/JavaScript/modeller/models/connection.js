@@ -4,25 +4,25 @@
 
 	// Connections
 	TYPO3.PackageBuilder.Modeller.Connection = Ember.Object.extend({
-		source : null,
-		target : null,
-		label : {
+		source: null,
+		target: null,
+		label: {
 			title : null
 		},
 
-		// If anything changes in this model, the Storage is updated
-		modellChanged: function () {
-			TYPO3.PackageBuilder.Modeller.Storage.update(this);
-		}.observes('source', 'target', 'label'),
-
+		// Render a connection
 		render: function () {
 			var item = this;
 
 			TYPO3.PackageBuilder.Modeller.jsPlumb.connect({
-				source: item.source,
-				target: item.target,
+				source: item.get('source'),
+				target: item.get('target'),
 				cssClass: "connector",
-				connector: "StateMachine",
+				connector:[
+					"Bezier", {
+						curviness: 80
+					}, {}
+				],
 				endpoint: "Blank",
 				anchor: "AutoDefault",
 				paintStyle: {
@@ -32,7 +32,7 @@
 				overlays : [
 					["Label", {
 						cssClass: "connector--label",
-						label : item.label.title
+						label : item.get('label').title
 					}],
 					["PlainArrow", {
 						location: 1,
@@ -41,6 +41,8 @@
 					}]
 				]
 			});
+
+			return this;
 		}
 
 	});
