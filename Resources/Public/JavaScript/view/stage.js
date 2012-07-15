@@ -1,6 +1,16 @@
 /*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
 /*globals console, Query, $, TYPO3, Ember */
 (function() {
+
+	TYPO3.Ice.Model.Project.reopen({
+		projectElementBinding: 'TYPO3.Ice.Model.Project.currentlySelectedElement',
+
+		isActive: function () {
+			return false;
+		}
+	});
+
+
 	TYPO3.PackageBuilder.Modeller.Collection = Ember.ArrayProxy.create({
 		content: [],
 
@@ -29,7 +39,6 @@
 		relationable: function (curId) {
 			this.get('content').forEach( function (el) {
 				if (el.get('identifier') !== curId) {
-					console.log(el);
 					el.set('isRelationable', true);
 				}
 			});
@@ -109,7 +118,8 @@
 			$('#' + target).addClass('is-active');
 
 			// Set element
-			TYPO3.PackageBuilder.Modeller.connect.start = target;
+			// @ TODO use property-id instead of component
+			TYPO3.PackageBuilder.Modeller.connect.start = this.get('elementId');
 		},
 
 		// End the relation and create it
@@ -119,18 +129,7 @@
 
 			TYPO3.PackageBuilder.Modeller.connect.end = this.get('elementId');
 
-			console.log(TYPO3.PackageBuilder.Modeller.connect.end);
-
-			var relation = TYPO3.PackageBuilder.Modeller.Connection.create({
-				source: TYPO3.PackageBuilder.Modeller.connect.start,
-				target: TYPO3.PackageBuilder.Modeller.connect.end,
-				label: {
-					title : 'yourMom'
-				}
-			}).render();
-
-			TYPO3.PackageBuilder.Modeller.connect.start = null;
-			TYPO3.PackageBuilder.Modeller.connect.end = null;
+			TYPO3.PackageBuilder.Modeller.DialogueView.create().appendTo('body');
 		}
 	});
 
