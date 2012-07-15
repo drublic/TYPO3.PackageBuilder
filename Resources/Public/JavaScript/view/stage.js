@@ -3,9 +3,8 @@
 (function() {
 	TYPO3.PackageBuilder.Modeller.Collection = Ember.ArrayProxy.create({
 		content: [],
-		currentlySelectedElementBinding: 'TYPO3.Ice.Model.Project.currentlySelectedElement',
-		projectElementTypeBinding: 'content',
 
+		// Find model by its id
 		findById: function (id) {
 			var model;
 
@@ -27,6 +26,22 @@
 			return this;
 		},
 
+		relationable: function (curId) {
+			this.get('content').forEach( function (el) {
+				if (el.get('identifier') !== curId) {
+					console.log(el);
+					el.set('isRelationable', true);
+				}
+			});
+		},
+
+		derelationable: function () {
+			this.filterProperty('isRelationable', true).forEach( function (el) {
+				el.set('isRelationable', false);
+			});
+		},
+
+		// Push a new model to the collection
 		createModel: function (model) {
 
 			// If not yet part of collection
@@ -40,26 +55,82 @@
 
 
 	TYPO3.Ice.View.StageClass = TYPO3.Ice.View.StageClass.extend({
+		templateName: 'Modeller-Stage',
+		didInsertElement: function () {}
+	});
+
+
+
+	TYPO3.PackageBuilder.Modeller.ComponentView = Ember.View.extend({
 		templateName: 'Modeller-Component',
+		classNames: ["component"],
 
-		didInsertElement: function() {
+		didInsertElement: function () {
+			var el = $('#' + this.get('elementId'));
 
-			this.get('childViews').forEach( function (el) {
-				el.get('childViews').forEach( function (child) {
-					window.setTimeout( function () {
+			// Make componant draggable
+			TYPO3.PackageBuilder.Modeller.jsPlumb.draggable(el);
+			$('a[rel="popover"]', el).popover();
 
-						var el = $('#' + child.get('elementId'));
+			// Modeller changed-event
+			$(document).trigger('modeller:change', this);
+		},
 
-						// Make componant draggable
-						TYPO3.PackageBuilder.Modeller.jsPlumb.draggable(el);
-						$('a[rel="popover"]', el).popover();
+		// Activate this component
+		onActivate: function () {
 
-						// Modeller changed-event
-						$(document).trigger('modeller:change', child);
-					}, 0);
-				});
-			});
+			// Retrive current model
+			var id = $('#' + this.get('elementId')).find('.components--data').data('identifier'),
+				model = TYPO3.PackageBuilder.Modeller.Collection.findById(id);
 
+			// Activate the current model
+			TYPO3.PackageBuilder.Modeller.Collection.deactivate();
+			model.set('isActive', true);
+
+			// Make the change public
+			TYPO3.Ice.Model.Project.set('currentlySelectedElement', model);
+		},
+
+		// Show properties
+		showMore: function () {
+			$('#' + this.get('elementId')).find('.components--more').toggleClass('is-active');
+			$('#' + this.get('elementId')).find('.components--properties').toggleClass('is-shown');
+
+			return this;
+		},
+
+
+		// This is the starting-point for a relation
+		startRelation: function (e) {
+			var id = $('#' + this.get('elementId')).find('.components--data').data('identifier'),
+				target = $(e.target).data('target');
+
+			TYPO3.PackageBuilder.Modeller.Collection.relationable(id);
+			$('#' + target).addClass('is-active');
+
+			// Set element
+			TYPO3.PackageBuilder.Modeller.connect.start = target;
+		},
+
+		// End the relation and create it
+		endRelation: function () {
+			TYPO3.PackageBuilder.Modeller.Collection.derelationable();
+			$('#' + TYPO3.PackageBuilder.Modeller.connect.start).find('.components--property.is-active').removeClass('is-active');
+
+			TYPO3.PackageBuilder.Modeller.connect.end = this.get('elementId');
+
+			console.log(TYPO3.PackageBuilder.Modeller.connect.end);
+
+			var relation = TYPO3.PackageBuilder.Modeller.Connection.create({
+				source: TYPO3.PackageBuilder.Modeller.connect.start,
+				target: TYPO3.PackageBuilder.Modeller.connect.end,
+				label: {
+					title : 'yourMom'
+				}
+			}).render();
+
+			TYPO3.PackageBuilder.Modeller.connect.start = null;
+			TYPO3.PackageBuilder.Modeller.connect.end = null;
 		}
 	});
 

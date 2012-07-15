@@ -14,6 +14,7 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 		return false;
 
 	}.property('projectElementType', 'currentlySelectedElement').cacheable(),
+
 	click: function () {
 		var currentlySelectedElement, defaultValues, identifier, indexInParent,
 			newElement, parentElementsArray, referenceElement, topLevelContainer,
@@ -58,10 +59,12 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 				}
 			}
 		}
+
 		return window.setTimeout(function () {
 			return _this.set('currentlySelectedElement', newElement);
 		}, 10);
 	},
+
 	addTopLevelContainer: function (containerIdentifier) {
 		var newContainer,
 			topLevelContainers = TYPO3.Ice.Model.Project.get('projectDefinition').get('children');
