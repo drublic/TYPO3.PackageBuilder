@@ -4,9 +4,9 @@
 					border-radius: $values;
 }
 
-@mixin x-box-shadow ($x, $y, $offset, $hex) {
-	-webkit-box-shadow: $x $y $offset $hex;
-					box-shadow: $x $y $offset $hex;
+@mixin x-box-shadow ($xx) {
+	-webkit-box-shadow: $xx;
+	        box-shadow: $xx;
 }
 
 
