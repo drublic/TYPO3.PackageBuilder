@@ -22,13 +22,6 @@ use TYPO3\PackageBuilder\Annotations as PackageBuilder;
 class Extension extends AbstractPackage{
 
 
-
-	/**
-	 *
-	 * @var array
-	 */
-	protected $settings = array();
-
 	/**
 	 * default settings for em_conf
 	 * @var array
@@ -45,10 +38,6 @@ class Extension extends AbstractPackage{
 	 */
 	protected $shy = FALSE;
 
-	/**
-	 * @var string
-	 */
-	protected $category;
 
 	/**
 	 * @var boolean
@@ -93,23 +82,11 @@ class Extension extends AbstractPackage{
 	private $renamed = FALSE;
 
 	/**
-	 * @var array
-	 */
-	private $dependencies = array();
-
-
-	/**
-	 * the lowest required TYPO3 version
-	 * @var float
-	 */
-	private $targetVersion = 4.5;
-
-	/**
 	 *
 	 * @return string
 	 */
 	public function getExtensionKey() {
-		return $this->extensionKey;
+		return $this->identifier;
 	}
 
 	/**
@@ -117,7 +94,7 @@ class Extension extends AbstractPackage{
 	 * @param string $extensionKey
 	 */
 	public function setExtensionKey($extensionKey) {
-		$this->extensionKey = $extensionKey;
+		$this->identifier = $extensionKey;
 	}
 
 	/**
@@ -136,20 +113,7 @@ class Extension extends AbstractPackage{
 		$this->originalExtensionKey = $extensionKey;
 	}
 
-	/**
-	 *
-	 * @param array $overWriteSettings
-	 */
-	public function setSettings($settings) {
-		$this->settings = $settings;
-	}
 
-	/**
-	 * @return array
-	 */
-	public function getSettings() {
-		return $this->settings;
-	}
 
 	/**
 	 *
@@ -169,94 +133,25 @@ class Extension extends AbstractPackage{
 	 * @return string
 	 */
 	public function getExtensionDir() {
-		if (empty($this->extensionDir)) {
-			if (empty($this->extensionKey)) {
+		if (empty($this->packageDir)) {
+			if (empty($this->identifier)) {
 				throw new \TYPO3\PackageBuilder\Exception('ExtensionDir can only be created if an extensionKey is defined first');
 			}
-			$this->extensionDir = PATH_typo3conf . 'ext/' . $this->extensionKey . '/';
+			$this->packageDir = PATH_typo3conf . 'ext/' . $this->identifier . '/';
 		}
-		return $this->extensionDir;
+		return $this->packageDir;
 	}
 
 	/**
 	 *
 	 * @param string $extensionDir
 	 */
-	public function setExtensionDir($extensionDir) {
-		$this->extensionDir = $extensionDir;
+	public function setExtensionDir($packageDir) {
+		$this->packageDir = $packageDir;
 	}
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function getName() {
-		return $this->name;
-	}
 
-	/**
-	 *
-	 * @param string $name
-	 */
-	public function setName($name) {
-		$this->name = $name;
-	}
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function getVersion() {
-		return $this->version;
-	}
-
-	/**
-	 *
-	 * @param string $version
-	 */
-	public function setVersion($version) {
-		$this->version = $version;
-	}
-
-	/**
-	 *
-	 * @return string
-	 */
-	public function getDescription() {
-		return $this->description;
-	}
-
-	/**
-	 *
-	 * @param string $description
-	 */
-	public function setDescription($description) {
-		$this->description = $description;
-	}
-
-	/**
-	 *
-	 * @return integer
-	 */
-	public function getState() {
-		return $this->state;
-	}
-
-	/**
-	 *
-	 * @param integer $state
-	 */
-	public function setState($state) {
-		$this->state = $state;
-	}
-
-	/**
-	 *
-	 * @return array<Tx_ExtensionBuilder_Domain_Model_DomainObject>
-	 */
-	public function getDomainObjects() {
-		return $this->domainObjects;
-	}
 
 	/**
 	 * An array of domain objects for which a controller should be built.
@@ -504,6 +399,7 @@ class Extension extends AbstractPackage{
 			case self::STATE_TEST:
 				return 'test';
 		}
+		return '';
 	}
 
 
@@ -627,20 +523,6 @@ class Extension extends AbstractPackage{
 	}
 
 	/**
-	 * @return string
-	 */
-	public function getCategory() {
-		return $this->category;
-	}
-
-	/**
-	 * @param string $category
-	 */
-	public function setCategory($category) {
-		$this->category = $category;
-	}
-
-	/**
 	 * @param boolean $supportVersioning
 	 */
 	public function setSupportVersioning($supportVersioning) {
@@ -652,34 +534,6 @@ class Extension extends AbstractPackage{
 	 */
 	public function getSupportVersioning() {
 		return $this->supportVersioning;
-	}
-
-	/**
-	 * @param array $dependencies
-	 */
-	public function setDependencies($dependencies) {
-		$this->dependencies = $dependencies;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getDependencies() {
-		return $this->dependencies;
-	}
-
-	/**
-	 * @param float $targetVersion
-	 */
-	public function setTargetVersion($targetVersion) {
-		$this->targetVersion = $targetVersion;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getTargetVersion() {
-		return $this->targetVersion;
 	}
 
 }

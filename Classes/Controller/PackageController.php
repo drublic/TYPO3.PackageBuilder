@@ -26,10 +26,25 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 * @var \TYPO3\PackageBuilder\Persistence\PersistenceManagerInterface
 	 * @FLOW3\Inject
 	 */
-	protected $persistenceManager;
+	#protected $persistenceManager;
 
 	/**
-	 * @var CodeGeneratorInterface
+	 * @var \TYPO3\FLOW3\Package\PackageManagerInterface
+	 * @FLOW3\Inject
+	 */
+	protected $packageManager;
+
+
+	/**
+	 * @var \TYPO3\FLOW3\Log\SystemLoggerInterface
+	 * @FLOW3\Inject
+	 *
+	 */
+	protected $logger;
+
+
+	/**
+	 * @var \TYPO3\PackageBuilder\Service\CodeGeneratorInterface
 	 */
 
 	protected $codeGenerator;
@@ -40,18 +55,23 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 * @return void
 	 */
 	public function initializeAction() {
-		if (defined('TYPO3_MODE')) {
-			// we are running in TYPO3
-			$this->settings['frameWork'] = 'TYPO3';
+		if (!isset($this->settings['codeGeneration']['frameWork']) OR $this->settings['codeGeneration']['frameWork'] == 'FLOW3') {
+			$this->settings['codeGeneration'] = \TYPO3\FLOW3\Utility\Arrays::arrayMergeRecursiveOverrule(
+				$this->settings['codeGeneration'],
+				$this->settings['codeGeneration']['FLOW3']
+			);
 		} else {
-			$this->settings['frameWork'] = 'FLOW3';
-			if (!empty($this->settings['extendIceSettings'])) {
-				$this->settings = \TYPO3\FLOW3\Utility\Arrays::arrayMergeRecursiveOverrule(
-					$this->configurationManager->getConfiguration(ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, 'TYPO3.Ice'),
-					$this->settings
-				);
-			}
+			$this->settings['codeGeneration']['frameWork'] = 'TYPO3';
 		}
+		if (!empty($this->settings['extendIceSettings'])) {
+			$this->settings = \TYPO3\FLOW3\Utility\Arrays::arrayMergeRecursiveOverrule(
+				$this->configurationManager->getConfiguration(ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, 'TYPO3.Ice'),
+				$this->settings
+			);
+			$this->codeGenerator = $this->objectManager->get('\TYPO3\PackageBuilder\Service\Flow3CodeGenerator');
+		}
+		$this->codeGenerator->injectSettings($this->settings);
+
 	}
 
 
@@ -61,6 +81,7 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 */
 	public function newAction() {
 		$this->indexAction();
+		$this->forward('create');
 
 	}
 
@@ -74,13 +95,29 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	/**
 	 * create a new package based on the configuration
 	 */
-	public function create() {
-		if($this->settings['frameWork'] == 'TYPO3') {
+	public function createAction() {
+		$packageKey = 'MyApp.TestPackage';
+		$this->settings['packageConfiguration'] = $this->packageConfigurationManager->getPackageConfiguration($packageKey);
+		$this->codeGenerator->injectSettings($this->settings);
+		//$this->codeGenerator->injectLogger($this->logger);
+		$this->logger->log('Test 123');
+		if($this->settings['codeGeneration']['frameWork'] == 'TYPO3') {
 
 		} else {
-			$testConfig = $this->persistenceManager->load('test');
-			$testModel = $this->objectManager->get('TYPO3\PackageBuilder\Domain\Model');
-			$this->codeGenerator->build($testModel);
+			$testPackage = $this->objectManager->get('TYPO3\PackageBuilder\Domain\Model\Package');
+			$testPackage->setTitle('My Test Package');
+			$testPackage->setDependencies(
+				array(
+					array(
+						'minVersion' => '1.1',
+						'maxVersion' => '9.9',
+						'key' => 'TYPO3.Test'
+					)
+				)
+
+			);
+			$testPackage->setKey($packageKey);
+			$this->codeGenerator->build($testPackage);
 		}
 
 	}

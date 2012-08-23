@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://typo3.org/ns/2008/flow3/package" version="0.1.1">
+	<key>{package.key}</key>
+	<title>{package.title}</title>
+	<description>{package.description}</description>
+	<version/>
+	<f:if condition="{package.dependencies}">
+	<constraints>
+		<depends>
+			<f:for each="{package.dependencies}"  as="dependency">
+			<package minVersion="{dependency.minVersion}" maxVersion="{dependency.maxVersion}">{dependency.key}</package>
+			</f:for>
+		</depends>
+	</constraints>
+	</f:if>
+</package>

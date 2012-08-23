@@ -1,5 +1,21 @@
 TYPO3:
   PackageBuilder:
+
+    log:
+      backendOptions:
+        logFileURL: '%FLOW3_PATH_DATA%Logs/PackageBuilder.log'
+        createParentDirectories: TRUE
+        severityThreshold: %LOG_DEBUG%
+
+    codeGeneration:
+      frameWork: FLOW3
+      FLOW3:
+        codeTemplateRootPath: '%FLOW3_PATH_PACKAGES%Application/TYPO3.PackageBuilder/Resources/Private/CodeTemplates/FLOW3/'
+        packagesDir: '%FLOW3_PATH_PACKAGES%Application'
+      TYPO3:
+        extensionsDir: '%FLOW3_PATH_ROOT%Data/Extensions/'
+
+
     panels:
       right:
         ConfigurationPanel:

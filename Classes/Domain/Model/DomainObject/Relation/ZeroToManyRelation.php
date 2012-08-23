@@ -62,7 +62,7 @@ class ZeroToManyRelation extends AnyToManyRelation {
 	/**
 	 * Overwrite parent function
 	 *
-	 * @return void
+	 * @return boolean
 	 */
 	public function getUseMMTable() {
 		return FALSE;

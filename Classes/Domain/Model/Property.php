@@ -265,6 +265,8 @@ abstract class Property {
 	public function getTypeHintWithTrailingWhiteSpace() {
 		if ($typehint = $this->getTypeHint()) {
 			return $typehint . ' ';
+		} else {
+			return '';
 		}
 	}
 

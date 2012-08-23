@@ -24,5 +24,15 @@ class ConfigurationManager  {
 	const PHOENIX = 2;
 	const TYPO3 = 3;
 
+	/**
+	 * @param string $packageKey
+	 * @return array
+	 */
+	public function getPackageConfiguration($packageKey) {
+		return array(
+			'enableRoundtrip' => FALSE
+		);
+	}
+
 
 }

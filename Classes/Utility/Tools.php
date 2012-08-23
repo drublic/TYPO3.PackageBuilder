@@ -205,5 +205,25 @@ class Tools {
 		return $XML;
 	}
 
+	/**
+	 * @static
+	 * @param array $configurations
+	 */
+	public static function replaceConstantsInConfiguration(array &$configurations) {
+		foreach ($configurations as $key => $configuration) {
+			if (is_array($configuration)) {
+				self::replaceConstantsInConfiguration($configurations[$key]);
+			} elseif (is_string($configuration)) {
+				$matches = array();
+				preg_match_all('/(?:%)([A-Z_0-9]+)(?:%)/', $configuration, $matches);
+				if (count($matches[1]) > 0) {
+					foreach ($matches[1] as $match) {
+						if (defined($match)) $configurations[$key] = str_replace('%' . $match . '%', constant($match), $configurations[$key]);
+					}
+				}
+			}
+		}
+	}
+
 }
 

@@ -62,7 +62,7 @@ class ManyToManyRelation extends AnyToManyRelation {
 	/**
 	 * Is a MM table needed for this relation?
 	 *
-	 * @return void
+	 * @return boolean
 	 */
 	public function getUseMMTable() {
 		return TRUE;

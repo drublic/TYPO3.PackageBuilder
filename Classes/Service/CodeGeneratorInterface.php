@@ -14,10 +14,10 @@ interface CodeGeneratorInterface  {
 
 	/**
 	 * @abstract
-	 * @param AbstractPackage $package
+	 * @param \TYPO3\PackageBuilder\Domain\Model\PackageInterface $package
 	 * @return mixed
 	 */
-	public function build( $package);
+	public function build(\TYPO3\PackageBuilder\Domain\Model\PackageInterface $package);
 
 
 }

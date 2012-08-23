@@ -12,14 +12,14 @@ use TYPO3\FLOW3\Annotations as FLOW3;
  *
  * @FLOW3\Scope("singleton")
  */
-class Typo3CodeGenerator extends CodeGenerator {
+class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface {
 
 	/**
 	 * The entry point to the class
 	 *
-	 * @param \TYPO3\PackageBuilder\Domain\Model\Extension $extension
+	 * @param \TYPO3\PackageBuilder\Domain\Model\PackageInterface $extension
 	 */
-	public function build(\TYPO3\PackageBuilder\Domain\Model\Extension $extension) {
+	public function build(\TYPO3\PackageBuilder\Domain\Model\PackageInterface $extension) {
 		$this->extension = $extension;
 		if ($this->settings['extConf']['enableRoundtrip'] == 1) {
 			$this->roundTripEnabled = TRUE;
@@ -430,50 +430,6 @@ class Typo3CodeGenerator extends CodeGenerator {
 
 	}
 
-
-	/**
-	 * Build the rendering context
-	 * @author Sebastian Kurfürst <sebastian@typo3.org>
-	 */
-	protected function buildRenderingContext($templateVariables) {
-		$templateVariables['settings'] = $this->settings;
-		$variableContainer = $this->objectManager->create('Tx_Fluid_Core_ViewHelper_TemplateVariableContainer', $templateVariables);
-
-		$renderingContext = $this->objectManager->create('Tx_Fluid_Core_Rendering_RenderingContext');
-		$viewHelperVariableContainer = $this->objectManager->create('Tx_Fluid_Core_ViewHelper_ViewHelperVariableContainer');
-		if (method_exists($renderingContext, 'setTemplateVariableContainer')) {
-			$renderingContext->setTemplateVariableContainer($variableContainer);
-			$renderingContext->setViewHelperVariableContainer($viewHelperVariableContainer);
-		} else {
-			$renderingContext->injectTemplateVariableContainer($variableContainer);
-			$renderingContext->injectViewHelperVariableContainer($viewHelperVariableContainer);
-		}
-		return $renderingContext;
-	}
-
-	/**
-	 * Render a template with variables
-	 *
-	 * @param string $filePath
-	 * @param array $variables
-	 */
-	protected function renderTemplate($filePath, $variables) {
-		//$codeTemplateRootPath = $this->getCodeTemplateRootPath();
-		$variables['settings'] = $this->settings;
-		//$variables['settings']['codeTemplateRootPath'] = $this->codeTemplateRootPath;
-		if (!is_file($this->codeTemplateRootPath . $filePath)) {
-			throw(new \TYPO3\PackageBuilder\Exception('TemplateFile ' . $this->codeTemplateRootPath . $filePath . ' not found'));
-		}
-		$templateCode = file_get_contents($this->codeTemplateRootPath . $filePath);
-		if (empty($templateCode)) {
-			throw(new \TYPO3\PackageBuilder\Exception('TemplateFile ' . $this->codeTemplateRootPath . $filePath . ' has no content'));
-		}
-		$parsedTemplate = $this->templateParser->parse($templateCode);
-		$renderedContent = trim($parsedTemplate->render($this->buildRenderingContext($variables)));
-		// remove all double empty lines (coming from fluid)
-		return preg_replace('/^\s*\n[\t ]*$/m', '', $renderedContent);
-
-	}
 
 
 	/**

@@ -759,6 +759,7 @@ class RoundTrip {
 	 * @return int overWriteSetting
 	 */
 	static public function getOverWriteSettingForPath($path, $extension) {
+		return 0;
 		$map = array(
 			'skip' => -1,
 			'merge' => 1,

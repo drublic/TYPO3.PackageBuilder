@@ -48,7 +48,7 @@ abstract class AnyToManyRelation extends AbstractRelation {
 	 * Returns the relation table name. It is build by having 'tx_myextension_' followed by the
 	first domain object name followed by the second domain object name followed by '_mm'.
 	 *
-	 * @return void
+	 * @return string
 	 */
 	public function getRelationTableName() {
 		if (!empty($this->relationTableName)) {
@@ -86,7 +86,7 @@ abstract class AnyToManyRelation extends AbstractRelation {
 	/**
 	 * Is a MM table needed for this relation?
 	 *
-	 * @return void
+	 * @return boolean
 	 */
 	public function getUseMMTable() {
 		if ($this->getInlineEditing()) {
