@@ -1,4 +1,3 @@
-
 /*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
 /*globals console, jQuery, $, TYPO3 */
 TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsPanelClass.Element.extend({
@@ -16,8 +15,8 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 	}.property('projectElementType', 'currentlySelectedElement').cacheable(),
 
 	click: function () {
-		var currentlySelectedElement, defaultValues, identifier, indexInParent,
-			newElement, parentElementsArray, referenceElement, topLevelContainer,
+		var currentlySelectedElement, defaultValues, identifier,
+			newElement, referenceElement, topLevelContainer,
 			_this = this;
 
 		currentlySelectedElement = this.get('currentlySelectedElement');
