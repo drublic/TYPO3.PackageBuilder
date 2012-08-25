@@ -19,5 +19,10 @@ interface CodeGeneratorInterface  {
 	 */
 	public function build(\TYPO3\PackageBuilder\Domain\Model\PackageInterface $package);
 
-
+	/**
+	 * @abstract
+	 * @param array $settings
+	 * @return mixed
+	 */
+	public function injectSettings(array $settings);
 }

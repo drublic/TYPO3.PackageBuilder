@@ -3,9 +3,21 @@
 <html>
 <head>
 	<title>List Action</title>
+<style type="text/css">
+	body {
+		font-family: Arial;
+		background-color: #666;
+		color:#fff;
+	}
+	a, a:visited {
+		color:#fff;
+	}
+</style>
 </head>
 <body>
-<h1>List Packages</h1>
-<f:link.action action="new" >New package</f:link.action>
+<h1>PackageBuilder</h1>
+<f:link.action action="new" >New package</f:link.action><br /><br />
+<f:link.action action="create" arguments="{frameWork:'TYPO3'}">Create TYPO3 Dummy Extension</f:link.action><br /><br />
+<f:link.action action="create" arguments="{frameWork:'FLOW3'}">Create FLOW3 Dummy Package</f:link.action><br />
 </body>
 </html>

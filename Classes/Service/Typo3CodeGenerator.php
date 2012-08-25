@@ -15,33 +15,30 @@ use TYPO3\FLOW3\Annotations as FLOW3;
 class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface {
 
 	/**
+	 * @var \TYPO3\PackageBuilder\Domain\Model\Extension
+	 */
+	protected $extension;
+
+	/**
 	 * The entry point to the class
 	 *
 	 * @param \TYPO3\PackageBuilder\Domain\Model\PackageInterface $extension
 	 */
 	public function build(\TYPO3\PackageBuilder\Domain\Model\PackageInterface $extension) {
+		$this->logger->log('Test123');
 		$this->extension = $extension;
-		if ($this->settings['extConf']['enableRoundtrip'] == 1) {
-			$this->roundTripEnabled = TRUE;
-			t3lib_div::devLog('roundtrip enabled', 'extension_builder', 0, $this->settings);
-		} else {
-			t3lib_div::devLog('roundtrip disabled', 'extension_builder', 0, $this->settings);
-		}
-		if (isset($this->settings['codeTemplateRootPath'])) {
-			$this->codeTemplateRootPath = $this->settings['codeTemplateRootPath'];
-		} else {
-			throw new \TYPO3\PackageBuilder\Exception('No codeTemplateRootPath configured');
-		}
-
-		if ($this->extension->getTargetVersion() == 4.5) {
-			$this->locallangFileFormat = 'xml';
-		}
-		// Base directory already exists at this point
+			// Base directory already exists at this point
 		$this->extensionDirectory = $this->extension->getExtensionDir();
 		if (!is_dir($this->extensionDirectory)) {
 			\TYPO3\FLOW3\Utility\Files::createDirectoryRecursively($this->extensionDirectory);
+			$this->logger->log('Extension Dir created: ' . $this->extensionDirectory);
 		}
-
+		return;
+		/**
+		if ($this->extension->getTargetVersion() == 4.5) {
+			$this->locallangFileFormat = 'xml';
+		}
+		*/
 		\TYPO3\FLOW3\Utility\Files::createDirectoryRecursively($this->extensionDirectory, 'Configuration');
 
 		$this->configurationDirectory = $this->extensionDirectory . 'Configuration/';

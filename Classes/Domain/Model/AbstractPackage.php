@@ -33,6 +33,18 @@ class AbstractPackage extends AbstractModel{
 	protected $key;
 
 	/**
+	 * @var string
+	 */
+	protected $nameSpace;
+
+	/**
+	 * the directory where the packages/extensions are stored
+	 *
+	 * @var string
+	 */
+	protected $baseDir;
+
+	/**
 	 * Package dir
 	 * @var string
 	 */
@@ -175,6 +187,12 @@ class AbstractPackage extends AbstractModel{
 	 * @return string
 	 */
 	public function getPackageDir() {
+		if(empty($this->packageDir)) {
+			if(empty($this->baseDir)) {
+				throw new \TYPO3\PackageBuilder\Exception\ConfigurationError('No base package dir configured');
+			}
+			$this->packageDir = $this->baseDir . $this->key;
+		}
 		return $this->packageDir;
 	}
 
@@ -274,6 +292,37 @@ class AbstractPackage extends AbstractModel{
 	 */
 	public function getKey() {
 		return $this->key;
+	}
+
+	/**
+	 * @param string $nameSpace
+	 */
+	public function setNameSpace($nameSpace) {
+		$this->nameSpace = $nameSpace;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getNameSpace() {
+		if(empty($this->nameSpace) && !empty($this->key)) {
+			$this->nameSpace = str_replace('.', '\\', $this->key);
+		}
+		return $this->nameSpace;
+	}
+
+	/**
+	 * @param string $baseDir
+	 */
+	public function setBaseDir($baseDir) {
+		$this->baseDir = $baseDir;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getBaseDir() {
+		return $this->baseDir;
 	}
 
 }

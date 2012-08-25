@@ -19,7 +19,7 @@ use TYPO3\PackageBuilder\Annotations as PackageBuilder;
  *
  * @PackageBuilder\Model
  */
-class Extension extends AbstractPackage{
+class Extension extends AbstractPackage  implements PackageInterface{
 
 
 	/**
@@ -76,6 +76,11 @@ class Extension extends AbstractPackage{
 	private $backendModules;
 
 	/**
+	 * @var full (absolute) path to extension dir
+	 */
+	protected $extensionDir;
+
+	/**
 	 * was the extension renamed?
 	 * @var boolean
 	 */
@@ -86,7 +91,7 @@ class Extension extends AbstractPackage{
 	 * @return string
 	 */
 	public function getExtensionKey() {
-		return $this->identifier;
+		return $this->key;
 	}
 
 	/**
@@ -94,7 +99,7 @@ class Extension extends AbstractPackage{
 	 * @param string $extensionKey
 	 */
 	public function setExtensionKey($extensionKey) {
-		$this->identifier = $extensionKey;
+		$this->key = $extensionKey;
 	}
 
 	/**
@@ -133,21 +138,18 @@ class Extension extends AbstractPackage{
 	 * @return string
 	 */
 	public function getExtensionDir() {
-		if (empty($this->packageDir)) {
-			if (empty($this->identifier)) {
-				throw new \TYPO3\PackageBuilder\Exception('ExtensionDir can only be created if an extensionKey is defined first');
-			}
-			$this->packageDir = PATH_typo3conf . 'ext/' . $this->identifier . '/';
+		if (empty($this->extensionDir)) {
+			$this->extensionDir = $this->getPackageDir();
 		}
-		return $this->packageDir;
+		return $this->extensionDir;
 	}
 
 	/**
 	 *
 	 * @param string $extensionDir
 	 */
-	public function setExtensionDir($packageDir) {
-		$this->packageDir = $packageDir;
+	public function setExtensionDir($extensionDir) {
+		$this->$extensionDir = $extensionDir;
 	}
 
 

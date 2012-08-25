@@ -29,7 +29,22 @@ namespace TYPO3\PackageBuilder\Log;
  * @author Nico de Haen
  */
 
-class FileLogger extends \TYPO3\FLOW3\Log\Backend\FileBackend {
+class FileLogger extends \TYPO3\FLOW3\Log\Logger {
 
+	public function log($message, $severity = LOG_INFO, $additionalData = NULL, $packageKey = NULL, $className = NULL, $methodName = NULL) {
+		if ($packageKey === NULL) {
+			$backtrace = debug_backtrace(FALSE, 2);
+			$className = isset($backtrace[1]['class']) ? $backtrace[1]['class'] : NULL;
+			$methodName = isset($backtrace[1]['function']) ? $backtrace[1]['function'] : NULL;
+			$lineNumber = isset($backtrace[0]['line']) ? $backtrace[0]['line'] : NULL;
+			$message .= "       " . $className . '::' . $methodName . '() [line ' . $lineNumber . ']';
+			$explodedClassName = explode('\\', $className);
+				// FIXME: This is not really the package key:
+			$packageKey = isset($explodedClassName[1]) ? $explodedClassName[1] : '';
+		}
+		foreach ($this->backends as $backend) {
+			$backend->append($message, $severity, $additionalData, $packageKey);
+		}
+	}
 
 }

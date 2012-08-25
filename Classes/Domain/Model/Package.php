@@ -21,7 +21,5 @@ use TYPO3\PackageBuilder\Annotations as PackageBuilder;
  */
 class Package extends AbstractPackage implements PackageInterface{
 
-
-
 }
 ?>

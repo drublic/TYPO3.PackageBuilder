@@ -27,7 +27,22 @@ class CodeGenerator {
 	/**
 	 * @var string
 	 */
-	protected $templateRootPath;
+	protected $classesDirectory;
+
+	/**
+	 * @var string
+	 */
+	protected $configurationDirectory;
+
+	/**
+	 * @var string
+	 */
+	protected $privateResourcesDirectory;
+
+	/**
+	 * @var string
+	 */
+	protected $codeTemplateRootPath;
 
 	/**
 	 * @var bool
@@ -35,9 +50,9 @@ class CodeGenerator {
 	protected $editModeEnabled = FALSE;
 
 	/**
-	 * @param $settings
+	 * @param array $settings
 	 */
-	public function injectSettings($settings) {
+	public function injectSettings(array $settings) {
 		$this->settings = $settings;
 	}
 
@@ -73,9 +88,15 @@ class CodeGenerator {
 	 */
 	protected $parser;
 
+	/**
+	 * @var \TYPO3\ParserApi\Service\Printer
+	 * @FLOW3\inject
+	 */
+	protected $printer;
+
 
 	/**
-	 * @var \TYPO3\PackageBuilder\Domain\Model\Package
+	 * @var \TYPO3\PackageBuilder\Domain\Model\AbstractPackage
 	 */
 	protected $package;
 
@@ -100,7 +121,9 @@ class CodeGenerator {
 	);
 
 	public function initializeObject() {
-		$this->logger =  \TYPO3\FLOW3\Log\LoggerFactory::create('PackageBuilderLogger','\\TYPO3\\FLOW3\\Log\\Logger','\\TYPO3\\FLOW3\\Log\\Backend\\FileBackend', $this->settings['log']['backendOptions']);
+		$this->logger =  \TYPO3\FLOW3\Log\LoggerFactory::create('PackageBuilderLogger','\\TYPO3\\PackageBuilder\\Log\\FileLogger','\\TYPO3\\FLOW3\\Log\\Backend\\FileBackend', $this->settings['log']['backendOptions']);
+		$this->targetFramework = $this->settings['codeGeneration']['frameWork'];
+		$this->codeTemplateRootPath = $this->settings['codeGeneration'][$this->targetFramework]['codeTemplateRootPath'];
 	}
 
 	/**
@@ -108,13 +131,26 @@ class CodeGenerator {
 	 *
 	 * @param string $filePath
 	 * @param array $variables
+	 * @return string
 	 */
-	protected function renderTemplate($filePath, $variables) {
+	protected function renderFluidTemplate($filePath, $variables) {
 		$variables['package'] = $this->package;
 		$standAloneView = $this->objectManager->get('TYPO3\\Fluid\\View\\StandaloneView');
-		$templateRootPath = $this->settings['codeGeneration']['codeTemplateRootPath'];
-		$templatePathAndFilename = $templateRootPath . $filePath;
+		$templatePathAndFilename = $this->codeTemplateRootPath . $filePath;
 		$standAloneView->setTemplatePathAndFilename($templatePathAndFilename);
+		$standAloneView->assignMultiple($variables);
+		return $standAloneView->render();
+	}
+
+	/**
+	 * @param string $templateSource
+	 * @param array $variables
+	 * @return string
+	 */
+	protected function renderFluidTemplateSource($templateSource, $variables) {
+		$variables['package'] = $this->package;
+		$standAloneView = $this->objectManager->get('TYPO3\\Fluid\\View\\StandaloneView');
+		$standAloneView->setTemplateSource($templateSource);
 		$standAloneView->assignMultiple($variables);
 		return $standAloneView->render();
 	}
@@ -136,7 +172,7 @@ class CodeGenerator {
 				$fileExtension = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 				if ($fileExtension == 'html') {
 					//TODO: We need some kind of protocol to be displayed after code generation
-					//devlog('File ' . basename($targetFile) . ' was not written. Template files can\'t be merged!', 'extension_builder', 1);
+					$this->logger->log('File ' . basename($targetFile) . ' was not written. Template files can\'t be merged!', 'extension_builder', LOG_WARNING);
 					return;
 				} elseif (in_array($fileExtension, $this->filesSupportingSplitToken)) {
 					$fileContents = $this->insertSplitToken($targetFile, $fileContents);
@@ -256,6 +292,12 @@ class CodeGenerator {
 
 	}
 
-
+	protected function log($message, $severity = 1) {
+		$a = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+		$path = explode('/',$a[0]['file']);
+		$info = array_pop($path).': Line '.$a[0]['line'];
+		$message .= $info . "\t" . $message;
+		$this->logger->log($message, $severity);
+	}
 
 }

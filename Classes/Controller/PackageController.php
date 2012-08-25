@@ -42,6 +42,11 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 */
 	protected $logger;
 
+	/**
+	 * @var string
+	 */
+	protected $targetFramework = 'FLOW3';
+
 
 	/**
 	 * @var \TYPO3\PackageBuilder\Service\CodeGeneratorInterface
@@ -55,25 +60,28 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 * @return void
 	 */
 	public function initializeAction() {
-		if (!isset($this->settings['codeGeneration']['frameWork']) OR $this->settings['codeGeneration']['frameWork'] == 'FLOW3') {
-			$this->settings['codeGeneration'] = \TYPO3\FLOW3\Utility\Arrays::arrayMergeRecursiveOverrule(
-				$this->settings['codeGeneration'],
-				$this->settings['codeGeneration']['FLOW3']
-			);
+		if ($this->request->hasArgument('frameWork')) {
+			$this->targetFramework = $this->request->getArgument('frameWork');
+		} elseif (!isset($this->settings['codeGeneration']['frameWork']) OR $this->settings['codeGeneration']['frameWork'] == 'FLOW3') {
+			$this->targetFramework = 'FLOW3';
 		} else {
-			$this->settings['codeGeneration']['frameWork'] = 'TYPO3';
+			$this->targetFramework = 'TYPO3';
 		}
+		$this->settings['codeGeneration'] = \TYPO3\FLOW3\Utility\Arrays::arrayMergeRecursiveOverrule(
+			$this->settings['codeGeneration'],
+			$this->settings['codeGeneration'][$this->targetFramework]
+		);
 		if (!empty($this->settings['extendIceSettings'])) {
 			$this->settings = \TYPO3\FLOW3\Utility\Arrays::arrayMergeRecursiveOverrule(
 				$this->configurationManager->getConfiguration(ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, 'TYPO3.Ice'),
 				$this->settings
 			);
-			$this->codeGenerator = $this->objectManager->get('\TYPO3\PackageBuilder\Service\Flow3CodeGenerator');
 		}
-		$this->codeGenerator->injectSettings($this->settings);
-
+		if(!class_exists('\\TYPO3\\PackageBuilder\\Service\\' . ucfirst(strtolower($this->targetFramework)). 'CodeGenerator')) {
+			throw new \TYPO3\PackageBuilder\Exception\MissingComponentException('No CodeGenerator class for target framework ' . $this->targetFramework . ' found');
+		}
+		$this->codeGenerator = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Service\\' . ucfirst(strtolower($this->targetFramework)). 'CodeGenerator');
 	}
-
 
 
 	/**
@@ -81,8 +89,6 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 */
 	public function newAction() {
 		$this->indexAction();
-		$this->forward('create');
-
 	}
 
 	/**
@@ -96,30 +102,26 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 * create a new package based on the configuration
 	 */
 	public function createAction() {
+		file_put_contents($this->settings['log']['backendOptions']['logFileURL'],'');
 		$packageKey = 'MyApp.TestPackage';
 		$this->settings['packageConfiguration'] = $this->packageConfigurationManager->getPackageConfiguration($packageKey);
 		$this->codeGenerator->injectSettings($this->settings);
-		//$this->codeGenerator->injectLogger($this->logger);
-		$this->logger->log('Test 123');
-		if($this->settings['codeGeneration']['frameWork'] == 'TYPO3') {
-
+			// $this->codeGenerator->injectLogger($this->logger);
+		if ($this->targetFramework == 'TYPO3') {
+			$testPackage = $this->objectManager->get('TYPO3\PackageBuilder\Domain\Model\Extension');
 		} else {
+			/* @var \TYPO3\PackageBuilder\Domain\Model\Package $testPackage */
 			$testPackage = $this->objectManager->get('TYPO3\PackageBuilder\Domain\Model\Package');
-			$testPackage->setTitle('My Test Package');
-			$testPackage->setDependencies(
-				array(
-					array(
-						'minVersion' => '1.1',
-						'maxVersion' => '9.9',
-						'key' => 'TYPO3.Test'
-					)
-				)
-
-			);
-			$testPackage->setKey($packageKey);
-			$this->codeGenerator->build($testPackage);
 		}
-
+		$testPackage->setTitle('My Test Package');
+		$testPackage->setKey($packageKey);
+		$testPackage->setBaseDir($this->settings['codeGeneration']['packagesDir']);
+		$person = new \TYPO3\PackageBuilder\Domain\Model\Person();
+		$person->setName('Max de Haen');
+		$person->setEmail('mail@test.de');
+		$testPackage->setPersons(array($person));
+		$this->codeGenerator->build($testPackage);
+		die('<pre>' . file_get_contents($this->settings['log']['backendOptions']['logFileURL']). '</pre>');
 	}
 
 }

@@ -10,12 +10,20 @@ use TYPO3\FLOW3\Annotations as FLOW3;
 
 /**
  *
+ *
  * @FLOW3\Scope("singleton")
  */
-class Flow3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface{
+class Flow3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface {
+
+	/**
+	 * @var string
+	 */
+	protected $metaDirectory;
 
 	/**
 	 * @param \TYPO3\PackageBuilder\Domain\Model\PackageInterface $package
+	 * @throws \TYPO3\PackageBuilder\Exception
+	 * @return mixed|void
 	 */
 	public function build(\TYPO3\PackageBuilder\Domain\Model\PackageInterface $package) {
 		$this->package = $package;
@@ -23,20 +31,18 @@ class Flow3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 		if ($this->settings['packageConfiguration']['enableRoundtrip'] == 1) {
 			$this->editModeEnabled = TRUE;
 		}
-		
-		if (isset($this->settings['codeGeneration']['codeTemplateRootPath'])) {
-			$this->codeTemplateRootPath = $this->settings['codeGeneration']['codeTemplateRootPath'];
-		} else {
+
+		if (empty($this->codeTemplateRootPath)) {
 			throw new \TYPO3\PackageBuilder\Exception('No codeTemplateRootPath configured');
 		}
 
 		$packageDir = $this->package->getPackageDir();
-		if(empty($packageDir)) {
-			$this->package->setPackageDir($this->settings['codeGeneration']['packagesDir'] . '/' . $package->getKey() . '/');
+		if (empty($packageDir)) {
+			$this->package->setPackageDir($this->settings['codeGeneration']['packagesDir'] . '/' . $this->package->getKey() . '/');
 		}
-		//\TYPO3\FLOW3\var_dump($this->settings);
+			// \TYPO3\FLOW3\var_dump($this->settings);
 
-		// Base directory already exists at this point
+			// Base directory already exists at this point
 		$this->packageDirectory = $this->package->getPackageDir();
 
 		\TYPO3\PackageBuilder\Utility\Tools::replaceConstantsInConfiguration($this->settings);
@@ -46,8 +52,8 @@ class Flow3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 		}
 
 		$this->createDirectoryRecursively($this->packageDirectory . 'Log/');
-		if(!file_exists($this->packageDirectory . 'Log/PackageBuilder.log')) {
-			$this->writeFile($this->packageDirectory . 'Log/PackageBuilder.log','Log vom ' . date('Y-m-d H:i') . chr(10));
+		if (!file_exists($this->packageDirectory . 'Log/PackageBuilder.log')) {
+			$this->writeFile($this->packageDirectory . 'Log/PackageBuilder.log', 'Log vom ' . date('Y-m-d H:i') . chr(10));
 		}
 
 		$logBackend = new \TYPO3\FLOW3\Log\Backend\FileBackend();
@@ -68,15 +74,32 @@ class Flow3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 
 		$this->createDirectoryRecursively($this->configurationDirectory);
 
+		$this->createDirectoryRecursively($this->privateResourcesDirectory);
+
 		die('Success');
 
 	}
 
 	protected function renderMetaFiles() {
-		$metaFileContent = $this->renderTemplate('Meta/Package.xmlt',array());
-		$this->writeFile($this->packageDirectory  . 'Meta/Package.xml',$metaFileContent);
-		$packageFileContent = $this->renderTemplate('Classes/Package.phpt',array());
-		$this->writeFile($this->packageDirectory  . 'Classes/Package.php',$packageFileContent);
+		$metaFileContent = $this->renderFluidTemplate('Meta/Package.xmlt', array());
+		$this->writeFile($this->packageDirectory . 'Meta/Package.xml', $metaFileContent);
+		$packageFileContent = $this->renderPackageClass('Classes/Package.php', array());
+		$this->writeFile($this->packageDirectory . 'Classes/Package.php', $packageFileContent);
+	}
+
+	protected function renderPackageClass() {
+		$packageClassFileObject = $this->parser->parseFile($this->codeTemplateRootPath . 'Classes/Package.php');
+		$packageClassFileObject->getNamespace()->setName($this->package->getNameSpace(), TRUE);
+		$classComments = $packageClassFileObject->getFirstClass()->getAllComments();
+		foreach($classComments as $line => $classComment) {
+			$classComment = $this->renderFluidTemplateSource($classComment->toString(), array());
+			$packageClassFileObject->getFirstClass()->replaceComment($classComment,$line);
+		}
+		$docComment = $packageClassFileObject->getFirstClass()->getDocComment()->getDescription();
+		$docComment = $this->renderFluidTemplateSource($docComment, array());
+		\TYPO3\FLOW3\var_dump($packageClassFileObject->getFirstClass()->getComment(),__FILE__ . __LINE__);
+		$packageClassFileObject->getFirstClass()->setDescription($docComment);
+		return $this->printer->renderFileObject($packageClassFileObject, TRUE);
 	}
 
 }
