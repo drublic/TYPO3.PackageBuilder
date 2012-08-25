@@ -64,14 +64,26 @@
 }
 
 
-// Activate-button
-// Extends .components--button
+// Activate Header
 .components--activate {
-	background-position: -384px 0;
+	color: #000;
+	text-decoration: none;
 
-	.is-active & {
-		display: none;
+	&:visited,
+	&:active,
+	&:hover {
+		color: #000;
 	}
+}
+
+// Extends .components--button
+.components--relation {
+	background-position: -144px -96px;
+}
+
+// Extends .components--button
+.components--add {
+	background-position: -408px -96px;
 }
 
 
@@ -224,16 +236,6 @@
 
 .components--property-type {
 	margin: 0;
-}
-
-// Extends .components--button
-.components--relation {
-	position: absolute;
-	top: 50%;
-	right: 0;
-	margin-top: -8px;
-
-	background-position: -144px -96px;
 }
 
 

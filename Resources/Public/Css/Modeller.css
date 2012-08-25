@@ -46,10 +46,19 @@
 }
 
 .components--activate {
-  background-position: -384px 0;
+  color: #000;
+  text-decoration: none;
 }
-.is-active .components--activate {
-  display: none;
+.components--activate:visited, .components--activate:active, .components--activate:hover {
+  color: #000;
+}
+
+.components--relation {
+  background-position: -144px -96px;
+}
+
+.components--add {
+  background-position: -408px -96px;
 }
 
 .popover {
@@ -180,14 +189,6 @@
 
 .components--property-type {
   margin: 0;
-}
-
-.components--relation {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  margin-top: -8px;
-  background-position: -144px -96px;
 }
 
 .connector--label {
