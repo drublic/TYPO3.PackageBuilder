@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\PackageBuilder\Service;
+namespace TYPO3\PackageBuilder\Service\FLOW3;
 
 /*                                                                        *
  * This script belongs to the FLOW3 package "TYPO3.PackageBuilder".       *
@@ -13,7 +13,7 @@ use TYPO3\FLOW3\Annotations as FLOW3;
  *
  * @FLOW3\Scope("singleton")
  */
-class Flow3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface {
+class CodeGenerator extends \TYPO3\PackageBuilder\Service\CodeGenerator implements \TYPO3\PackageBuilder\Service\CodeGeneratorInterface {
 
 	/**
 	 * @var string
@@ -27,14 +27,6 @@ class Flow3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	 */
 	public function build(\TYPO3\PackageBuilder\Domain\Model\PackageInterface $package) {
 		$this->package = $package;
-
-		if ($this->settings['packageConfiguration']['enableRoundtrip'] == 1) {
-			$this->editModeEnabled = TRUE;
-		}
-
-		if (empty($this->codeTemplateRootPath)) {
-			throw new \TYPO3\PackageBuilder\Exception('No codeTemplateRootPath configured');
-		}
 
 		$packageDir = $this->package->getPackageDir();
 		if (empty($packageDir)) {

@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\PackackageBuilder\Tests;
+namespace TYPO3\PackageBuilder\Tests;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,7 +24,7 @@ namespace TYPO3\PackackageBuilder\Tests;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-if(!class_exists('\\TYPO3\\PackackageBuilder\\Tests\\BaseTest')) {
+if(!class_exists('\\TYPO3\\PackageBuilder\\Tests\\BaseTest')) {
 	require_once('../BaseTest.php');
 }
 

@@ -1,32 +1,32 @@
-{namespace k=Tx_ExtensionBuilder_ViewHelpers}
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}
 <f:if condition="{extension.targetVersion}< 4.6">
 	<f:then>
-	<k:openingTag>f:form.errors</k:openingTag>
+	<pb:openingTag>f:form.errors</pb:openingTag>
 	<div class="error">
-		<k:curlyBrackets>error.message</k:curlyBrackets>
-		<k:openingTag>f:if condition="<k:curlyBrackets>error.propertyName</k:curlyBrackets>"</k:openingTag>
+		<pb:curlyBrackets>error.message</pb:curlyBrackets>
+		<pb:openingTag>f:if condition="<pb:curlyBrackets>error.propertyName</pb:curlyBrackets>"</pb:openingTag>
 			<p>
-				<strong><k:curlyBrackets>error.propertyName</k:curlyBrackets></strong>:
-				<k:openingTag>f:for each="<k:curlyBrackets>error.errors</k:curlyBrackets>" as="errorDetail"</k:openingTag>
-					<k:curlyBrackets>errorDetail.message</k:curlyBrackets>
-				<k:openingTag>/f:for</k:openingTag>
+				<strong><pb:curlyBrackets>error.propertyName</pb:curlyBrackets></strong>:
+				<pb:openingTag>f:for each="<pb:curlyBrackets>error.errors</pb:curlyBrackets>" as="errorDetail"</pb:openingTag>
+					<pb:curlyBrackets>errorDetail.message</pb:curlyBrackets>
+				<pb:openingTag>/f:for</pb:openingTag>
 			</p>
-		<k:openingTag>/f:if</k:openingTag>
+		<pb:openingTag>/f:if</pb:openingTag>
 	</div>
-<k:openingTag>/f:form.errors</k:openingTag>
+<pb:openingTag>/f:form.errors</pb:openingTag>
 	</f:then>
 	<f:else>
-<k:openingTag>f:form.validationResults for="<k:curlyBrackets>object</k:curlyBrackets>"</k:openingTag>
-	<k:openingTag>f:if condition="<k:curlyBrackets>validationResults.flattenedErrors</k:curlyBrackets>"</k:openingTag>
+<pb:openingTag>f:form.validationResults for="<pb:curlyBrackets>object</pb:curlyBrackets>"</pb:openingTag>
+	<pb:openingTag>f:if condition="<pb:curlyBrackets>validationResults.flattenedErrors</pb:curlyBrackets>"</pb:openingTag>
 		<ul>
-		<k:openingTag>f:for each="<k:curlyBrackets>validationResults.flattenedErrors</k:curlyBrackets>" key="propertyPath" as="errors"</k:openingTag>
+		<pb:openingTag>f:for each="<pb:curlyBrackets>validationResults.flattenedErrors</pb:curlyBrackets>" key="propertyPath" as="errors"</pb:openingTag>
 			<li>
-			<k:curlyBrackets>propertyPath</k:curlyBrackets>: <ul>
-				<k:openingTag>f:for each="<k:curlyBrackets>errors</k:curlyBrackets>" as="error"</k:openingTag><li><k:curlyBrackets>error</k:curlyBrackets></li><k:openingTag>/f:for</k:openingTag>
+			<pb:curlyBrackets>propertyPath</pb:curlyBrackets>: <ul>
+				<pb:openingTag>f:for each="<pb:curlyBrackets>errors</pb:curlyBrackets>" as="error"</pb:openingTag><li><pb:curlyBrackets>error</pb:curlyBrackets></li><pb:openingTag>/f:for</pb:openingTag>
 				</ul>
 			</li>
-		<k:openingTag>/f:for</k:openingTag></ul>
-<k:openingTag>/f:if</k:openingTag>
-<k:openingTag>/f:form.validationResults</k:openingTag>
+		<pb:openingTag>/f:for</pb:openingTag></ul>
+<pb:openingTag>/f:if</pb:openingTag>
+<pb:openingTag>/f:form.validationResults</pb:openingTag>
 	</f:else>
 </f:if>

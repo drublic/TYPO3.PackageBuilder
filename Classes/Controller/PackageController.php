@@ -16,11 +16,6 @@ use \TYPO3\FLOW3\Configuration\ConfigurationManager as ConfigurationManager;
  */
 class PackageController extends \TYPO3\Ice\Controller\StandardController {
 
-	/**
-	 * @var \TYPO3\PackageBuilder\Configuration\ConfigurationManager
-	 * @FLOW3\Inject
-	 */
-	protected $packageConfigurationManager;
 
 	/**
 	 * @var \TYPO3\PackageBuilder\Persistence\PersistenceManagerInterface
@@ -34,6 +29,11 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 */
 	protected $packageManager;
 
+	/**
+	 * @var \TYPO3\PackageBuilder\Configuration\AbstractConfigurationManager
+	 */
+	protected $packageConfigurationManager;
+
 
 	/**
 	 * @var \TYPO3\FLOW3\Log\SystemLoggerInterface
@@ -45,14 +45,19 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	/**
 	 * @var string
 	 */
-	protected $targetFramework = 'FLOW3';
+	protected $targetFrameWork = 'FLOW3';
 
 
 	/**
-	 * @var \TYPO3\PackageBuilder\Service\CodeGeneratorInterface
+	 * @var \TYPO3\PackageBuilder\Service\AbstractCodeGenerator
 	 */
 
 	protected $codeGenerator;
+
+	/**
+	 * @var \TYPO3\PackageBuilder\Domain\Repository\AbstractPackageRepository
+	 */
+	protected $packageRepository;
 
 	/**
 	 * Initialize action, and merge settings if needed
@@ -61,15 +66,15 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 */
 	public function initializeAction() {
 		if ($this->request->hasArgument('frameWork')) {
-			$this->targetFramework = $this->request->getArgument('frameWork');
+			$this->targetFrameWork = $this->request->getArgument('frameWork');
 		} elseif (!isset($this->settings['codeGeneration']['frameWork']) OR $this->settings['codeGeneration']['frameWork'] == 'FLOW3') {
-			$this->targetFramework = 'FLOW3';
+			$this->targetFrameWork = 'FLOW3';
 		} else {
-			$this->targetFramework = 'TYPO3';
+			$this->targetFrameWork = 'TYPO3';
 		}
 		$this->settings['codeGeneration'] = \TYPO3\FLOW3\Utility\Arrays::arrayMergeRecursiveOverrule(
 			$this->settings['codeGeneration'],
-			$this->settings['codeGeneration'][$this->targetFramework]
+			$this->settings['codeGeneration'][$this->targetFrameWork]
 		);
 		if (!empty($this->settings['extendIceSettings'])) {
 			$this->settings = \TYPO3\FLOW3\Utility\Arrays::arrayMergeRecursiveOverrule(
@@ -77,10 +82,13 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 				$this->settings
 			);
 		}
-		if(!class_exists('\\TYPO3\\PackageBuilder\\Service\\' . ucfirst(strtolower($this->targetFramework)). 'CodeGenerator')) {
-			throw new \TYPO3\PackageBuilder\Exception\MissingComponentException('No CodeGenerator class for target framework ' . $this->targetFramework . ' found');
+		if(!class_exists('\\TYPO3\\PackageBuilder\\Service\\' . $this->targetFrameWork. '\\CodeGenerator')) {
+			throw new \TYPO3\PackageBuilder\Exception\MissingComponentException('No CodeGenerator class for target framework ' . $this->targetFrameWork . ' found');
 		}
-		$this->codeGenerator = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Service\\' . ucfirst(strtolower($this->targetFramework)). 'CodeGenerator');
+		$this->codeGenerator = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Service\\' . $this->targetFrameWork. '\\CodeGenerator');
+		$this->packageRepository = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Domain\\Repository\\' . $this->targetFrameWork. '\\PackageRepository');
+		$this->packageFactory = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Service\\' . $this->targetFrameWork. '\\PackageFactory');
+		$this->packageConfigurationManager = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Configuration\\' . $this->targetFrameWork. '\\ConfigurationManager');
 	}
 
 
@@ -102,25 +110,38 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 * create a new package based on the configuration
 	 */
 	public function createAction() {
-		file_put_contents($this->settings['log']['backendOptions']['logFileURL'],'');
-		$packageKey = 'MyApp.TestPackage';
-		$this->settings['packageConfiguration'] = $this->packageConfigurationManager->getPackageConfiguration($packageKey);
-		$this->codeGenerator->injectSettings($this->settings);
-			// $this->codeGenerator->injectLogger($this->logger);
-		if ($this->targetFramework == 'TYPO3') {
-			$testPackage = $this->objectManager->get('TYPO3\PackageBuilder\Domain\Model\Extension');
-		} else {
-			/* @var \TYPO3\PackageBuilder\Domain\Model\Package $testPackage */
-			$testPackage = $this->objectManager->get('TYPO3\PackageBuilder\Domain\Model\Package');
+		try {
+			$settingsFile = $this->settings['codeGeneration']['packagesDir']. 'PackageBuilder.json';
+			if(!file_exists($settingsFile)){
+				die($settingsFile);
+			}
+			define('PATH_typo3conf',$this->settings['codeGeneration']['packagesDir']);
+			$packageBuildConfiguration = $this->packageConfigurationManager->getConfigurationFromFile($settingsFile);
+			/**
+			$validationConfigurationResult = $this->extensionValidator->validateConfigurationFormat($packageBuildConfiguration);
+			if (!empty($validationConfigurationResult['warnings'])) {
+				$confirmationRequired = $this->handleValidationWarnings($validationConfigurationResult['warnings']);
+				if (!empty($confirmationRequired)) {
+					return $confirmationRequired;
+				}
+			}
+			*/
+			$package = $this->packageFactory->create($packageBuildConfiguration);
+			//\TYPO3\FLOW3\var_dump($package);
+
 		}
-		$testPackage->setTitle('My Test Package');
-		$testPackage->setKey($packageKey);
-		$testPackage->setBaseDir($this->settings['codeGeneration']['packagesDir']);
-		$person = new \TYPO3\PackageBuilder\Domain\Model\Person();
-		$person->setName('Max de Haen');
-		$person->setEmail('mail@test.de');
-		$testPackage->setPersons(array($person));
-		$this->codeGenerator->build($testPackage);
+		catch (Exception $e) {
+			throw $e;
+		}
+		file_put_contents($this->settings['log']['backendOptions']['logFileURL'],'');
+
+		//\TYPO3\FLOW3\var_dump($this->settings['codeGeneration']);
+		$this->settings['packageConfiguration'] = $this->packageConfigurationManager->getPackageConfiguration($package->getKey());
+		$this->codeGenerator->injectSettings($this->settings);
+
+		$package->setBaseDir($this->settings['codeGeneration']['packagesDir']);
+
+		$this->codeGenerator->build($package);
 		die('<pre>' . file_get_contents($this->settings['log']['backendOptions']['logFileURL']). '</pre>');
 	}
 

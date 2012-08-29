@@ -231,7 +231,7 @@ abstract class AbstractProperty {
 	 * @return string the field name in lowercase underscore
 	 */
 	public function getFieldName() {
-		$fieldName = \t3lib_div::camelCaseToLowerCaseUnderscored($this->name);
+		$fieldName = \TYPO3\PackageBuilder\Utility\Tools::camelCaseToLowerCaseUnderscored($this->name);
 		if (\TYPO3\PackageBuilder\Domain\Validator\ExtensionValidator::isReservedMYSQLWord($fieldName)) {
 			$fieldName = ($this->domainObject->getExtension()->getShortExtensionKey() . '_') . $fieldName;
 		}
@@ -381,7 +381,7 @@ abstract class AbstractProperty {
 	 * @return string $mappingStatement
 	 */
 	public function getMappingStatement() {
-		if ($this->getFieldName() != \t3lib_div::camelCaseToLowerCaseUnderscored($this->name)) {
+		if ($this->getFieldName() != \TYPO3\PackageBuilder\Utility\Tools::camelCaseToLowerCaseUnderscored($this->name)) {
 			return ($this->getFieldName() . '.mapOnProperty = ') . $this->name;
 		} else {
 			return NULL;

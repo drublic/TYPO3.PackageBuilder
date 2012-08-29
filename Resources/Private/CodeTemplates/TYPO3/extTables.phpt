@@ -1,12 +1,12 @@
-{namespace k=Tx_ExtensionBuilder_ViewHelpers}<?php
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}<?php
 if (!defined('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 <f:for each="{extension.Plugins}" as="plugin">
 Tx_Extbase_Utility_Extension::registerPlugin(
 	$_EXTKEY,
-	'<k:format.uppercaseFirst>{plugin.key}</k:format.uppercaseFirst>',
-	'<k:format.quoteString>{plugin.name}</k:format.quoteString>'
+	'<pb:format.uppercaseFirst>{plugin.key}</pb:format.uppercaseFirst>',
+	'<pb:format.quoteString>{plugin.name}</pb:format.quoteString>'
 );
 <f:if condition="{plugin.switchableControllerActions}">
 $pluginSignature = str_replace('_','',$_EXTKEY) . '_{plugin.key}';
@@ -39,17 +39,17 @@ if (TYPO3_MODE === 'BE') {
 </f:for>
 }
 </f:if>
-t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript', '<k:format.quoteString>{extension.name}</k:format.quoteString>');
+t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript', '<pb:format.quoteString>{extension.name}</pb:format.quoteString>');
 
 <f:for each="{extension.domainObjects}" as="domainObject">
-	<k:mapping renderCondition="needsTypeField" domainObject="{domainObject}">
-<k:render partial="TCA/TypeField.phpt" arguments="{domainObject:domainObject, settings:settings, locallangFileFormat:locallangFileFormat}" />
-	</k:mapping>
+	<pb:typo3.mapping renderCondition="needsTypeField" domainObject="{domainObject}">
+<f:render partial="TCA/TypeField.phpt" arguments="{domainObject:domainObject, settings:settings, locallangFileFormat:locallangFileFormat}" />
+	</pb:typo3.mapping>
 	<f:if condition="{domainObject.mapToTable}">
 		<f:then>
-			<k:mapping domainObject="{domainObject}" renderCondition="isMappedToExternalTable">
-<k:render partial="TCA/Columns.phpt" arguments="{domainObject:domainObject, settings:settings, locallangFileFormat:locallangFileFormat}" />
-			</k:mapping>
+			<pb:typo3.mapping domainObject="{domainObject}" renderCondition="isMappedToExternalTable">
+<f:render partial="TCA/Columns.phpt" arguments="{domainObject:domainObject, settings:settings, locallangFileFormat:locallangFileFormat}" />
+			</pb:typo3.mapping>
 		</f:then>
 		<f:else>
 t3lib_extMgm::addLLrefForTCAdescr('{domainObject.databaseTableName}', 'EXT:{extension.extensionKey}/Resources/Private/Language/locallang_csh_{domainObject.databaseTableName}.{locallangFileFormat}');

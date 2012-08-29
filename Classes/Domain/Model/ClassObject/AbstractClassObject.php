@@ -214,7 +214,7 @@ abstract class AbstractClassObject {
 	 * @return string Property description
 	 */
 	public function getDescriptionLines() {
-		return \t3lib_div::trimExplode('
+		return \TYPO3\FLOW3\Utility\Arrays::trimExplode('
 ', trim($this->getDescription()));
 	}
 

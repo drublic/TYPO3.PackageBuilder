@@ -22,36 +22,30 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-namespace TYPO3\PackageBuilder\Service;
-
-
+namespace TYPO3\PackageBuilder\Service\TYPO3;
+use TYPO3\PackageBuilder\Domain\Model as Model;
+use TYPO3\FLOW3\Annotations as FLOW3;
 /**
  * Builder for domain objects
  *
  * @package PackageBuilder
  */
-class ObjectSchemaBuilder {
+class DomainObjectFactory extends \TYPO3\PackageBuilder\Service\AbstractDomainObjectFactory {
 
 	/**
-	 * @var \TYPO3\PackageBuilder\Configuration\ConfigurationManager
+	 * @var \TYPO3\PackageBuilder\Configuration\TYPO3\ConfigurationManager
+	 *
+	 * @FLOW3\Inject
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @param \TYPO3\PackageBuilder\Configuration\ConfigurationManager $configurationManager
-	 * @return void
-	 */
-	public function injectConfigurationManager(\TYPO3\PackageBuilder\Configuration\ConfigurationManager $configurationManager) {
-		$this->configurationManager = $configurationManager;
-	}
-
-	/**
 	 * @param array $jsonDomainObject
-	 * @return Tx_ExtensionBuilder_Domain_Model_DomainObject $domainObject
+	 * @return \TYPO3\PackageBuilder\Domain\Model\DomainObject $domainObject
 	 */
-	public function build(array $jsonDomainObject) {
+	public function create(array $jsonDomainObject) {
 		//t3lib_div::devlog('Building domain object '.$jsonDomainObject['name'],'extension_builder',0,$jsonDomainObject);
-		$domainObject = \t3lib_div::makeInstance('TYPO3\\PackageBuilder\\Domain\\Model\\DomainObject');
+		$domainObject = new Model\DomainObject;
 		$domainObject->setUniqueIdentifier($jsonDomainObject['objectsettings']['uid']);
 		$domainObject->setName($jsonDomainObject['name']);
 		$domainObject->setDescription($jsonDomainObject['objectsettings']['description']);
@@ -61,7 +55,11 @@ class ObjectSchemaBuilder {
 			$domainObject->setEntity(FALSE);
 		}
 		$domainObject->setAggregateRoot($jsonDomainObject['objectsettings']['aggregateRoot']);
-		$domainObject->setSorting($jsonDomainObject['objectsettings']['sorting']);
+
+		if(isset($jsonDomainObject['objectsettings']['sorting'])) {
+			$domainObject->setSorting($jsonDomainObject['objectsettings']['sorting']);
+		}
+
 		// extended settings
 		if (!empty($jsonDomainObject['objectsettings']['mapToTable'])) {
 			$domainObject->setMapToTable($jsonDomainObject['objectsettings']['mapToTable']);
@@ -72,12 +70,11 @@ class ObjectSchemaBuilder {
 		// properties
 		foreach ($jsonDomainObject['propertyGroup']['properties'] as $jsonProperty) {
 			$propertyType = $jsonProperty['propertyType'];
-			$propertyClassName = ('TYPO3\\PackageBuilder\\Domain\\Model\\DomainObject_' . $propertyType) . 'Property';
+			$propertyClassName = '\\TYPO3\\PackageBuilder\\Domain\\Model\\DomainObject\\' . $propertyType . 'Property';
 			if (!class_exists($propertyClassName)) {
-				\t3lib_div::devlog(('Property of type ' . $propertyType) . ' not found', 'extension_builder', 2, $jsonProperty);
 				throw new \Exception(('Property of type ' . $propertyType) . ' not found');
 			}
-			$property = \t3lib_div::makeInstance($propertyClassName);
+			$property = new $propertyClassName;
 			$property->setUniqueIdentifier($jsonProperty['uid']);
 			$property->setName($jsonProperty['propertyName']);
 			$property->setDescription($jsonProperty['propertyDescription']);
@@ -92,19 +89,19 @@ class ObjectSchemaBuilder {
 		}
 		$relatedForeignTables = array();
 		foreach ($jsonDomainObject['relationGroup']['relations'] as $jsonRelation) {
-			$relation = self::buildRelation($jsonRelation);
+			$relation = $this->buildRelation($jsonRelation);
 			if (!empty($jsonRelation['foreignRelationClass'])) {
 				// relations without wires
 				$relation->setForeignClassName($jsonRelation['foreignRelationClass']);
 				$relation->setRelatedToExternalModel(TRUE);
-				$extbaseClassConfiguration = $this->configurationManager->getExtbaseClassConfiguration($jsonRelation['foreignRelationClass']);
+				//$extbaseClassConfiguration = $this->configurationManager->getExtbaseClassConfiguration($jsonRelation['foreignRelationClass']);
 				if (isset($extbaseClassConfiguration['tableName'])) {
 					$foreignDatabaseTableName = $extbaseClassConfiguration['tableName'];
 				} else {
 					$foreignDatabaseTableName = strtolower($jsonRelation['foreignRelationClass']);
 				}
 				$relation->setForeignDatabaseTableName($foreignDatabaseTableName);
-				if (is_a($relation, Tx_ExtensionBuilder_Domain_Model_DomainObject_Relation_ZeroToManyRelation)) {
+				if (is_a($relation,  '\\TYPO3\\PackageBuilder\\Domain\\Model\\DomainObject\\Relation\\ZeroToManyRelation')) {
 					$foreignKeyName = strtolower($domainObject->getName());
 					if (isset($relatedForeignTables[$foreignDatabaseTableName])) {
 						$foreignKeyName .= $relatedForeignTables[$foreignDatabaseTableName];
@@ -136,7 +133,8 @@ class ObjectSchemaBuilder {
 			}
 			if (!empty($actionNames)) {
 				foreach ($actionNames as $actionName) {
-					$action = \t3lib_div::makeInstance('TYPO3\\PackageBuilder\\Domain\\Model\\DomainObject\\Action');
+					$actionClassName = '\\TYPO3\\PackageBuilder\\Domain\\Model\\DomainObject\\Action';
+					$action = new $actionClassName;
 					$action->setName($actionName);
 					$domainObject->addAction($action);
 				}
@@ -150,9 +148,8 @@ class ObjectSchemaBuilder {
 	 * @return Tx_ExtensionBuilder_Domain_Model_DomainObject_Relation_AbstractRelation
 	 */
 	static public function buildRelation($relationJsonConfiguration) {
-		$relationSchemaClassName = ('TYPO3\\PackageBuilder\\Domain\\Model\\DomainObject_Relation_' . ucfirst($relationJsonConfiguration['relationType'])) . 'Relation';
+		$relationSchemaClassName = '\\TYPO3\\PackageBuilder\\Domain\\Model\\DomainObject\\Relation\\' . ucfirst($relationJsonConfiguration['relationType']) . 'Relation';
 		if (!class_exists($relationSchemaClassName)) {
-			\t3lib_div::devlog('Relation misconfiguration', 'extension_builder', 2, $relationJsonConfiguration);
 			throw new \Exception(((('Relation of type ' . $relationSchemaClassName) . ' not found (configured in "') . $relationJsonConfiguration['relationName']) . '")');
 		}
 		$relation = new $relationSchemaClassName();

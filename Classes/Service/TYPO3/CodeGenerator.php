@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\PackageBuilder\Service;
+namespace TYPO3\PackageBuilder\Service\TYPO3;
 
 /*                                                                        *
  * This script belongs to the FLOW3 package "TYPO3.PackageBuilder".       *
@@ -12,7 +12,7 @@ use TYPO3\FLOW3\Annotations as FLOW3;
  *
  * @FLOW3\Scope("singleton")
  */
-class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface {
+class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator {
 
 	/**
 	 * @var \TYPO3\PackageBuilder\Domain\Model\Extension
@@ -20,32 +20,35 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	protected $extension;
 
 	/**
+	 * @var string
+	 */
+	protected $extensionDirectory;
+
+	protected $locallangFileFormat = 'xlf';
+
+	/**
 	 * The entry point to the class
 	 *
 	 * @param \TYPO3\PackageBuilder\Domain\Model\PackageInterface $extension
+	 * @return void
 	 */
 	public function build(\TYPO3\PackageBuilder\Domain\Model\PackageInterface $extension) {
-		$this->logger->log('Test123');
+		$this->logger->log('Build started');
 		$this->extension = $extension;
 			// Base directory already exists at this point
-		$this->extensionDirectory = $this->extension->getExtensionDir();
+		$this->setExtensionDirectory($this->extension->getExtensionDir() . '/');
 		if (!is_dir($this->extensionDirectory)) {
 			\TYPO3\FLOW3\Utility\Files::createDirectoryRecursively($this->extensionDirectory);
 			$this->logger->log('Extension Dir created: ' . $this->extensionDirectory);
 		}
-		return;
-		/**
-		if ($this->extension->getTargetVersion() == 4.5) {
-			$this->locallangFileFormat = 'xml';
-		}
-		*/
-		\TYPO3\FLOW3\Utility\Files::createDirectoryRecursively($this->extensionDirectory, 'Configuration');
 
 		$this->configurationDirectory = $this->extensionDirectory . 'Configuration/';
 
-		\TYPO3\FLOW3\Utility\Files::createDirectoryRecursively($this->extensionDirectory, 'Resources/Private');
-
 		$this->privateResourcesDirectory = $this->extensionDirectory . 'Resources/Private/';
+
+		\TYPO3\FLOW3\Utility\Files::createDirectoryRecursively($this->configurationDirectory);
+
+		\TYPO3\FLOW3\Utility\Files::createDirectoryRecursively($this->privateResourcesDirectory);
 
 		$this->generateYamlSettingsFile();
 
@@ -63,21 +66,21 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 
 		$this->generateLocallangFiles();
 
-		$this->generateDomainObjectRelatedFiles();
+		$this->generateDocumentationFiles();
 
-		if (floatval($this->extension->getTargetVersion()) > 4.6) {
-			$this->generateDocumentationFiles();
-		}
+		return $this->extension;
+
+		$this->generateDomainObjectRelatedFiles();
 
 	}
 
 	protected function generateYamlSettingsFile() {
 
 		if (!file_exists($this->configurationDirectory . 'ExtensionBuilder/settings.yaml')) {
-			t3lib_div::mkdir($this->configurationDirectory . 'ExtensionBuilder');
+			\TYPO3\FLOW3\Utility\Files::createDirectoryRecursively($this->configurationDirectory . 'ExtensionBuilder');
 			$fileContents = $this->generateYamlSettings();
 			$targetFile = $this->configurationDirectory . 'ExtensionBuilder/settings.yaml';
-			t3lib_div::writeFile($targetFile, $fileContents);
+			$this->writeFile($targetFile, $fileContents);
 		}
 
 	}
@@ -87,9 +90,9 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 		$extensionFiles = array('ext_emconf.php', 'ext_tables.php', 'ext_tables.sql');
 		foreach ($extensionFiles as $extensionFile) {
 			try {
-				$fileContents = $this->renderTemplate(t3lib_div::underscoredToLowerCamelCase($extensionFile) . 't', array('extension' => $this->extension, 'locallangFileFormat' => $this->locallangFileFormat));
+				$fileContents = $this->renderFluidTemplate(\TYPO3\PackageBuilder\Utility\Tools::underscoredToLowerCamelCase($extensionFile) . 't', array('extension' => $this->extension, 'locallangFileFormat' => $this->locallangFileFormat));
 				$this->writeFile($this->extensionDirectory . $extensionFile, $fileContents);
-				t3lib_div::devlog('Generated ' . $extensionFile, 'extension_builder', 0, array('Content' => $fileContents));
+				$this->logger->log('Generated ' . $extensionFile);
 			} catch (Exception $e) {
 				throw new \TYPO3\PackageBuilder\Exception('Could not write ' . $extensionFile . ', error: ' . $e->getMessage());
 			}
@@ -100,23 +103,23 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	protected function generatePluginFiles() {
 		if ($this->extension->getPlugins()) {
 			try {
-				$fileContents = $this->renderTemplate(t3lib_div::underscoredToLowerCamelCase('ext_localconf.phpt'), array('extension' => $this->extension));
+				$fileContents = $this->renderFluidTemplate(\TYPO3\PackageBuilder\Utility\Tools::underscoredToLowerCamelCase('ext_localconf.phpt'), array('extension' => $this->extension));
 				$this->writeFile($this->extensionDirectory . 'ext_localconf.php', $fileContents);
-				t3lib_div::devlog('Generated ext_localconf.php', 'extension_builder', 0, array('Content' => $fileContents));
-			} catch (Exception $e) {
+				$this->logger->log('Generated ext_localconf.php');
+			} catch (\Exception $e) {
 				throw new \TYPO3\PackageBuilder\Exception('Could not write ext_localconf.php. Error: ' . $e->getMessage());
 			}
 			try {
 				$currentPluginKey = '';
 				foreach ($this->extension->getPlugins() as $plugin) {
 					if ($plugin->getSwitchableControllerActions()) {
-						if (!is_dir($this->extensionDirectory . 'Configuration/FlexForms')) {
-							$this->mkdir_deep($this->extensionDirectory, 'Configuration/FlexForms');
+						if (!is_dir($this->configurationDirectory . 'FlexForms')) {
+							$this->createDirectoryRecursively($this->configurationDirectory . 'FlexForms');
 						}
 						$currentPluginKey = $plugin->getKey();
-						$fileContents = $this->renderTemplate('Configuration/Flexforms/flexform.xmlt', array('plugin' => $plugin));
+						$fileContents = $this->renderFluidTemplate('Configuration/Flexforms/flexform.xmlt', array('plugin' => $plugin));
 						$this->writeFile($this->extensionDirectory . 'Configuration/FlexForms/flexform_' . $currentPluginKey . '.xml', $fileContents);
-						t3lib_div::devlog('Generated flexform_' . $currentPluginKey . '.xml', 'extension_builder', 0, array('Content' => $fileContents));
+						$this->logger->log('Generated flexform_' . $currentPluginKey . '.xml');
 					}
 				}
 			} catch (Exception $e) {
@@ -133,8 +136,12 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 			$domainObjects = $this->extension->getDomainObjects();
 
 			foreach ($domainObjects as $domainObject) {
+				if (!is_dir($this->configurationDirectory . 'TCA')) {
+					$this->createDirectoryRecursively($this->configurationDirectory . 'TCA');
+				}
 				$fileContents = $this->generateTCA($domainObject);
 				$this->writeFile($this->configurationDirectory . 'TCA/' . $domainObject->getName() . '.php', $fileContents);
+				$this->logger->log('Generated ' . 'TCA/' . $domainObject->getName() . '.php');
 			}
 
 		} catch (Exception $e) {
@@ -145,8 +152,8 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	protected function generateLocallangFiles() {
 		// Generate locallang*.xml files
 		try {
-			\TYPO3\FLOW3\Utility\Files::createDirectoryRecursively($this->privateResourcesDirectory, 'Language');
 			$this->languageDirectory = $this->privateResourcesDirectory . 'Language/';
+			\TYPO3\FLOW3\Utility\Files::createDirectoryRecursively($this->languageDirectory);
 			$fileContents = $this->generateLocallangFileContent();
 			$this->writeFile($this->languageDirectory . 'locallang.' . $this->locallangFileFormat, $fileContents);
 			$fileContents = $this->generateLocallangFileContent('_db');
@@ -155,12 +162,14 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 				foreach ($this->extension->getBackendModules() as $backendModule) {
 					$fileContents = $this->generateLocallangFileContent('_mod', 'backendModule', $backendModule);
 					$this->writeFile($this->languageDirectory . 'locallang_' . $backendModule->getKey() . '.' . $this->locallangFileFormat, $fileContents);
+					$this->logger->log('Generated Resources/Private/Language/locallang_' . $backendModule->getKey() . '.' . $this->locallangFileFormat);
 				}
 
 			}
 			foreach ($this->extension->getDomainObjects() as $domainObject) {
 				$fileContents = $this->generateLocallangFileContent('_csh', 'domainObject', $domainObject);
 				$this->writeFile($this->languageDirectory . 'locallang_csh_' . $domainObject->getDatabaseTableName() . '.' . $this->locallangFileFormat, $fileContents);
+				$this->logger->log('Generated Resources/Private/Language/locallang_csh_' . $domainObject->getDatabaseTableName()  . '.' . $this->locallangFileFormat);
 
 			}
 		} catch (Exception $e) {
@@ -187,14 +196,14 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 
 				) {
 					$hasTemplates = TRUE;
-					$this->mkdir_deep($this->extensionDirectory, $templateRootFolder . 'Templates/' . $domainObject->getName());
+					$this->createDirectoryRecursively($this->extensionDirectory.$templateRootFolder . 'Templates/' . $domainObject->getName());
 					$fileContents = $this->generateDomainTemplate($templateRootFolder . 'Templates/', $domainObject, $action);
 					$this->writeFile($domainTemplateDirectory . ucfirst($action->getName()) . '.html', $fileContents);
 					// generate partials for formfields
 					if ($action->getNeedsForm()) {
-						$this->mkdir_deep($absoluteTemplateRootFolder, 'Partials');
+						$this->createDirectoryRecursively($absoluteTemplateRootFolder . 'Partials');
 						$partialDirectory = $absoluteTemplateRootFolder . 'Partials/';
-						$this->mkdir_deep($partialDirectory, $domainObject->getName());
+						$this->createDirectoryRecursively($partialDirectory . $domainObject->getName());
 						$formfieldsPartial = $partialDirectory . $domainObject->getName() . '/FormFields.html';
 						$fileContents = $this->generateDomainFormFieldsPartial($templateRootFolder . 'Partials/', $domainObject);
 						$this->writeFile($formfieldsPartial, $fileContents);
@@ -204,9 +213,9 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 					}
 					// generate partials for properties
 					if ($action->getNeedsPropertyPartial()) {
-						$this->mkdir_deep($absoluteTemplateRootFolder, 'Partials');
+						$this->createDirectoryRecursively($absoluteTemplateRootFolder . 'Partials');
 						$partialDirectory = $absoluteTemplateRootFolder . 'Partials/';
-						$this->mkdir_deep($partialDirectory, $domainObject->getName());
+						$this->createDirectoryRecursively($partialDirectory . $domainObject->getName());
 						$propertiesPartial = $partialDirectory . $domainObject->getName() . '/Properties.html';
 						$fileContents = $this->generateDomainPropertiesPartial($templateRootFolder . 'Partials/', $domainObject);
 						$this->writeFile($propertiesPartial, $fileContents);
@@ -216,7 +225,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 		}
 		if ($hasTemplates) {
 			// Generate Layouts directory
-			$this->mkdir_deep($absoluteTemplateRootFolder, 'Layouts');
+			$this->createDirectoryRecursively($absoluteTemplateRootFolder . 'Layouts');
 			$layoutsDirectory = $absoluteTemplateRootFolder . 'Layouts/';
 			$this->writeFile($layoutsDirectory . 'Default.html', $this->generateLayout($templateRootFolder . 'Layouts/'));
 		}
@@ -226,7 +235,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 		if ($this->extension->hasPlugins() || $this->extension->hasBackendModules()) {
 			// Generate TypoScript setup
 			try {
-				$this->mkdir_deep($this->extensionDirectory, 'Configuration/TypoScript');
+				$this->createDirectoryRecursively($this->extensionDirectory . 'Configuration/TypoScript');
 				$typoscriptDirectory = $this->extensionDirectory . 'Configuration/TypoScript/';
 				$fileContents = $this->generateTyposcriptSetup();
 				$this->writeFile($typoscriptDirectory . 'setup.txt', $fileContents);
@@ -258,32 +267,32 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	protected function generateDomainObjectRelatedFiles() {
 
 		if (count($this->extension->getDomainObjects()) > 0) {
-			$this->classBuilder->initialize($this, $this->extension, $this->roundTripEnabled);
+			$this->classBuilder->initialize($this, $this->extension, $this->editModeEnabled);
 			// Generate Domain Model
 			try {
 
 				$domainModelDirectory = 'Classes/Domain/Model/';
-				$this->mkdir_deep($this->extensionDirectory, $domainModelDirectory);
+				$this->createDirectoryRecursively($this->extensionDirectory . $domainModelDirectory);
 
 				$domainRepositoryDirectory = 'Classes/Domain/Repository/';
-				$this->mkdir_deep($this->extensionDirectory, $domainRepositoryDirectory);
+				$this->createDirectoryRecursively($this->extensionDirectory . $domainRepositoryDirectory);
 
-				$this->mkdir_deep($this->extensionDirectory, 'Tests/Unit/Domain/Model');
 				$domainModelTestsDirectory = $this->extensionDirectory . 'Tests/Unit/Domain/Model/';
+				$this->createDirectoryRecursively($domainModelTestsDirectory);
 
-				$this->mkdir_deep($this->extensionDirectory, 'Tests/Unit/Controller');
+				$this->createDirectoryRecursively($this->extensionDirectory . 'Tests/Unit/Controller');
 				$crudEnabledControllerTestsDirectory = $this->extensionDirectory . 'Tests/Unit/Controller/';
 
 				foreach ($this->extension->getDomainObjects() as $domainObject) {
 					$destinationFile = $domainModelDirectory . $domainObject->getName() . '.php';
-					if ($this->roundTripEnabled && Tx_ExtensionBuilder_Service_RoundTrip::getOverWriteSettingForPath($destinationFile, $this->extension) > 0) {
+					if ($this->editModeEnabled && \TYPO3\PackageBuilder\Service\RoundTrip::getOverWriteSettingForPath($destinationFile, $this->extension) > 0) {
 						$mergeWithExistingClass = TRUE;
 					} else {
 						$mergeWithExistingClass = FALSE;
 					}
 					$fileContents = $this->generateDomainObjectCode($domainObject, $mergeWithExistingClass);
 					$this->writeFile($this->extensionDirectory . $destinationFile, $fileContents);
-					t3lib_div::devlog('Generated ' . $domainObject->getName() . '.php', 'extension_builder', 0);
+					$this->logger->log('Generated ' . $domainObject->getName() . '.php', 'extension_builder', 0);
 					$this->extension->setMD5Hash($this->extensionDirectory . $destinationFile);
 
 					if ($domainObject->isAggregateRoot()) {
@@ -293,18 +302,18 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 					} else {
 						$iconFileName = 'value_object.gif';
 					}
-					$this->upload_copy_move(t3lib_extMgm::extPath('extension_builder') . 'Resources/Private/Icons/' . $iconFileName, $this->iconsDirectory . $domainObject->getDatabaseTableName() . '.gif');
+					$this->copy($this->codeTemplateRootPath . 'Resources/Private/Icons/' . $iconFileName, $this->iconsDirectory . $domainObject->getDatabaseTableName() . '.gif');
 
 					if ($domainObject->isAggregateRoot()) {
 						$destinationFile = $domainRepositoryDirectory . $domainObject->getName() . 'Repository.php';
-						if ($this->roundTripEnabled && Tx_ExtensionBuilder_Service_RoundTrip::getOverWriteSettingForPath($destinationFile, $this->extension) > 0) {
+						if ($this->editModeEnabled && \TYPO3\PackageBuilder\Service\RoundTrip::getOverWriteSettingForPath($destinationFile, $this->extension) > 0) {
 							$mergeWithExistingClass = TRUE;
 						} else {
 							$mergeWithExistingClass = FALSE;
 						}
 						$fileContents = $this->generateDomainRepositoryCode($domainObject, $mergeWithExistingClass);
 						$this->writeFile($this->extensionDirectory . $destinationFile, $fileContents);
-						t3lib_div::devlog('Generated ' . $domainObject->getName() . 'Repository.php', 'extension_builder', 0);
+						$this->logger->log('Generated ' . $domainObject->getName() . 'Repository.php', 'extension_builder', 0);
 						$this->extension->setMD5Hash($this->extensionDirectory . $destinationFile);
 					}
 
@@ -318,18 +327,18 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 
 			// Generate Action Controller
 			try {
-				$this->mkdir_deep($this->extensionDirectory, 'Classes/Controller');
+				$this->createDirectoryRecursively($this->extensionDirectory . 'Classes/Controller');
 				$controllerDirectory = 'Classes/Controller/';
 				foreach ($this->extension->getDomainObjectsForWhichAControllerShouldBeBuilt() as $domainObject) {
 					$destinationFile = $controllerDirectory . $domainObject->getName() . 'Controller.php';
-					if ($this->roundTripEnabled && Tx_ExtensionBuilder_Service_RoundTrip::getOverWriteSettingForPath($destinationFile, $this->extension) > 0) {
+					if ($this->editModeEnabled && \TYPO3\PackageBuilder\Service\RoundTrip::getOverWriteSettingForPath($destinationFile, $this->extension) > 0) {
 						$mergeWithExistingClass = TRUE;
 					} else {
 						$mergeWithExistingClass = FALSE;
 					}
 					$fileContents = $this->generateActionControllerCode($domainObject, $mergeWithExistingClass);
 					$this->writeFile($this->extensionDirectory . $destinationFile, $fileContents);
-					t3lib_div::devlog('Generated ' . $domainObject->getName() . 'Controller.php', 'extension_builder', 0);
+					$this->logger->log('Generated ' . $domainObject->getName() . 'Controller.php', 'extension_builder');
 					$this->extension->setMD5Hash($this->extensionDirectory . $destinationFile);
 
 					// Generate basic UnitTests
@@ -363,7 +372,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 
 
 		} else {
-			t3lib_div::devlog('No domainObjects in this extension', 'extension_builder', 3, (array)$this->extension);
+			$this->logger->log('No domainObjects in this extension');
 		}
 	}
 
@@ -379,7 +388,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 
 	protected function copyStaticFiles() {
 		try {
-			$this->upload_copy_move(t3lib_extMgm::extPath('extension_builder') . 'Resources/Private/Icons/ext_icon.gif', $this->extensionDirectory . 'ext_icon.gif');
+			$this->copy($this->codeTemplateRootPath . 'Resources/Private/Icons/ext_icon.gif', $this->extensionDirectory . 'ext_icon.gif');
 		} catch (Exception $e) {
 			throw new \TYPO3\PackageBuilder\Exception('Could not copy ext_icon.gif, error: ' . $e->getMessage());
 		}
@@ -387,19 +396,19 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 		// insert a manual template
 		try {
 			if (!file_exists($this->extensionDirectory . 'doc/manual.sxw') && file_exists($this->codeTemplateRootPath . 'doc/manual.sxw')) {
-				$this->mkdir_deep($this->extensionDirectory, 'doc');
-				$this->upload_copy_move($this->codeTemplateRootPath . 'doc/manual.sxw', $this->extensionDirectory . 'doc/manual.sxw');
+				$this->createDirectoryRecursively($this->extensionDirectory . 'doc');
+				$this->copy($this->codeTemplateRootPath . 'doc/manual.sxw', $this->extensionDirectory . 'doc/manual.sxw');
 			}
 		} catch (Exception $e) {
 			throw new \TYPO3\PackageBuilder\Exception('An error occurred when copying the manual template: ' . $e->getMessage() . $e->getFile());
 		}
 
 		try {
-			$this->mkdir_deep($this->extensionDirectory, 'Resources/Public');
+			$this->createDirectoryRecursively($this->extensionDirectory . 'Resources/Public');
 			$publicResourcesDirectory = $this->extensionDirectory . 'Resources/Public/';
-			$this->mkdir_deep($publicResourcesDirectory, 'Icons');
+			$this->createDirectoryRecursively($publicResourcesDirectory . 'Icons');
 			$this->iconsDirectory = $publicResourcesDirectory . 'Icons/';
-			$this->upload_copy_move(t3lib_extMgm::extPath('extension_builder') . 'Resources/Private/Icons/relation.gif', $this->iconsDirectory . 'relation.gif');
+			$this->copy($this->codeTemplateRootPath. 'Resources/Private/Icons/relation.gif', $this->iconsDirectory . 'relation.gif');
 		} catch (Exception $e) {
 			throw new \TYPO3\PackageBuilder\Exception('Could not create public resources folder, error: ' . $e->getMessage());
 		}
@@ -411,19 +420,25 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	 * generate the folder structure for reST documentation
 	 */
 	protected function generateDocumentationFiles() {
-		$this->mkdir_deep($this->extensionDirectory, 'Documentation');
+		$documentationDirectory = $this->codeTemplateRootPath. 'Documentation/';
+		$this->createDirectoryRecursively($this->extensionDirectory.'Documentation/');
 		$docFiles = array();
-		$docFiles = t3lib_div::getAllFilesAndFoldersInPath($docFiles, t3lib_extMgm::extPath('extension_builder') . 'Resources/Private/CodeTemplates/Extbase/Documentation/', '', TRUE, 5, '/.*rstt/');
+		$docFiles = \TYPO3\FLOW3\Utility\Files::readDirectoryRecursively($documentationDirectory, NULL, TRUE, $docFiles);
 		foreach ($docFiles as $docFile) {
 			if (is_dir($docFile)) {
-				$this->mkdir_deep($this->extensionDirectory, 'Documentation/' . str_replace($this->codeTemplateRootPath . 'Documentation/', '', $docFile));
+				$this->createDirectoryRecursively($this->extensionDirectory . 'Documentation/' . $docFile);
+				$this->logger->log('Copied Documentation/' . $docFile);
 			} else if (strpos($docFile, '.rstt') === FALSE) {
-				$this->upload_copy_move($docFile, str_replace(t3lib_extMgm::extPath('extension_builder') . 'Resources/Private/CodeTemplates/Extbase/', $this->extensionDirectory, $docFile));
+				$target = str_replace($documentationDirectory, $this->extensionDirectory . 'Documentation/', $docFile);
+				$this->createDirectoryRecursively(dirname($target));
+				$this->copy($docFile, $target);
+				$this->logger->log('Copied ' . 'Documentation/' . str_replace($documentationDirectory, '', $docFile));
 			}
 		}
-		$this->upload_copy_move(t3lib_extMgm::extPath('extension_builder') . 'Resources/Private/CodeTemplates/Extbase/Readme.rst', $this->extensionDirectory . 'Readme.rst');
-		$fileContents = $this->renderTemplate('Documentation/Index.rstt', array('extension' => $this->extension));
+		$this->copy($this->codeTemplateRootPath . 'Readme.rst', $this->extensionDirectory . 'Readme.rst');
+		$fileContents = $this->renderFluidTemplate('Documentation/Index.rstt', array('extension' => $this->extension));
 		$this->writeFile($this->extensionDirectory . 'Documentation/Index.rst', $fileContents);
+		$this->logger->log('Generated Documentation/Index.rst');
 
 	}
 
@@ -443,7 +458,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 			$classDocComment = $this->renderDocComment($controllerClassObject, $domainObject);
 			$controllerClassObject->setDocComment($classDocComment);
 
-			return $this->renderTemplate('Classes/class.phpt', array('domainObject' => $domainObject, 'extension' => $this->extension, 'classObject' => $controllerClassObject));
+			return $this->renderFluidTemplate('Classes/class.phpt', array('domainObject' => $domainObject, 'extension' => $this->extension, 'classObject' => $controllerClassObject));
 		} else {
 			throw new \TYPO3\PackageBuilder\Exception('Class file for controller could not be generated');
 		}
@@ -461,7 +476,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 		if ($modelClassObject) {
 			$classDocComment = $this->renderDocComment($modelClassObject, $domainObject);
 			$modelClassObject->setDocComment($classDocComment);
-			return $this->renderTemplate('Classes/class.phpt', array('domainObject' => $domainObject, 'extension' => $this->extension, 'classObject' => $modelClassObject));
+			return $this->renderFluidTemplate('Classes/class.phpt', array('domainObject' => $domainObject, 'extension' => $this->extension, 'classObject' => $modelClassObject));
 		} else {
 			throw new \TYPO3\PackageBuilder\Exception('Class file for domain object could not be generated');
 		}
@@ -481,7 +496,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 			$classDocComment = $this->renderDocComment($repositoryClassObject, $domainObject);
 			$repositoryClassObject->setDocComment($classDocComment);
 
-			return $this->renderTemplate('Classes/class.phpt', array('domainObject' => $domainObject, 'classObject' => $repositoryClassObject));
+			return $this->renderFluidTemplate('Classes/class.phpt', array('domainObject' => $domainObject, 'classObject' => $repositoryClassObject));
 		} else {
 			throw new \TYPO3\PackageBuilder\Exception('Class file for repository could not be generated');
 		}
@@ -495,7 +510,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	 * @return string
 	 */
 	public function generateDomainModelTests(Tx_ExtensionBuilder_Domain_Model_DomainObject $domainObject) {
-		return $this->renderTemplate('Tests/DomainModelTest.phpt', array('extension' => $this->extension, 'domainObject' => $domainObject));
+		return $this->renderFluidTemplate('Tests/DomainModelTest.phpt', array('extension' => $this->extension, 'domainObject' => $domainObject));
 	}
 
 	/**
@@ -508,7 +523,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	 * @return string
 	 */
 	public function generateControllerTests($controllerName, Tx_ExtensionBuilder_Domain_Model_DomainObject $domainObject) {
-		return $this->renderTemplate('Tests/ControllerTest.phpt', array('extension' => $this->extension, 'controllerName' => $controllerName, 'domainObject' => $domainObject));
+		return $this->renderFluidTemplate('Tests/ControllerTest.phpt', array('extension' => $this->extension, 'controllerName' => $controllerName, 'domainObject' => $domainObject));
 	}
 
 	/**
@@ -518,7 +533,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	 */
 	protected function renderDocComment($classObject, $domainObject) {
 		if (!$classObject->hasDocComment()) {
-			$docComment = $this->renderTemplate('Partials/Classes/classDocComment.phpt', array('domainObject' => $domainObject, 'extension' => $this->extension, 'classObject' => $classObject));
+			$docComment = $this->renderFluidTemplate('Partials/Classes/classDocComment.phpt', array('domainObject' => $domainObject, 'extension' => $this->extension, 'classObject' => $classObject));
 		} else {
 			$docComment = $classObject->getDocComment();
 		}
@@ -526,7 +541,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 
 		if (empty($precedingBlock) || strpos($precedingBlock, 'GNU General Public License') < 1) {
 
-			$licenseHeader = $this->renderTemplate('Partials/Classes/licenseHeader.phpt', array('persons' => $this->extension->getPersons()));
+			$licenseHeader = $this->renderFluidTemplate('Partials/Classes/licenseHeader.phpt', array('persons' => $this->extension->getPersons()));
 			$docComment = "\n" . $licenseHeader . "\n\n\n" . $docComment;
 		} else {
 			$docComment = $precedingBlock . "\n" . $docComment;
@@ -544,23 +559,23 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	 * @return string The generated Template code (might be empty)
 	 */
 	public function generateDomainTemplate($templateRootFolder, Tx_ExtensionBuilder_Domain_Model_DomainObject $domainObject, Tx_ExtensionBuilder_Domain_Model_DomainObject_Action $action) {
-		return $this->renderTemplate($templateRootFolder . $action->getName() . '.htmlt', array('domainObject' => $domainObject, 'action' => $action, 'extension' => $this->extension));
+		return $this->renderFluidTemplate($templateRootFolder . $action->getName() . '.htmlt', array('domainObject' => $domainObject, 'action' => $action, 'extension' => $this->extension));
 	}
 
 	public function generateDomainFormFieldsPartial($templateRootFolder, Tx_ExtensionBuilder_Domain_Model_DomainObject $domainObject) {
-		return $this->renderTemplate($templateRootFolder . 'formFields.htmlt', array('extension' => $this->extension, 'domainObject' => $domainObject));
+		return $this->renderFluidTemplate($templateRootFolder . 'formFields.htmlt', array('extension' => $this->extension, 'domainObject' => $domainObject));
 	}
 
 	public function generateDomainPropertiesPartial($templateRootFolder, Tx_ExtensionBuilder_Domain_Model_DomainObject $domainObject) {
-		return $this->renderTemplate($templateRootFolder . 'properties.htmlt', array('extension' => $this->extension, 'domainObject' => $domainObject));
+		return $this->renderFluidTemplate($templateRootFolder . 'properties.htmlt', array('extension' => $this->extension, 'domainObject' => $domainObject));
 	}
 
 	public function generateFormErrorsPartial($templateRootFolder) {
-		return $this->renderTemplate($templateRootFolder . 'formErrors.htmlt', array('extension' => $this->extension));
+		return $this->renderFluidTemplate($templateRootFolder . 'formErrors.htmlt', array('extension' => $this->extension));
 	}
 
 	public function generateLayout($templateRootFolder) {
-		return $this->renderTemplate($templateRootFolder . 'default.htmlt', array('extension' => $this->extension));
+		return $this->renderFluidTemplate($templateRootFolder . 'default.htmlt', array('extension' => $this->extension));
 	}
 
 
@@ -578,7 +593,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 			$variableArray[$variableName] = $variable;
 		}
 
-		if ($this->roundTripEnabled && Tx_ExtensionBuilder_Service_RoundTrip::getOverWriteSettingForPath($targetFile . '.' . $this->locallangFileFormat, $this->extension) == 1) {
+		if ($this->editModeEnabled && \TYPO3\PackageBuilder\Service\RoundTrip::getOverWriteSettingForPath($targetFile . '.' . $this->locallangFileFormat, $this->extension) == 1) {
 			$existingFile = NULL;
 			$filenameToLookFor = $this->extensionDirectory . $targetFile;
 			if ($variableName == 'domainObject') {
@@ -590,7 +605,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 				$existingFile = $filenameToLookFor . '.xml';
 			}
 			if ($existingFile != NULL) {
-				$defaultFileContent = $this->renderTemplate($targetFile . '.' . $this->locallangFileFormat . 't', $variableArray);
+				$defaultFileContent = $this->renderFluidTemplate($targetFile . '.' . $this->locallangFileFormat . 't', $variableArray);
 				if ($this->locallangFileFormat == 'xlf') {
 					throw new \TYPO3\PackageBuilder\Exception('Merging xlf files is not yet supported. Please set overwrite settings to "keep" or "overwrite"');
 					// this is prepared already but still needs some improvements
@@ -602,32 +617,32 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 
 			}
 		}
-		return $this->renderTemplate($targetFile . '.' . $this->locallangFileFormat . 't', $variableArray);
+		return $this->renderFluidTemplate($targetFile . '.' . $this->locallangFileFormat . 't', $variableArray);
 	}
 
 	public function generatePrivateResourcesHtaccess() {
-		return $this->renderTemplate('Resources/Private/htaccess.t', array());
+		return $this->renderFluidTemplate('Resources/Private/htaccess.t', array());
 	}
 
-	public function generateTCA(Tx_ExtensionBuilder_Domain_Model_DomainObject $domainObject) {
-		return $this->renderTemplate('Configuration/TCA/domainObject.phpt', array('extension' => $this->extension, 'domainObject' => $domainObject, 'locallangFileFormat' => $this->locallangFileFormat));
+	public function generateTCA( \TYPO3\PackageBuilder\Domain\Model\DomainObject $domainObject) {
+		return $this->renderFluidTemplate('Configuration/TCA/domainObject.phpt', array('extension' => $this->extension, 'domainObject' => $domainObject, 'locallangFileFormat' => $this->locallangFileFormat));
 	}
 
 	public function generateYamlSettings() {
-		return $this->renderTemplate('Configuration/ExtensionBuilder/settings.yamlt', array('extension' => $this->extension));
+		return $this->renderFluidTemplate('Configuration/ExtensionBuilder/settings.yamlt', array('extension' => $this->extension));
 	}
 
 
 	public function generateTyposcriptSetup() {
-		return $this->renderTemplate('Configuration/TypoScript/setup.txtt', array('extension' => $this->extension));
+		return $this->renderFluidTemplate('Configuration/TypoScript/setup.txtt', array('extension' => $this->extension));
 	}
 
 	public function generateTyposcriptConstants() {
-		return $this->renderTemplate('Configuration/TypoScript/constants.txtt', array('extension' => $this->extension));
+		return $this->renderFluidTemplate('Configuration/TypoScript/constants.txtt', array('extension' => $this->extension));
 	}
 
 	public function generateStaticTyposcript() {
-		return $this->renderTemplate('ext_typoscript_setup.txtt', array('extension' => $this->extension));
+		return $this->renderFluidTemplate('ext_typoscript_setup.txtt', array('extension' => $this->extension));
 	}
 
 
@@ -656,7 +671,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 			'settings' => $this->settings
 		);
 
-		$methodBody = $this->renderTemplate('Partials/Classes/' . $classType . '/Methods/' . $methodName . 'MethodBody.phpt', $variables);
+		$methodBody = $this->renderFluidTemplate('Partials/Classes/' . $classType . '/Methods/' . $methodName . 'MethodBody.phpt', $variables);
 		return $methodBody;
 	}
 
@@ -683,7 +698,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 		}
 		if (!empty($classPath)) {
 			if (!is_dir($extensionDirectory . $classPath) && $createDirIfNotExist) {
-				t3lib_div::mkdir_deep($extensionDirectory, $classPath);
+				self::createDirectoryRecursively($extensionDirectory . $classPath);
 			}
 			if (!is_dir($extensionDirectory . $classPath) && $createDirIfNotExist) {
 				throw new \TYPO3\PackageBuilder\Exception('folder could not be created:' . $extensionDirectory . $classPath);
@@ -700,8 +715,8 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	 * @param string $fileContents
 	 */
 	protected function writeFile($targetFile, $fileContents) {
-		if ($this->roundTripEnabled) {
-			$overWriteMode = Tx_ExtensionBuilder_Service_RoundTrip::getOverWriteSettingForPath($targetFile, $this->extension);
+		if ($this->editModeEnabled) {
+			$overWriteMode = \TYPO3\PackageBuilder\Service\RoundTrip::getOverWriteSettingForPath($targetFile, $this->extension);
 			if ($overWriteMode == -1) {
 				return; // skip file creation
 			}
@@ -709,7 +724,7 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 				$fileExtension = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 				if ($fileExtension == 'html') {
 					//TODO: We need some kind of protocol to be displayed after code generation
-					t3lib_div::devlog('File ' . basename($targetFile) . ' was not written. Template files can\'t be merged!', 'extension_builder', 1);
+					$this->logger->log('File ' . basename($targetFile) . ' was not written. Template files can\'t be merged!',1);
 					return;
 				} elseif (in_array($fileExtension, $this->filesSupportingSplitToken)) {
 					$fileContents = $this->insertSplitToken($targetFile, $fileContents);
@@ -721,9 +736,9 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 		}
 
 		if (empty($fileContents)) {
-			t3lib_div::devLog('No file content! File ' . $targetFile . ' had no content', 'extension_builder', 0, $this->settings);
+			$this->logger->log('No file content! File ' . $targetFile . ' had no content',1);
 		}
-		$success = t3lib_div::writeFile($targetFile, $fileContents);
+		$success = file_put_contents($targetFile, $fileContents);
 		if (!$success) {
 			throw new \TYPO3\PackageBuilder\Exception('File ' . $targetFile . ' could not be created!');
 		}
@@ -743,10 +758,10 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 
 			// merge the files means append everything behind the split token
 			$existingFileContent = file_get_contents($targetFile);
-			if (strpos($existingFileContent, Tx_ExtensionBuilder_Service_RoundTrip::OLD_SPLIT_TOKEN)) {
-				$existingFileContent = str_replace(Tx_ExtensionBuilder_Service_RoundTrip::OLD_SPLIT_TOKEN, Tx_ExtensionBuilder_Service_RoundTrip::SPLIT_TOKEN, $existingFileContent);
+			if (strpos($existingFileContent, \TYPO3\PackageBuilder\Service\RoundTrip::OLD_SPLIT_TOKEN)) {
+				$existingFileContent = str_replace(\TYPO3\PackageBuilder\Service\RoundTrip::OLD_SPLIT_TOKEN, \TYPO3\PackageBuilder\Service\RoundTrip::SPLIT_TOKEN, $existingFileContent);
 			}
-			$fileParts = explode(Tx_ExtensionBuilder_Service_RoundTrip::SPLIT_TOKEN, $existingFileContent);
+			$fileParts = explode(\TYPO3\PackageBuilder\Service\RoundTrip::SPLIT_TOKEN, $existingFileContent);
 			if (count($fileParts) == 2) {
 				$customFileContent = str_replace('?>', '', $fileParts[1]);
 			}
@@ -756,11 +771,11 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 
 		if ($fileExtension == 'php') {
 			$fileContents = str_replace('?>', '', $fileContents);
-			$fileContents .= Tx_ExtensionBuilder_Service_RoundTrip::SPLIT_TOKEN;
+			$fileContents .= \TYPO3\PackageBuilder\Service\RoundTrip::SPLIT_TOKEN;
 		} else if ($fileExtension == $this->locallangFileFormat) {
 			//$fileContents = Tx_ExtensionBuilder_Utility_Tools::mergeLocallangXml($targetFile, $fileContents, $this->locallangFileFormat);
 		} else {
-			$fileContents .= "\n" . Tx_ExtensionBuilder_Service_RoundTrip::SPLIT_TOKEN;
+			$fileContents .= "\n" . \TYPO3\PackageBuilder\Service\RoundTrip::SPLIT_TOKEN;
 		}
 
 		$fileContents .= rtrim($customFileContent);
@@ -778,39 +793,33 @@ class Typo3CodeGenerator extends CodeGenerator implements CodeGeneratorInterface
 	 * @param string $targetFile the path and filename of the targetFile
 	 * @param string $fileContents
 	 */
-	protected function upload_copy_move($sourceFile, $targetFile) {
-		$overWriteMode = Tx_ExtensionBuilder_Service_RoundTrip::getOverWriteSettingForPath($targetFile, $this->extension);
+	protected function copy($sourceFile, $targetFile) {
+		$overWriteMode = \TYPO3\PackageBuilder\Service\RoundTrip::getOverWriteSettingForPath($targetFile, $this->extension);
 		if ($overWriteMode === -1) {
 			// skip creation
 			return;
 		}
-		if (!file_exists($targetFile) || ($this->roundTripEnabled && $overWriteMode < 2)) {
-			t3lib_div::upload_copy_move($sourceFile, $targetFile);
+		if (!file_exists($targetFile) || ($this->editModeEnabled && $overWriteMode < 2)) {
+			copy($sourceFile, $targetFile);
 		}
 	}
 
 	/**
-	 * wrapper for t3lib_div::mkdir_deep
-	 * checks for overwrite settings
-	 *
-	 * @param string $directory base path
-	 * @param string $deepDirectory
+	 * @param string $extensionDir
 	 */
-	protected function mkdir_deep($directory, $deepDirectory) {
-		$subDirectories = explode('/', $deepDirectory);
-		$tmpBasePath = $directory;
-		foreach ($subDirectories as $subDirectory) {
-			$overWriteMode = Tx_ExtensionBuilder_Service_RoundTrip::getOverWriteSettingForPath($tmpBasePath . $subDirectory, $this->extension);
-			//throw new \TYPO3\PackageBuilder\Exception($directory . $subDirectory . '/' . $overWriteMode);
-			if ($overWriteMode === -1) {
-				// skip creation
-				return;
-			}
-			if (!is_dir($deepDirectory) || ($this->roundTripEnabled && $overWriteMode < 2)) {
-				\TYPO3\FLOW3\Utility\Files::createDirectoryRecursively($tmpBasePath, $subDirectory);
-			}
-			$tmpBasePath .= $subDirectory . '/';
-		}
-
+	public function setExtensionDirectory($extensionDir) {
+		$this->extensionDirectory = $extensionDir;
+		$this->packageDirectory = $extensionDir;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function getExtensionDiretory() {
+		if(empty($this->extensionDirectory)) {
+			return $this->getPackageDirectory();
+		}
+		return $this->extensionDirectory;
+	}
+
 }

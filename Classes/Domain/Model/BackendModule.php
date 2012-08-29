@@ -1,4 +1,5 @@
 <?php
+namespace TYPO3\PackageBuilder\Domain\Model;
 /***************************************************************
  *  Copyright notice
  *
@@ -21,7 +22,7 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-namespace TYPO3\PackageBuilder\Domain\Model;
+
 
 /**
  * A plugin in the extension

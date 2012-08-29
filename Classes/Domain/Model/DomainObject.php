@@ -71,24 +71,25 @@ class DomainObject {
 	 */
 	protected $entity;
 
+
 	/**
-	 * The extension this domain object belongs to.
+	 * The package this domain object belongs to.
 	 *
-	 * @var Extension
+	 * @var AbstractPackage
 	 */
-	protected $extension;
+	protected $package;
 
 	/**
 	 * List of properties the domain object has
 	 *
-	 * @var array<Tx_ExtensionBuilder_Domain_Model_DomainObject_AbstractProperty>
+	 * @var DomainObject\AbstractProperty[]
 	 */
 	protected $properties = array();
 
 	/**
 	 * List of actions the domain object has
 	 *
-	 * @var array<Tx_ExtensionBuilder_Domain_Model_DomainObject_Action>
+	 * @var DomainObject\Action[]
 	 */
 	protected $actions = array();
 
@@ -112,7 +113,7 @@ class DomainObject {
 	/**
 	 * Domain objects that extend the current object (as declared in this extension)
 	 *
-	 * @var array<Tx_ExtensionBuilder_Domain_Model_DomainObject>
+	 * @var DomainObject[]
 	 */
 	protected $childObjects = array();
 
@@ -135,18 +136,18 @@ class DomainObject {
 	}
 
 	public function getClassName() {
-		return (('Tx_' . \t3lib_div::underscoredToUpperCamelCase($this->extension->getExtensionKey())) . '_Domain_Model_') . $this->getName();
+		return $this->package->getNameSpace() . '\\Domain\\Model\\' . $this->getName();
 	}
 
 	public function getControllerName() {
-		return ((('Tx_' . \t3lib_div::underscoredToUpperCamelCase($this->extension->getExtensionKey())) . '_Controller_') . $this->getName()) . 'Controller';
+		return $this->package->getNameSpace() . '\\Controller\\'. $this->getName() . 'Controller';
 	}
 
 	public function getDatabaseTableName() {
 		if (!empty($this->mapToTable)) {
 			return $this->mapToTable;
 		} else {
-			return (('tx_' . strtolower(\t3lib_div::underscoredToUpperCamelCase($this->extension->getExtensionKey()))) . '_domain_model_') . strtolower($this->getName());
+			return 'tx_' .\TYPO3\PackageBuilder\Utility\Tools::camelCaseToLowerCaseUnderscored($this->package->getExtensionKey()) . '_domain_model_' . strtolower($this->getName());
 		}
 	}
 
@@ -251,7 +252,7 @@ class DomainObject {
 	/**
 	 * Get all properties
 	 *
-	 * @return array<Tx_ExtensionBuilder_Domain_Model_DomainObject_AbstractProperty>
+	 * @return _AbstractProperty[]
 	 */
 	public function getProperties() {
 		return $this->properties;
@@ -260,7 +261,7 @@ class DomainObject {
 	/**
 	 * Get property
 	 *
-	 * @return object <Tx_ExtensionBuilder_Domain_Model_DomainObject_AbstractProperty>
+	 * @return AbstractProperty
 	 */
 	public function getPropertyByName($propertyName) {
 		foreach ($this->properties as $property) {
@@ -274,7 +275,7 @@ class DomainObject {
 	/**
 	 * Get all properties holding relations of type Property_Relation_ZeroToManyRelation
 	 *
-	 * @return array<Tx_ExtensionBuilder_Domain_Model_DomainObject_Relation_ZeroToManyRelation>
+	 * @return Relation|ZeroToManyRelation[]
 	 */
 	public function getZeroToManyRelationProperties() {
 		$relationProperties = array();
@@ -289,7 +290,7 @@ class DomainObject {
 	/**
 	 * Get all properties holding relations of type Property_Relation_AnyToManyRelation
 	 *
-	 * @return array<Tx_ExtensionBuilder_Domain_Model_DomainObject_Relation_AnyToManyRelation>
+	 * @return Relation|AnyToManyRelation[]
 	 */
 	public function getAnyToManyRelationProperties() {
 		$relationProperties = array();
@@ -317,7 +318,7 @@ class DomainObject {
 	/**
 	 * Get all actions
 	 *
-	 * @return array<Tx_ExtensionBuilder_Domain_Model_DomainObject_Action>
+	 * @return Action[]
 	 */
 	public function getActions() {
 		return $this->actions;
@@ -338,14 +339,14 @@ class DomainObject {
 	 * @param Extension $extension the extension this domain model belongs to.
 	 */
 	public function setExtension(Extension $extension) {
-		$this->extension = $extension;
+		$this->package = $extension;
 	}
 
 	/**
-	 * @return Tx_ExtensionBuilder_Domain_Model_Extension
+	 * @return Extension
 	 */
 	public function getExtension() {
-		return $this->extension;
+		return $this->package;
 	}
 
 	/**
@@ -355,9 +356,9 @@ class DomainObject {
 	 */
 	public function getBaseClass() {
 		if ($this->entity) {
-			return 'Tx_Extbase_DomainObject_AbstractEntity';
+			return '\\TYPO3\\CMS\\Extbase\\DomainObject\\AbstractEntity';
 		} else {
-			return 'Tx_Extbase_DomainObject_AbstractValueObject';
+			return '\\TYPO3\\CMS\\Extbase\\DomainObject\\AbstractValueObject';
 		}
 	}
 
@@ -370,7 +371,7 @@ class DomainObject {
 		if (!$this->aggregateRoot) {
 			return '';
 		}
-		return ((('Tx_' . \t3lib_div::underscoredToUpperCamelCase($this->extension->getExtensionKey())) . '_Domain_Repository_') . $this->getName()) . 'Repository';
+		return $this->getPackage()->getNameSpace() . '\\Domain\\Repository\\' . $this->getName() . 'Repository';
 	}
 
 	/**
@@ -402,7 +403,7 @@ class DomainObject {
 	 * @return string
 	 */
 	public function getLabelNamespace() {
-		return ($this->extension->getShortExtensionKey() . '_domain_model_') . strtolower($this->getName());
+		return ($this->package->getShortExtensionKey() . '_domain_model_') . strtolower($this->getName());
 	}
 
 	/**
@@ -501,7 +502,7 @@ class DomainObject {
 	 * @return string
 	 */
 	public function getRecordType() {
-		return str_replace('Domain_Model_', '', $this->getClassName());
+		return str_replace($this->package->getNameSpace() . '\\Domain\\Model\\', '', $this->getClassName());
 	}
 
 	public function isSubClass() {
@@ -520,7 +521,7 @@ class DomainObject {
 	}
 
 	/**
-	 * @return array Tx_ExtensionBuilder_Domain_Model_DomainObject
+	 * @return DomainObject[]
 	 */
 	public function getChildObjects() {
 		return $this->childObjects;
@@ -538,6 +539,20 @@ class DomainObject {
 	 */
 	public function getSorting() {
 		return $this->sorting;
+	}
+
+	/**
+	 * @param \TYPO3\PackageBuilder\Domain\Model\AbstractPackage $package
+	 */
+	public function setPackage($package) {
+		$this->package = $package;
+	}
+
+	/**
+	 * @return \TYPO3\PackageBuilder\Domain\Model\AbstractPackage
+	 */
+	public function getPackage() {
+		return $this->package;
 	}
 
 }

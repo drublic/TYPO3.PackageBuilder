@@ -1,5 +1,5 @@
-{namespace k=Tx_ExtensionBuilder_ViewHelpers}
-<k:openingTag>f:layout name="Default" /</k:openingTag>
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}
+<pb:openingTag>f:layout name="Default" /</pb:openingTag>
 
 This Template is responsible for creating a table of domain objects.
 
@@ -13,39 +13,39 @@ in /Configuration/ExtensionBuilder/settings.yaml:
 
 Otherwise your changes will be overwritten the next time you save the extension in the extension builder
 
-<k:openingTag>f:section name="content"</k:openingTag>
+<pb:openingTag>f:section name="content"</pb:openingTag>
 <h1>Listing for {domainObject.name}</h1>
 
-<k:openingTag>f:flashMessages /</k:openingTag>
+<pb:openingTag>f:flashMessages /</pb:openingTag>
 
 <table  class="{extension.shortExtensionKey}" >
-	<k:format.removeMultipleNewlines><tr>
+	<pb:format.removeMultipleNewlines><tr>
 
-	<k:comment>Building up the table header</k:comment>
+	<pb:comment>Building up the table header</pb:comment>
 		<f:for each="{domainObject.properties}" as="property"><f:if condition="{property.isDisplayable}">
-		<th><k:openingTag>f:translate key="{property.labelNamespace}" /</k:openingTag></th>
+		<th><pb:openingTag>f:translate key="{property.labelNamespace}" /</pb:openingTag></th>
 		</f:if></f:for>
 		<th> </th>
 		<th> </th>
 	</tr>
-	</k:format.removeMultipleNewlines>
+	</pb:format.removeMultipleNewlines>
 
-	<k:format.removeMultipleNewlines>
-	<k:comment>Creating the f:for which loops through all objects</k:comment>
+	<pb:format.removeMultipleNewlines>
+	<pb:comment>Creating the f:for which loops through all objects</pb:comment>
 
-	<k:openingTag>f:for each="{domainObject.name -> k:format.lowercaseFirst() -> k:pluralize() -> k:curlyBrackets()}" as="{domainObject.name -> k:format.lowercaseFirst()}"</k:openingTag>
+	<pb:openingTag>f:for each="{domainObject.name -> pb:format.lowercaseFirst() -> pb:pluralize() -> pb:curlyBrackets()}" as="{domainObject.name -> pb:format.lowercaseFirst()}"</pb:openingTag>
 
 		<tr>
 		<f:for each="{domainObject.properties}" as="property"><f:if condition="{property.isDisplayable}">
-			<td><k:openingTag>f:link.action action="show" arguments="<k:curlyBrackets>{domainObject.name -> k:format.lowercaseFirst()} : {domainObject.name -> k:format.lowercaseFirst()}</k:curlyBrackets>"</k:openingTag> <k:curlyBrackets>{domainObject.name -> k:format.lowercaseFirst()}.{property.nameToBeDisplayedInFluidTemplate}</k:curlyBrackets><![CDATA[</f:link.action>]]></td>
+			<td><pb:openingTag>f:link.action action="show" arguments="<pb:curlyBrackets>{domainObject.name -> pb:format.lowercaseFirst()} : {domainObject.name -> pb:format.lowercaseFirst()}</pb:curlyBrackets>"</pb:openingTag> <pb:curlyBrackets>{domainObject.name -> pb:format.lowercaseFirst()}.{property.nameToBeDisplayedInFluidTemplate}</pb:curlyBrackets><![CDATA[</f:link.action>]]></td>
 		</f:if></f:for>
 
-			<td><k:openingTag>f:link.action action="edit" arguments="<k:curlyBrackets>{domainObject.name -> k:format.lowercaseFirst()} : {domainObject.name -> k:format.lowercaseFirst()}</k:curlyBrackets>"</k:openingTag>Edit<![CDATA[</f:link.action>]]></td>
-			<td><k:openingTag>f:link.action action="delete" arguments="<k:curlyBrackets>{domainObject.name -> k:format.lowercaseFirst()} : {domainObject.name -> k:format.lowercaseFirst()}</k:curlyBrackets>"</k:openingTag>Delete<![CDATA[</f:link.action>]]></td>
+			<td><pb:openingTag>f:link.action action="edit" arguments="<pb:curlyBrackets>{domainObject.name -> pb:format.lowercaseFirst()} : {domainObject.name -> pb:format.lowercaseFirst()}</pb:curlyBrackets>"</pb:openingTag>Edit<![CDATA[</f:link.action>]]></td>
+			<td><pb:openingTag>f:link.action action="delete" arguments="<pb:curlyBrackets>{domainObject.name -> pb:format.lowercaseFirst()} : {domainObject.name -> pb:format.lowercaseFirst()}</pb:curlyBrackets>"</pb:openingTag>Delete<![CDATA[</f:link.action>]]></td>
 		</tr>
 	<![CDATA[</f:for>]]>
-	</k:format.removeMultipleNewlines>
+	</pb:format.removeMultipleNewlines>
 </table>
 
-<k:openingTag>f:link.action action="new"</k:openingTag>New {domainObject.name}<![CDATA[</f:link.action>]]>
+<pb:openingTag>f:link.action action="new"</pb:openingTag>New {domainObject.name}<![CDATA[</f:link.action>]]>
 <![CDATA[</f:section>]]>

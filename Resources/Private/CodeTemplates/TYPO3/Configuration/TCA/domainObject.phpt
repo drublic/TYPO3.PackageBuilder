@@ -1,11 +1,11 @@
-{namespace k=Tx_ExtensionBuilder_ViewHelpers}<?php
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}<?php
 if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 <f:if condition="{domainObject.mapToTable}"><f:then>
-<k:mapping domainObject="{domainObject}" renderCondition="isMappedToInternalTable">
-<k:render partial="TCA/Columns.phpt" arguments="{domainObject:domainObject, settings:settings}" />
-</k:mapping></f:then><f:else>
+<pb:typo3.mapping domainObject="{domainObject}" renderCondition="isMappedToInternalTable">
+<pb:render partial="Columns.phpt" arguments="{domainObject:domainObject, settings:settings}" />
+</pb:typo3.mapping></f:then><f:else>
 $TCA['{domainObject.databaseTableName}'] = array(
 	'ctrl' => $TCA['{domainObject.databaseTableName}']['ctrl'],
 	'interface' => array(
@@ -100,10 +100,10 @@ $TCA['{domainObject.databaseTableName}'] = array(
 			'exclude' => <f:if condition="{property.excludeField}"><f:then>1</f:then><f:else>0</f:else></f:if>,
 			'label' => 'LLL:EXT:{extension.extensionKey}/Resources/Private/Language/locallang_db.{locallangFileFormat}:{property.labelNamespace}',
 			'config' => array(
-				<k:format.indent indentation="4"><k:render partial="TCA/{property.dataType}.phpt" arguments="{property: property,extension:extension,settings:settings,locallangFileFormat:locallangFileFormat}" /></k:format.indent>
+				<pb:format.indent indentation="4"><pb:render partial="{property.dataType}.phpt" arguments="{property: property,extension:extension,settings:settings,locallangFileFormat:locallangFileFormat}" /></pb:format.indent>
 			),<f:if condition="{property.useRTE}">
 			'defaultExtras' => 'richtext[]',</f:if>
-		),</f:for><f:for each="{k:listForeignKeyRelations(extension: extension, domainObject: domainObject)}" as="relation">
+		),</f:for><f:for each="{pb:typo3.listForeignKeyRelations(extension: extension, domainObject: domainObject)}" as="relation">
 		'{relation.foreignKeyName}' => array(
 			'config' => array(
 				'type' => 'passthrough',
@@ -113,7 +113,7 @@ $TCA['{domainObject.databaseTableName}'] = array(
 );
 
 <f:if condition="{domainObject.childObjects}">
-<k:render partial="TCA/TypeField.phpt" arguments="{domainObject:domainObject, settings:settings}" />
+<pb:render partial="TypeField.phpt" arguments="{domainObject:domainObject, settings:settings}" />
 </f:if>
 
 </f:else></f:if>

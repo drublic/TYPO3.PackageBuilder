@@ -22,7 +22,9 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-namespace TYPO3\PackageBuilder\Service;
+namespace TYPO3\PackageBuilder\Service\TYPO3;
+
+use TYPO3\PackageBuilder\Domain\Model as Model;
 use TYPO3\FLOW3\Annotations as FLOW3;
 
 /**
@@ -32,44 +34,36 @@ use TYPO3\FLOW3\Annotations as FLOW3;
  * @FLOW3\Scope("singleton")
  *
  */
-class ExtensionSchemaBuilder {
+class PackageFactory extends \TYPO3\PackageBuilder\Service\AbstractPackageFactory {
 
 	/**
-	 * @var \TYPO3\PackageBuilder\Configuration\ConfigurationManager
+	 * @var \TYPO3\PackageBuilder\Configuration\TYPO3\ConfigurationManager
+	 *
+	 * @FLOW3\Inject
 	 */
 	protected $configurationManager;
 
-	/**
-	 * @param \TYPO3\PackageBuilder\Configuration\ConfigurationManager $configurationManager
-	 * @return void
-	 */
-	public function injectConfigurationManager(\TYPO3\PackageBuilder\Configuration\ConfigurationManager $configurationManager) {
-		$this->configurationManager = $configurationManager;
-	}
+
 
 	/**
-	 * @var ObjectSchemaBuilder
+	 * @var \TYPO3\PackageBuilder\Service\TYPO3\DomainObjectFactory
+	 *
+	 * @FLOW3\Inject
+	 *
 	 */
-	protected $objectSchemaBuilder;
+	protected $domainObjectFactory;
 
-	/**
-	 * @param ObjectSchemaBuilder $objectSchemaBuilder
-	 * @return void
-	 */
-	public function injectObjectSchemaBuilder(ObjectSchemaBuilder $objectSchemaBuilder) {
-		$this->objectSchemaBuilder = $objectSchemaBuilder;
-	}
 
 	/**
 	 * @param array $extensionBuildConfiguration
-	 * @return Tx_ExtensionBuilder_Domain_Model_Extension $extension
+	 * @return \TYPO3\PackageBuilder\Domain\Model\Extension $extension
 	 */
-	public function build(array $extensionBuildConfiguration) {
-		$extension = \t3lib_div::makeInstance('TYPO3\\PackageBuilder\\Domain\\Model\\Extension');
+	public function create(array $extensionBuildConfiguration) {
+		$extension = new Model\Extension();
 		$globalProperties = $extensionBuildConfiguration['properties'];
 		if (!is_array($globalProperties)) {
-			\t3lib_div::devlog('Error: Extension properties not submitted! ' . $extension->getOriginalExtensionKey(), 'builder', 3, $globalProperties);
-			throw new \Exception('Extension properties not submitted!');
+			$this->logger->log('Error: Extension properties not submitted! ');
+			throw new \TYPO3\PackageBuilder\Exception('Extension properties not submitted!');
 		}
 		$this->setExtensionProperties($extension, $globalProperties);
 		foreach ($globalProperties['persons'] as $personValues) {
@@ -85,10 +79,10 @@ class ExtensionSchemaBuilder {
 			$extension->addBackendModule($backendModule);
 		}
 		// classes
-		if (is_array($extensionBuildConfiguration['modules'])) {
-			foreach ($extensionBuildConfiguration['modules'] as $singleModule) {
-				$domainObject = $this->objectSchemaBuilder->build($singleModule['value']);
-				if ($domainObject->isSubClass() && !$domainObject->isMappedToExistingTable()) {
+		if (isset($extensionBuildConfiguration['domainObjects']) && is_array($extensionBuildConfiguration['domainObjects'])) {
+			foreach ($extensionBuildConfiguration['domainObjects'] as $singleModule) {
+				$domainObject = $this->domainObjectFactory->create($singleModule['value']);
+				if (FALSE && $domainObject->isSubClass() && !$domainObject->isMappedToExistingTable()) {
 					// we try to get the table from Extbase configuration
 					$classSettings = $this->configurationManager->getExtbaseClassConfiguration($domainObject->getParentClass());
 					//t3lib_div::devlog('!isMappedToExistingTable:' . strtolower($domainObject->getParentClass()), 'extension_builder', 0, $classSettings);
@@ -98,9 +92,11 @@ class ExtensionSchemaBuilder {
 						// we use the default table name
 						$tableName = strtolower($domainObject->getParentClass());
 					}
+					/**
 					if (!isset($GLOBALS['TCA'][$tableName])) {
-						throw new \Exception(('Table definitions for table ' . $tableName) . ' could not be loaded. You can only map to tables with existing TCA or extend classes of installed extensions!');
+						throw new \TYPO3\PackageBuilder\Exception(('Table definitions for table ' . $tableName) . ' could not be loaded. You can only map to tables with existing TCA or extend classes of installed extensions!');
 					}
+					 */
 					$domainObject->setMapToTable($tableName);
 				}
 				$extension->addDomainObject($domainObject);
@@ -115,7 +111,7 @@ class ExtensionSchemaBuilder {
 			}
 		}
 		// relations
-		if (is_array($extensionBuildConfiguration['wires'])) {
+		if (isset($extensionBuildConfiguration['wires']) && is_array($extensionBuildConfiguration['wires'])) {
 			$this->setExtensionRelations($extensionBuildConfiguration, $extension);
 		}
 		return $extension;
@@ -123,7 +119,7 @@ class ExtensionSchemaBuilder {
 
 	/**
 	 * @param array $extensionBuildConfiguration
-	 * @param \TYPO3\PackageBuilder\Domain\Model\Extension $extension
+	 * @param Model\Extension $extension
 	 * @throws Exception
 	 */
 	protected function setExtensionRelations($extensionBuildConfiguration, &$extension) {
@@ -137,20 +133,20 @@ class ExtensionSchemaBuilder {
 					$wire['src'] = $wire['tgt'];
 					$wire['tgt'] = array('moduleId' => $tgtModuleId, 'terminal' => 'SOURCES');
 				} else {
-					throw new \Exception('A wire has always to connect a relation with a model, not with another relation');
+					throw new \TYPO3\PackageBuilder\Exception('A wire has always to connect a relation with a model, not with another relation');
 				}
 			}
 			$srcModuleId = $wire['src']['moduleId'];
 			$relationId = substr($wire['src']['terminal'], 13);
 			// strip "relationWire_"
-			$relationJsonConfiguration = $extensionBuildConfiguration['modules'][$srcModuleId]['value']['relationGroup']['relations'][$relationId];
+			$relationJsonConfiguration = $extensionBuildConfiguration['domainObjects'][$srcModuleId]['value']['relationGroup']['relations'][$relationId];
 			if (!is_array($relationJsonConfiguration)) {
-				\t3lib_div::devlog('Error in JSON relation configuration!', 'extension_builder', 3, $extensionBuildConfiguration);
-				$errorMessage = 'Missing relation config in domain object: ' . $extensionBuildConfiguration['modules'][$srcModuleId]['value']['name'];
-				throw new \Exception($errorMessage);
+				//\t3lib_div::devlog('Error in JSON relation configuration!', 'extension_builder', 3, $extensionBuildConfiguration);
+				$errorMessage = 'Missing relation config in domain object: ' . $extensionBuildConfiguration['domainObjects'][$srcModuleId]['value']['name'];
+				throw new \TYPO3\PackageBuilder\Exception($errorMessage);
 			}
-			$foreignModelName = $extensionBuildConfiguration['modules'][$wire['tgt']['moduleId']]['value']['name'];
-			$localModelName = $extensionBuildConfiguration['modules'][$wire['src']['moduleId']]['value']['name'];
+			$foreignModelName = $extensionBuildConfiguration['domainObjects'][$wire['tgt']['moduleId']]['value']['name'];
+			$localModelName = $extensionBuildConfiguration['domainObjects'][$wire['src']['moduleId']]['value']['name'];
 			//$relation = $this->objectSchemaBuilder->buildRelation($relationJsonConfiguration);
 			if (!isset($existingRelations[$localModelName])) {
 				$existingRelations[$localModelName] = array();
@@ -158,15 +154,15 @@ class ExtensionSchemaBuilder {
 			$domainObject = $extension->getDomainObjectByName($localModelName);
 			$relation = $domainObject->getPropertyByName($relationJsonConfiguration['relationName']);
 			if (!$relation) {
-				\t3lib_div::devlog((('Relation not found: ' . $localModelName) . '->') . $relationJsonConfiguration['relationName'], 'extension_builder', 2, $relationJsonConfiguration);
-				throw new \Exception((('Relation not found: ' . $localModelName) . '->') . $relationJsonConfiguration['relationName']);
+				//\t3lib_div::devlog((('Relation not found: ' . $localModelName) . '->') . $relationJsonConfiguration['relationName'], 'extension_builder', 2, $relationJsonConfiguration);
+				throw new \TYPO3\PackageBuilder\Exception((('Relation not found: ' . $localModelName) . '->') . $relationJsonConfiguration['relationName']);
 			}
 			// get unique foreign key names for multiple relations to the same foreign class
 			if (in_array($foreignModelName, $existingRelations[$localModelName])) {
-				if (is_a($relation, Tx_ExtensionBuilder_Domain_Model_DomainObject_Relation_ZeroToManyRelation)) {
+				if (is_a($relation, '\\TYPO3\\PackageBuilder\\Domain\\Model\\DomainObject\\Relation\\ZeroToManyRelation')) {
 					$relation->setForeignKeyName(strtolower($localModelName) . count($existingRelations[$localModelName]));
 				}
-				if (is_a($relation, Tx_ExtensionBuilder_Domain_Model_DomainObject_Relation_AnyToManyRelation)) {
+				if (is_a($relation, '\\TYPO3\\PackageBuilder\\Domain\\Model\\DomainObject\\Relation\\AnyToManyRelation')) {
 					$relation->setUseExtendedRelationTableName(TRUE);
 				}
 			}
@@ -176,7 +172,7 @@ class ExtensionSchemaBuilder {
 	}
 
 	/**
-	 * @param \TYPO3\PackageBuilder\Domain\Model\Extension $extension
+	 * @param Model\Extension $extension
 	 * @param array $propertyConfiguration
 	 * @return void
 	 */
@@ -186,19 +182,19 @@ class ExtensionSchemaBuilder {
 		// description
 		$extension->setDescription($propertyConfiguration['description']);
 		// extensionKey
-		$extension->setExtensionKey(trim($propertyConfiguration['extensionKey']));
-		if ($propertyConfiguration['emConf']['disableVersioning']) {
+		$extension->setKey(trim($propertyConfiguration['extensionKey']));
+		if ( isset($propertyConfiguration['emConf']['disableVersioning']) && $propertyConfiguration['emConf']['disableVersioning']) {
 			$extension->setSupportVersioning(FALSE);
 		}
 		// various extension properties
 		$extension->setVersion($propertyConfiguration['emConf']['version']);
 		if (!empty($propertyConfiguration['emConf']['dependsOn'])) {
 			$dependencies = array();
-			$lines = \t3lib_div::trimExplode('
+			$lines = \TYPO3\FLOW3\Utility\Arrays::trimExplode('
 ', $propertyConfiguration['emConf']['dependsOn']);
 			foreach ($lines as $line) {
 				if (strpos($line, '=>')) {
-					list($extensionKey, $version) = \t3lib_div::trimExplode('=>', $line);
+					list($extensionKey, $version) = \TYPO3\FLOW3\Utility\Arrays::trimExplode('=>', $line);
 					$dependencies[$extensionKey] = $version;
 				}
 			}
@@ -219,19 +215,19 @@ class ExtensionSchemaBuilder {
 		$state = 0;
 		switch ($propertyConfiguration['emConf']['state']) {
 		case 'alpha':
-			$state = \TYPO3\PackageBuilder\Domain\Model\Extension::STATE_ALPHA;
+			$state = Model\Extension::STATE_ALPHA;
 			break;
 		case 'beta':
-			$state = \TYPO3\PackageBuilder\Domain\Model\Extension::STATE_BETA;
+			$state = Model\Extension::STATE_BETA;
 			break;
 		case 'stable':
-			$state = \TYPO3\PackageBuilder\Domain\Model\Extension::STATE_STABLE;
+			$state = Model\Extension::STATE_STABLE;
 			break;
 		case 'experimental':
-			$state = \TYPO3\PackageBuilder\Domain\Model\Extension::STATE_EXPERIMENTAL;
+			$state = Model\Extension::STATE_EXPERIMENTAL;
 			break;
 		case 'test':
-			$state = \TYPO3\PackageBuilder\Domain\Model\Extension::STATE_TEST;
+			$state = Model\Extension::STATE_TEST;
 			break;
 		}
 		$extension->setState($state);
@@ -239,19 +235,19 @@ class ExtensionSchemaBuilder {
 			// handle renaming of extensions
 			// original extensionKey
 			$extension->setOriginalExtensionKey($propertyConfiguration['originalExtensionKey']);
-			\t3lib_div::devlog('Extension setOriginalExtensionKey:' . $extension->getOriginalExtensionKey(), 'extbase', 0, $propertyConfiguration);
+			$this->logger->log('Extension setOriginalExtensionKey:' . $extension->getOriginalExtensionKey());
 		}
 		if (!empty($propertyConfiguration['originalExtensionKey']) && $extension->getOriginalExtensionKey() != $extension->getExtensionKey()) {
 			$settings = $this->configurationManager->getExtensionSettings($extension->getOriginalExtensionKey());
 			// if an extension was renamed, a new extension dir is created and we
 			// have to copy the old settings file to the new extension dir
-			copy($this->configurationManager->getSettingsFile($extension->getOriginalExtensionKey()), $this->configurationManager->getSettingsFile($extension->getExtensionKey()));
+			//copy($this->configurationManager->getSettingsFile($extension->getOriginalExtensionKey()), $this->configurationManager->getSettingsFile($extension->getExtensionKey()));
 		} else {
 			$settings = $this->configurationManager->getExtensionSettings($extension->getExtensionKey());
 		}
 		if (!empty($settings)) {
 			$extension->setSettings($settings);
-			\t3lib_div::devlog('Extension settings:' . $extension->getExtensionKey(), 'extbase', 0, $extension->getSettings());
+			//\t3lib_div::devlog('Extension settings:' . $extension->getExtensionKey(), 'extbase', 0, $extension->getSettings());
 		}
 	}
 
@@ -260,7 +256,7 @@ class ExtensionSchemaBuilder {
 	 * @return Tx_ExtensionBuilder_Domain_Model_Person
 	 */
 	protected function buildPerson($personValues) {
-		$person = \t3lib_div::makeInstance('TYPO3\\PackageBuilder\\Domain\\Model\\Person');
+		$person = new Model\Person;
 		$person->setName($personValues['name']);
 		$person->setRole($personValues['role']);
 		$person->setEmail($personValues['email']);
@@ -273,33 +269,35 @@ class ExtensionSchemaBuilder {
 	 * @return Tx_ExtensionBuilder_Domain_Model_Plugin
 	 */
 	protected function buildPlugin($pluginValues) {
-		$plugin = \t3lib_div::makeInstance('TYPO3\\PackageBuilder\\Domain\\Model\\Plugin');
+		$plugin = new Model\Plugin;
 		$plugin->setName($pluginValues['name']);
-		$plugin->setType($pluginValues['type']);
+		if (isset($pluginValues['type'])) {
+			$plugin->setType($pluginValues['type']);
+		}
 		$plugin->setKey($pluginValues['key']);
 		if (!empty($pluginValues['actions']['controllerActionCombinations'])) {
 			$controllerActionCombinations = array();
-			$lines = \t3lib_div::trimExplode('
+			$lines = \TYPO3\FLOW3\Utility\Arrays::trimExplode('
 ', $pluginValues['actions']['controllerActionCombinations'], TRUE);
 			foreach ($lines as $line) {
-				list($controllerName, $actionNames) = \t3lib_div::trimExplode('=>', $line);
-				$controllerActionCombinations[$controllerName] = \t3lib_div::trimExplode(',', $actionNames);
+				list($controllerName, $actionNames) = \TYPO3\FLOW3\Utility\Arrays::trimExplode('=>', $line);
+				$controllerActionCombinations[$controllerName] = \TYPO3\FLOW3\Utility\Arrays::trimExplode(',', $actionNames);
 			}
 			$plugin->setControllerActionCombinations($controllerActionCombinations);
 		}
 		if (!empty($pluginValues['actions']['noncacheableActions'])) {
 			$noncacheableControllerActions = array();
-			$lines = \t3lib_div::trimExplode('
+			$lines = \TYPO3\FLOW3\Utility\Arrays::trimExplode('
 ', $pluginValues['actions']['noncacheableActions'], TRUE);
 			foreach ($lines as $line) {
-				list($controllerName, $actionNames) = \t3lib_div::trimExplode('=>', $line);
-				$noncacheableControllerActions[$controllerName] = \t3lib_div::trimExplode(',', $actionNames);
+				list($controllerName, $actionNames) = \TYPO3\FLOW3\Utility\Arrays::trimExplode('=>', $line);
+				$noncacheableControllerActions[$controllerName] = \TYPO3\FLOW3\Utility\Arrays::trimExplode(',', $actionNames);
 			}
 			$plugin->setNoncacheableControllerActions($noncacheableControllerActions);
 		}
 		if (!empty($pluginValues['actions']['switchableActions'])) {
 			$switchableControllerActions = array();
-			$lines = \t3lib_div::trimExplode('
+			$lines = \TYPO3\FLOW3\Utility\Arrays::trimExplode('
 ', $pluginValues['actions']['switchableActions'], TRUE);
 			$switchableAction = array();
 			foreach ($lines as $line) {
@@ -310,7 +308,7 @@ class ExtensionSchemaBuilder {
 					}
 					$switchableAction['label'] = trim($line);
 				} else {
-					$switchableAction['actions'] = \t3lib_div::trimExplode(';', $line, TRUE);
+					$switchableAction['actions'] = \TYPO3\FLOW3\Utility\Arrays::trimExplode(';', $line, TRUE);
 					$switchableControllerActions[] = $switchableAction;
 				}
 			}
@@ -324,7 +322,7 @@ class ExtensionSchemaBuilder {
 	 * @return Tx_ExtensionBuilder_Domain_Model_BackendModule
 	 */
 	protected function buildBackendModule($backendModuleValues) {
-		$backendModule = \t3lib_div::makeInstance('TYPO3\\PackageBuilder\\Domain\\Model\\BackendModule');
+		$backendModule = new Model\BackendModule;
 		$backendModule->setName($backendModuleValues['name']);
 		$backendModule->setMainModule($backendModuleValues['mainModule']);
 		$backendModule->setTabLabel($backendModuleValues['tabLabel']);
@@ -332,11 +330,11 @@ class ExtensionSchemaBuilder {
 		$backendModule->setDescription($backendModuleValues['description']);
 		if (!empty($backendModuleValues['actions']['controllerActionCombinations'])) {
 			$controllerActionCombinations = array();
-			$lines = \t3lib_div::trimExplode('
+			$lines = \TYPO3\FLOW3\Utility\Arrays::trimExplode('
 ', $backendModuleValues['actions']['controllerActionCombinations'], TRUE);
 			foreach ($lines as $line) {
-				list($controllerName, $actionNames) = \t3lib_div::trimExplode('=>', $line);
-				$controllerActionCombinations[$controllerName] = \t3lib_div::trimExplode(',', $actionNames);
+				list($controllerName, $actionNames) = \TYPO3\FLOW3\Utility\Arrays::trimExplode('=>', $line);
+				$controllerActionCombinations[$controllerName] = \TYPO3\FLOW3\Utility\Arrays::trimExplode(',', $actionNames);
 			}
 			$backendModule->setControllerActionCombinations($controllerActionCombinations);
 		}

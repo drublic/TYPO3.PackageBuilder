@@ -116,7 +116,7 @@ class AbstractPackage extends AbstractModel{
 	 *
 	 */
 	public function getDomainObjects(){
-        return $this->domainObjects();
+        return $this->domainObjects;
 	}
 
 

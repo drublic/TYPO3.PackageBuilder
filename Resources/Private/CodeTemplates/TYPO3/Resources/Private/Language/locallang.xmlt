@@ -1,4 +1,4 @@
-{namespace k=Tx_ExtensionBuilder_ViewHelpers}<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <T3locallang>
 	<meta type="array">
 		<type>module</type>

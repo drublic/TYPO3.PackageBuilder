@@ -1,5 +1,5 @@
-{namespace k=Tx_ExtensionBuilder_ViewHelpers}
-<k:openingTag>f:layout name="Default" /</k:openingTag>
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}
+<pb:openingTag>f:layout name="Default" /</pb:openingTag>
 
 This Template is responsible for displaying a single view for a domain object
 
@@ -12,11 +12,11 @@ in /Configuration/ExtensionBuilder/settings.yaml:
 
 Otherwise your changes will be overwritten the next time you save the extension in the extension builder
 
-<k:openingTag>f:section name="content"</k:openingTag>
+<pb:openingTag>f:section name="content"</pb:openingTag>
 <h1>Single View for {domainObject.name}</h1>
 
-<k:openingTag>f:flashMessages /</k:openingTag>
-<k:openingTag>f:render partial="{domainObject.name}/Properties" arguments="<k:curlyBrackets>{domainObject.name -> k:format.lowercaseFirst()}:{domainObject.name -> k:format.lowercaseFirst()}</k:curlyBrackets>" /</k:openingTag>
-<k:openingTag>f:link.action action="list"</k:openingTag>Back to list<![CDATA[</f:link.action>]]><br />
-<k:openingTag>f:link.action action="create"</k:openingTag>New {domainObject.name}<![CDATA[</f:link.action>]]>
+<pb:openingTag>f:flashMessages /</pb:openingTag>
+<pb:openingTag>f:render partial="{domainObject.name}/Properties" arguments="<pb:curlyBrackets>{domainObject.name -> pb:format.lowercaseFirst()}:{domainObject.name -> pb:format.lowercaseFirst()}</pb:curlyBrackets>" /</pb:openingTag>
+<pb:openingTag>f:link.action action="list"</pb:openingTag>Back to list<![CDATA[</f:link.action>]]><br />
+<pb:openingTag>f:link.action action="create"</pb:openingTag>New {domainObject.name}<![CDATA[</f:link.action>]]>
 <![CDATA[</f:section>]]>

@@ -63,14 +63,14 @@ class Extension extends AbstractPackage  implements PackageInterface{
 
 	/**
 	 * plugins
-	 * @var array<\TYPO3\PackageBuilder\Domain\Model\Plugin>
+	 * @var Plugin[]
 	 * @ORM\OneToMany
 	 */
 	private $plugins;
 
 	/**
 	 * backend modules
-	 * @var array<\TYPO3\PackageBuilder\Domain\Model\BackendModule>
+	 * @var BackendModule[]
 	 * @ORM\OneToMany
 	 */
 	private $backendModules;
@@ -245,12 +245,12 @@ class Extension extends AbstractPackage  implements PackageInterface{
 
 	/**
 	 * Add a domain object to the extension. Creates the reverse link as well.
-	 * @param Tx_ExtensionBuilder_Domain_Model_DomainObject $domainObject
+	 * @param DomainObject $domainObject
 	 */
-	public function addDomainObject(Tx_ExtensionBuilder_Domain_Model_DomainObject $domainObject) {
+	public function addDomainObject(DomainObject $domainObject) {
 		$domainObject->setExtension($this);
 		if (in_array($domainObject->getName(), array_keys($this->domainObjects))) {
-			throw new \TYPO3\PackageBuilder\Exception('Duplicate domain object name "' . $domainObject->getName() . '".', Tx_ExtensionBuilder_Domain_Validator_ExtensionValidator::ERROR_DOMAINOBJECT_DUPLICATE);
+			throw new \TYPO3\PackageBuilder\Exception('Duplicate domain object name "' . $domainObject->getName() . '".', \TYPO3\PackageBuilder\Domain\Validator\ExtensionValidator::ERROR_DOMAINOBJECT_DUPLICATE);
 		}
 		if ($domainObject->getNeedsUploadFolder()) {
 			$this->needsUploadFolder = TRUE;
@@ -261,7 +261,7 @@ class Extension extends AbstractPackage  implements PackageInterface{
 	/**
 	 *
 	 * @param string $domainObjectName
-	 * @return Tx_ExtensionBuilder_Domain_Model_DomainObject
+	 * @return DomainObject
 	 */
 	public function getDomainObjectByName($domainObjectName) {
 		if (isset($this->domainObjects[$domainObjectName])) {
@@ -280,7 +280,7 @@ class Extension extends AbstractPackage  implements PackageInterface{
 	/**
 	 * Returns the Persons
 	 *
-	 * @return array<Tx_ExtensionBuilder_Domain_Model_Person>
+	 * @return Person[]
 	 */
 	public function getPersons() {
 		return $this->persons;
@@ -289,7 +289,7 @@ class Extension extends AbstractPackage  implements PackageInterface{
 	/**
 	 * Sets the Persons
 	 *
-	 * @param array<Tx_ExtensionBuilder_Domain_Model_Person> $persons
+	 * @param Person[]
 	 * @return void
 	 */
 	public function setPersons($persons) {
@@ -299,7 +299,7 @@ class Extension extends AbstractPackage  implements PackageInterface{
 	/**
 	 * Adds a Person to the end of the current Set of Persons.
 	 *
-	 * @param Tx_ExtensionBuilder_Domain_Model_Person $person
+	 * @param Person
 	 * @return void
 	 */
 	public function addPerson($person) {
@@ -309,17 +309,17 @@ class Extension extends AbstractPackage  implements PackageInterface{
 	/**
 	 * Setter for plugin
 	 *
-	 * @param Tx_Extbase_Persistence_ObjectStorage<Tx_ExtensionBuilder_Domain_Model_Plugin> $plugins
+	 * @param \SplObjectStorage Plugin
 	 * @return void
 	 */
-	public function setPlugins(Tx_Extbase_Persistence_ObjectStorage $plugins) {
+	public function setPlugins(\SplObjectStorage $plugins) {
 		$this->plugins = $plugins;
 	}
 
 	/**
 	 * Getter for $plugin
 	 *
-	 * @return Tx_Extbase_Persistence_ObjectStorage<Tx_ExtensionBuilder_Domain_Model_Plugin>
+	 * @return \SplObjectStorage
 	 */
 	public function getPlugins() {
 		return $this->plugins;
@@ -340,27 +340,27 @@ class Extension extends AbstractPackage  implements PackageInterface{
 	/**
 	 * Add $plugin
 	 *
-	 * @param Tx_ExtensionBuilder_Domain_Model_Plugin
+	 * @param Plugin
 	 * @return void
 	 */
-	public function addPlugin(Tx_ExtensionBuilder_Domain_Model_Plugin $plugin) {
+	public function addPlugin(Plugin $plugin) {
 		$this->plugins[] = $plugin;
 	}
 
 	/**
 	 * Setter for backendModule
 	 *
-	 * @param Tx_Extbase_Persistence_ObjectStorage<Tx_ExtensionBuilder_Domain_Model_BackendModule> $backendModules
+	 * @param \SplObjectStorage backendModule
 	 * @return void
 	 */
-	public function setBackendModules(Tx_Extbase_Persistence_ObjectStorage $backendModules) {
+	public function setBackendModules(SplObjectStorage $backendModules) {
 		$this->backendModules = $backendModules;
 	}
 
 	/**
 	 * Getter for $backendModule
 	 *
-	 * @return Tx_Extbase_Persistence_ObjectStorage<Tx_ExtensionBuilder_Domain_Model_Plugin>
+	 * @return \SplObjectStorage
 	 */
 	public function getBackendModules() {
 		return $this->backendModules;
@@ -369,10 +369,10 @@ class Extension extends AbstractPackage  implements PackageInterface{
 	/**
 	 * Add $backendModule
 	 *
-	 * @param Tx_ExtensionBuilder_Domain_Model_BackendModule
+	 * @param BackendModule
 	 * @return void
 	 */
-	public function addBackendModule(Tx_ExtensionBuilder_Domain_Model_BackendModule $backendModule) {
+	public function addBackendModule(BackendModule $backendModule) {
 		$this->backendModules[] = $backendModule;
 	}
 

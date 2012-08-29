@@ -12,7 +12,7 @@ use TYPO3\FLOW3\Annotations as FLOW3;
  *
  * @FLOW3\Scope("singleton")
  */
-class CodeGenerator {
+abstract class AbstractCodeGenerator {
 
 	/**
 	 * @var array
@@ -54,6 +54,17 @@ class CodeGenerator {
 	 */
 	public function injectSettings(array $settings) {
 		$this->settings = $settings;
+		if(!isset($this->settings['codeGeneration']['codeTemplateRootPath'])) {
+			return;
+		}
+		try {
+			$this->codeTemplateRootPath = $this->settings['codeGeneration']['codeTemplateRootPath'];
+			if ($this->settings['packageConfiguration']['enableRoundtrip'] == 1) {
+				$this->editModeEnabled = TRUE;
+			}
+		} catch(Exception $e) {
+			throw new \TYPO3\PackageBuilder\Exception\ConfigurationError($e->getMessage());
+		}
 	}
 
 	/**
@@ -122,8 +133,6 @@ class CodeGenerator {
 
 	public function initializeObject() {
 		$this->logger =  \TYPO3\FLOW3\Log\LoggerFactory::create('PackageBuilderLogger','\\TYPO3\\PackageBuilder\\Log\\FileLogger','\\TYPO3\\FLOW3\\Log\\Backend\\FileBackend', $this->settings['log']['backendOptions']);
-		$this->targetFramework = $this->settings['codeGeneration']['frameWork'];
-		$this->codeTemplateRootPath = $this->settings['codeGeneration'][$this->targetFramework]['codeTemplateRootPath'];
 	}
 
 	/**
@@ -268,7 +277,7 @@ class CodeGenerator {
 	 * @param string $deepDirectory
 	 */
 	protected function createDirectoryRecursively($directory) {
-		$parts = explode($this->packageDirectory,$directory);
+		$parts = explode($this->getPackageDirectory(),$directory);
 		if(count($parts)>1) {
 			$directory = $parts[1];
 		} else {
@@ -276,7 +285,7 @@ class CodeGenerator {
 			return;
 		}
 		$subDirectories = explode('/',$directory);
-		$tmpBasePath = $this->packageDirectory;
+		$tmpBasePath = $this->getPackageDirectory();
 		foreach($subDirectories as $subDirectory) {
 			$overWriteMode = \TYPO3\PackageBuilder\Service\RoundTrip::getOverWriteSettingForPath($tmpBasePath . $subDirectory, $this->package);
 			//throw new Exception($directory . $subDirectory . '/' . $overWriteMode);
@@ -289,7 +298,6 @@ class CodeGenerator {
 			}
 			$tmpBasePath .= $subDirectory . '/';
 		}
-
 	}
 
 	protected function log($message, $severity = 1) {
@@ -298,6 +306,20 @@ class CodeGenerator {
 		$info = array_pop($path).': Line '.$a[0]['line'];
 		$message .= $info . "\t" . $message;
 		$this->logger->log($message, $severity);
+	}
+
+	/**
+	 * @param string $packageDirectory
+	 */
+	public function setPackageDirectory($packageDirectory) {
+		$this->packageDirectory = $packageDirectory;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPackageDirectory() {
+		return $this->packageDirectory;
 	}
 
 }
