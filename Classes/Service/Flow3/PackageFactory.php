@@ -32,7 +32,13 @@ use TYPO3\FLOW3\Annotations as FLOW3;
  * @FLOW3\Scope("singleton")
  */
 
-class PackageFactory {
+class PackageFactory extends \TYPO3\PackageBuilder\Service\AbstractPackageFactory{
 
+	/**
+	 * @param array $configuration
+	 */
+	public function create(array $configuration) {
+
+	}
 
 }

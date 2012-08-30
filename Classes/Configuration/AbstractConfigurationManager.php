@@ -534,3 +534,5 @@ abstract class AbstractConfigurationManager  {
 	}
 
 }
+
+?>

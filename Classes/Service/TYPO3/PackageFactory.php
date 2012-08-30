@@ -343,3 +343,4 @@ class PackageFactory extends \TYPO3\PackageBuilder\Service\AbstractPackageFactor
 
 }
 
+?>

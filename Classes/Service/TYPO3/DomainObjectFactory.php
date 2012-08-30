@@ -164,3 +164,4 @@ class DomainObjectFactory extends \TYPO3\PackageBuilder\Service\AbstractDomainOb
 
 }
 
+?>

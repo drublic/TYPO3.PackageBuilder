@@ -89,6 +89,11 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 		$this->packageRepository = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Domain\\Repository\\' . $this->targetFrameWork. '\\PackageRepository');
 		$this->packageFactory = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Service\\' . $this->targetFrameWork. '\\PackageFactory');
 		$this->packageConfigurationManager = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Configuration\\' . $this->targetFrameWork. '\\ConfigurationManager');
+
+		$this->logger =  \TYPO3\FLOW3\Log\LoggerFactory::create('PackageBuilderLogger','\\TYPO3\\PackageBuilder\\Log\\FileLogger','\\TYPO3\\FLOW3\\Log\\Backend\\FileBackend', $this->settings['log']['backendOptions']);
+		$this->codeGenerator->injectLogger($this->logger);
+		$this->packageRepository->injectLogger($this->logger);
+		$this->packageFactory->injectLogger($this->logger);
 	}
 
 
@@ -140,8 +145,8 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 		$this->codeGenerator->injectSettings($this->settings);
 
 		$package->setBaseDir($this->settings['codeGeneration']['packagesDir']);
-
 		$this->codeGenerator->build($package);
+
 		die('<pre>' . file_get_contents($this->settings['log']['backendOptions']['logFileURL']). '</pre>');
 	}
 

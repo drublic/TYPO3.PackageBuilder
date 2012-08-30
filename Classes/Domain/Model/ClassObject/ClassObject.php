@@ -551,3 +551,4 @@ class ClassObject extends AbstractClassObject {
 
 }
 
+?>

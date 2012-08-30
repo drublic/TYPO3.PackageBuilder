@@ -1,11 +1,9 @@
 <?php
-namespace TYPO3\PackageBuilder\Service;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Nico de Haen <mail@ndh-websolutions.de>
+ *  (c) 2010  Nico de Haen <mail@ndh-websolutions.de>
  *  All rights reserved
- *
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
  *  free software; you can redistribute it and/or modify
@@ -18,28 +16,20 @@ namespace TYPO3\PackageBuilder\Service;
  *
  *  This script is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use TYPO3\FLOW3\Annotations as FLOW3;
+namespace TYPO3\PackageBuilder\Exception;
 
 /**
- * @package
- * @author Nico de Haen
+ * An exception thrown if an error occured during parsing a php file
  *
- * @FLOW3\Scope("singleton")
+ * @package PackageBuilder
  */
+class WriteAccessError extends \TYPO3\PackageBuilder\Exception {
 
-abstract class AbstractPackageFactory {
 
-	abstract public function create(array $configuration);
-
-	/**
-	 * @param \TYPO3\FLOW3\Log\Logger $logger
-	 */
-	public function injectLogger(\TYPO3\FLOW3\Log\Logger $logger) {
-		$this->logger = $logger;
-	}
 }
+

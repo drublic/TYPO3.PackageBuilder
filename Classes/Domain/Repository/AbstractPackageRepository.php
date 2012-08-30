@@ -35,7 +35,12 @@ abstract class AbstractPackageRepository {
 
 	abstract public function findAll();
 
-
+	/**
+	 * @param \TYPO3\FLOW3\Log\Logger $logger
+	 */
+	public function injectLogger(\TYPO3\FLOW3\Log\Logger $logger) {
+		$this->logger = $logger;
+	}
 
 }
 

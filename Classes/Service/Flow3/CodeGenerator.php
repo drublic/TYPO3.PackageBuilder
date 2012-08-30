@@ -13,12 +13,13 @@ use TYPO3\FLOW3\Annotations as FLOW3;
  *
  * @FLOW3\Scope("singleton")
  */
-class CodeGenerator extends \TYPO3\PackageBuilder\Service\CodeGenerator implements \TYPO3\PackageBuilder\Service\CodeGeneratorInterface {
+class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator {
 
 	/**
 	 * @var string
 	 */
 	protected $metaDirectory;
+
 
 	/**
 	 * @param \TYPO3\PackageBuilder\Domain\Model\PackageInterface $package
@@ -95,3 +96,5 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\CodeGenerator implemen
 	}
 
 }
+
+?>

@@ -86,3 +86,5 @@ class ConfigurationManager extends \TYPO3\PackageBuilder\Configuration\AbstractC
 		return $settingsFile;
 	}
 }
+
+?>

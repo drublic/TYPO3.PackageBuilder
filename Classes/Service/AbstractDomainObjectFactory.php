@@ -37,3 +37,5 @@ abstract class AbstractDomainObjectFactory {
 	abstract public function create(array $configuration);
 
 }
+
+?>

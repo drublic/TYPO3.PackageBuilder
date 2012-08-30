@@ -33,7 +33,7 @@ software development
 abstract class AbstractClassObject {
 
 	/**
-	 * 1	ReflectionMethod::IS_STATIC
+	 * 1    ReflectionMethod::IS_STATIC
 	2	ReflectionMethod::IS_ABSTRACT
 	4	ReflectionMethod::IS_FINAL
 	256	ReflectionMethod::IS_PUBLIC
@@ -374,3 +374,4 @@ abstract class AbstractClassObject {
 
 }
 
+?>

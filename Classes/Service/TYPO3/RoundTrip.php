@@ -1,4 +1,5 @@
 <?php
+namespace TYPO3\PackageBuilder\Service\TYPO3;
 /***************************************************************
  *  Copyright notice
  *
@@ -21,7 +22,7 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-namespace TYPO3\PackageBuilder\Service;
+
 use TYPO3\FLOW3\Annotations as FLOW3;
 
 /**
@@ -32,7 +33,7 @@ use TYPO3\FLOW3\Annotations as FLOW3;
  * @FLOW3\Scope("singleton")
  *
  */
-class RoundTrip {
+class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 
 	const SPLIT_TOKEN = '## EXTENSION BUILDER DEFAULTS END TOKEN - Everything BEFORE this line is overwritten with the defaults of the extension builder';
 	const OLD_SPLIT_TOKEN = '## KICKSTARTER DEFAULTS END TOKEN - Everything BEFORE this line is overwritten with the defaults of the kickstarter';
@@ -76,7 +77,7 @@ class RoundTrip {
 	protected $classBuilder;
 
 	/**
-	 * @var \TYPO3\PackageBuilder\Configuration\ConfigurationManager
+	 * @var \TYPO3\PackageBuilder\Configuration\TYPO3\ConfigurationManager
 	 */
 	protected $configurationManager;
 
@@ -103,13 +104,7 @@ class RoundTrip {
 		$this->classBuilder = $classBuilder;
 	}
 
-	/**
-	 * @param \TYPO3\PackageBuilder\Configuration\ConfigurationManager $configurationManager
-	 * @return void
-	 */
-	public function injectConfigurationManager(\TYPO3\PackageBuilder\Configuration\ConfigurationManager $configurationManager) {
-		$this->configurationManager = $configurationManager;
-	}
+
 
 	/**
 	 * If a JSON file is found in the extensions directory the previous version
@@ -899,3 +894,4 @@ class RoundTrip {
 
 }
 
+?>

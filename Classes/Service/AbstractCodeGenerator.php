@@ -50,29 +50,6 @@ abstract class AbstractCodeGenerator {
 	protected $editModeEnabled = FALSE;
 
 	/**
-	 * @param array $settings
-	 */
-	public function injectSettings(array $settings) {
-		$this->settings = $settings;
-		if(!isset($this->settings['codeGeneration']['codeTemplateRootPath'])) {
-			return;
-		}
-		try {
-			$this->codeTemplateRootPath = $this->settings['codeGeneration']['codeTemplateRootPath'];
-			if ($this->settings['packageConfiguration']['enableRoundtrip'] == 1) {
-				$this->editModeEnabled = TRUE;
-			}
-		} catch(Exception $e) {
-			throw new \TYPO3\PackageBuilder\Exception\ConfigurationError($e->getMessage());
-		}
-	}
-
-	/**
-	 * @var \TYPO3\FLOW3\Log\Logger
-	 */
-	protected $logger;
-
-	/**
 	 * @var \TYPO3\FLOW3\Configuration\ConfigurationManager
 	 * @FLOW3\Inject
 	 */
@@ -105,6 +82,11 @@ abstract class AbstractCodeGenerator {
 	 */
 	protected $printer;
 
+	/**
+	 * @var \TYPO3\PackageBuilder\Log\FileLogger
+	 */
+	protected $logger;
+
 
 	/**
 	 * @var \TYPO3\PackageBuilder\Domain\Model\AbstractPackage
@@ -131,8 +113,31 @@ abstract class AbstractCodeGenerator {
 		'txt' // Typoscript/**
 	);
 
-	public function initializeObject() {
-		$this->logger =  \TYPO3\FLOW3\Log\LoggerFactory::create('PackageBuilderLogger','\\TYPO3\\PackageBuilder\\Log\\FileLogger','\\TYPO3\\FLOW3\\Log\\Backend\\FileBackend', $this->settings['log']['backendOptions']);
+	//abstract public function initialize();
+
+	/**
+	 * @param array $settings
+	 */
+	public function injectSettings(array $settings) {
+		$this->settings = $settings;
+		if(!isset($this->settings['codeGeneration']['codeTemplateRootPath'])) {
+			return;
+		}
+		try {
+			$this->codeTemplateRootPath = $this->settings['codeGeneration']['codeTemplateRootPath'];
+			if ($this->settings['packageConfiguration']['enableRoundtrip'] == 1) {
+				$this->editModeEnabled = TRUE;
+			}
+		} catch(Exception $e) {
+			throw new \TYPO3\PackageBuilder\Exception\ConfigurationError($e->getMessage());
+		}
+	}
+
+	/**
+	 * @param \TYPO3\FLOW3\Log\Logger $logger
+	 */
+	public function injectLogger(\TYPO3\FLOW3\Log\Logger $logger) {
+		$this->logger = $logger;
 	}
 
 	/**
@@ -173,7 +178,7 @@ abstract class AbstractCodeGenerator {
 	 */
 	protected function writeFile($targetFile, $fileContents) {
 		if ($this->editModeEnabled) {
-			$overWriteMode = Tx_ExtensionBuilder_Service_RoundTrip::getOverWriteSettingForPath($targetFile, $this->extension);
+			$overWriteMode = \TYPO3\PackageBuilder\Service\AbstractRoundTrip::getOverWriteSettingForPath($targetFile, $this->extension);
 			if ($overWriteMode == -1) {
 				return; // skip file creation
 			}
@@ -216,10 +221,10 @@ abstract class AbstractCodeGenerator {
 
 			// merge the files means append everything behind the split token
 			$existingFileContent = file_get_contents($targetFile);
-			if (strpos($existingFileContent, \TYPO3\PackageBuilder\Service\RoundTrip::OLD_SPLIT_TOKEN)) {
-				$existingFileContent = str_replace(\TYPO3\PackageBuilder\Service\RoundTrip::OLD_SPLIT_TOKEN, \TYPO3\PackageBuilder\Service\RoundTrip::SPLIT_TOKEN, $existingFileContent);
+			if (strpos($existingFileContent, \TYPO3\PackageBuilder\Service\AbstractRoundTrip::OLD_SPLIT_TOKEN)) {
+				$existingFileContent = str_replace(\TYPO3\PackageBuilder\Service\AbstractRoundTrip::OLD_SPLIT_TOKEN, \TYPO3\PackageBuilder\Service\AbstractRoundTrip::SPLIT_TOKEN, $existingFileContent);
 			}
-			$fileParts = explode(\TYPO3\PackageBuilder\Service\RoundTrip::SPLIT_TOKEN, $existingFileContent);
+			$fileParts = explode(\TYPO3\PackageBuilder\Service\AbstractRoundTrip::SPLIT_TOKEN, $existingFileContent);
 			if (count($fileParts) == 2) {
 				$customFileContent = str_replace('?>', '', $fileParts[1]);
 			}
@@ -229,13 +234,13 @@ abstract class AbstractCodeGenerator {
 
 		if ($fileExtension == 'php') {
 			$fileContents = str_replace('?>', '', $fileContents);
-			$fileContents .= \TYPO3\PackageBuilder\Service\RoundTrip::SPLIT_TOKEN;
+			$fileContents .= \TYPO3\PackageBuilder\Service\AbstractRoundTrip::SPLIT_TOKEN;
 		}
 		else if ($fileExtension == $this->locallangFileFormat) {
 			//$fileContents = Tx_ExtensionBuilder_Utility_Tools::mergeLocallangXml($targetFile, $fileContents, $this->locallangFileFormat);
 		}
 		else {
-			$fileContents .= "\n" . \TYPO3\PackageBuilder\Service\RoundTrip::SPLIT_TOKEN;
+			$fileContents .= "\n" . \TYPO3\PackageBuilder\Service\AbstractRoundTrip::SPLIT_TOKEN;
 		}
 
 		$fileContents .= rtrim($customFileContent);
@@ -254,7 +259,7 @@ abstract class AbstractCodeGenerator {
 	 * @param string $fileContents
 	 */
 	protected function uploadCopyMove($sourceFile, $targetFile) {
-		$overWriteMode = \TYPO3\PackageBuilder\Service\RoundTrip::getOverWriteSettingForPath($targetFile, $this->package);
+		$overWriteMode = \TYPO3\PackageBuilder\Service\AbstractRoundTrip::getOverWriteSettingForPath($targetFile, $this->package);
 		if ($overWriteMode === -1) {
 			// skip creation
 			return;
@@ -287,7 +292,7 @@ abstract class AbstractCodeGenerator {
 		$subDirectories = explode('/',$directory);
 		$tmpBasePath = $this->getPackageDirectory();
 		foreach($subDirectories as $subDirectory) {
-			$overWriteMode = \TYPO3\PackageBuilder\Service\RoundTrip::getOverWriteSettingForPath($tmpBasePath . $subDirectory, $this->package);
+			$overWriteMode = \TYPO3\PackageBuilder\Service\AbstractRoundTrip::getOverWriteSettingForPath($tmpBasePath . $subDirectory, $this->package);
 			//throw new Exception($directory . $subDirectory . '/' . $overWriteMode);
 			if ($overWriteMode === -1) {
 				// skip creation
@@ -323,3 +328,5 @@ abstract class AbstractCodeGenerator {
 	}
 
 }
+
+?>
