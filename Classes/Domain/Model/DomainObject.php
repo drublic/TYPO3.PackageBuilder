@@ -136,11 +136,11 @@ class DomainObject {
 	}
 
 	public function getClassName() {
-		return $this->package->getNameSpace() . '\\Domain\\Model\\' . $this->getName();
+		return $this->getName();
 	}
 
 	public function getControllerName() {
-		return $this->package->getNameSpace() . '\\Controller\\'. $this->getName() . 'Controller';
+		return $this->getName() . 'Controller';
 	}
 
 	public function getDatabaseTableName() {
@@ -350,19 +350,6 @@ class DomainObject {
 	}
 
 	/**
-	 * Get the base class for this Domain Object (different if it is entity or value object)
-	 *
-	 * @return string name of the base class
-	 */
-	public function getBaseClass() {
-		if ($this->entity) {
-			return '\\TYPO3\\CMS\\Extbase\\DomainObject\\AbstractEntity';
-		} else {
-			return '\\TYPO3\\CMS\\Extbase\\DomainObject\\AbstractValueObject';
-		}
-	}
-
-	/**
 	 * returns the name of the domain repository class name, if it is an aggregateroot.
 	 *
 	 * @return string
@@ -371,7 +358,7 @@ class DomainObject {
 		if (!$this->aggregateRoot) {
 			return '';
 		}
-		return $this->getPackage()->getNameSpace() . '\\Domain\\Repository\\' . $this->getName() . 'Repository';
+		return $this->getName() . 'Repository';
 	}
 
 	/**

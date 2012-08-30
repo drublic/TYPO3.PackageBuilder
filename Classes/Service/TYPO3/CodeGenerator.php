@@ -96,7 +96,7 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 		$extensionFiles = array('ext_emconf.php', 'ext_tables.php', 'ext_tables.sql');
 		foreach ($extensionFiles as $extensionFile) {
 			try {
-				$fileContents = $this->renderFluidTemplate(\TYPO3\PackageBuilder\Utility\Tools::underscoredToLowerCamelCase($extensionFile) . 't', array('extension' => $this->extension, 'locallangFileFormat' => $this->locallangFileFormat));
+				$fileContents = $this->renderFluidTemplate(\TYPO3\PackageBuilder\Utility\Tools::underscoredToLowerCamelCase($extensionFile) . '.tmpl', array('extension' => $this->extension, 'locallangFileFormat' => $this->locallangFileFormat));
 				$this->writeFile($this->extensionDirectory . $extensionFile, $fileContents);
 				$this->logger->log('Generated ' . $extensionFile);
 			} catch (\Exception $e) {
@@ -109,7 +109,7 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 	protected function generatePluginFiles() {
 		if ($this->extension->getPlugins()) {
 			try {
-				$fileContents = $this->renderFluidTemplate(\TYPO3\PackageBuilder\Utility\Tools::underscoredToLowerCamelCase('ext_localconf.phpt'), array('extension' => $this->extension));
+				$fileContents = $this->renderFluidTemplate(\TYPO3\PackageBuilder\Utility\Tools::underscoredToLowerCamelCase('ext_localconf.php.tmpl'), array('extension' => $this->extension));
 				$this->writeFile($this->extensionDirectory . 'ext_localconf.php', $fileContents);
 				$this->logger->log('Generated ext_localconf.php');
 			} catch (\Exception $e) {
@@ -274,8 +274,7 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 
 		if (count($this->extension->getDomainObjects()) > 0) {
 			$this->classBuilder->initialize($this->extension, $this->editModeEnabled);
-			return;
-			// Generate Domain Model
+				// Generate Domain Model
 			try {
 
 				$domainModelDirectory = 'Classes/Domain/Model/';
@@ -299,9 +298,8 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 					}
 					$fileContents = $this->generateDomainObjectCode($domainObject, $mergeWithExistingClass);
 					$this->writeFile($this->extensionDirectory . $destinationFile, $fileContents);
-					$this->logger->log('Generated ' . $domainObject->getName() . '.php', 'extension_builder', 0);
+					$this->logger->log('Generated ' . $domainObject->getName() . '.php');
 					$this->extension->setMD5Hash($this->extensionDirectory . $destinationFile);
-
 					if ($domainObject->isAggregateRoot()) {
 						$iconFileName = 'aggregate_root.gif';
 					} elseif ($domainObject->isEntity()) {
@@ -309,8 +307,8 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 					} else {
 						$iconFileName = 'value_object.gif';
 					}
-					$this->copy($this->codeTemplateRootPath . 'Resources/Private/Icons/' . $iconFileName, $this->iconsDirectory . $domainObject->getDatabaseTableName() . '.gif');
 
+					$this->copy($this->codeTemplateRootPath . 'Resources/Private/Icons/' . $iconFileName, $this->iconsDirectory . $domainObject->getDatabaseTableName() . '.gif');
 					if ($domainObject->isAggregateRoot()) {
 						$destinationFile = $domainRepositoryDirectory . $domainObject->getName() . 'Repository.php';
 						if ($this->editModeEnabled && RoundTrip::getOverWriteSettingForPath($destinationFile, $this->extension) > 0) {
@@ -332,7 +330,7 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 				throw new \TYPO3\PackageBuilder\Exception('Could not generate domain model, error: ' . $e->getMessage());
 			}
 
-			// Generate Action Controller
+				// Generate Action Controller
 			try {
 				$this->createDirectoryRecursively($this->extensionDirectory . 'Classes/Controller');
 				$controllerDirectory = 'Classes/Controller/';
@@ -376,7 +374,6 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 			} catch (\Exception $e) {
 				throw new \TYPO3\PackageBuilder\Exception('Could not generate ext_autoload.php, error: ' . $e->getMessage());
 			}
-
 
 		} else {
 			$this->logger->log('No domainObjects in this extension');
@@ -465,7 +462,7 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 			$classDocComment = $this->renderDocComment($controllerClassObject, $domainObject);
 			$controllerClassObject->setDocComment($classDocComment);
 
-			return $this->renderFluidTemplate('Classes/class.phpt', array('domainObject' => $domainObject, 'extension' => $this->extension, 'classObject' => $controllerClassObject));
+			return $this->renderFluidTemplate('Classes/class.php.tmpl', array('domainObject' => $domainObject, 'extension' => $this->extension, 'classObject' => $controllerClassObject));
 		} else {
 			throw new \TYPO3\PackageBuilder\Exception('Class file for controller could not be generated');
 		}
@@ -483,7 +480,7 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 		if ($modelClassObject) {
 			$classDocComment = $this->renderDocComment($modelClassObject, $domainObject);
 			$modelClassObject->setDocComment($classDocComment);
-			return $this->renderFluidTemplate('Classes/class.phpt', array('domainObject' => $domainObject, 'extension' => $this->extension, 'classObject' => $modelClassObject));
+			return $this->renderFluidTemplate('Classes/class.php.tmpl', array('domainObject' => $domainObject, 'package' => $this->package, 'classObject' => $modelClassObject));
 		} else {
 			throw new \TYPO3\PackageBuilder\Exception('Class file for domain object could not be generated');
 		}
@@ -503,7 +500,7 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 			$classDocComment = $this->renderDocComment($repositoryClassObject, $domainObject);
 			$repositoryClassObject->setDocComment($classDocComment);
 
-			return $this->renderFluidTemplate('Classes/class.phpt', array('domainObject' => $domainObject, 'classObject' => $repositoryClassObject));
+			return $this->renderFluidTemplate('Classes/class.php.tmpl', array('domainObject' => $domainObject, 'classObject' => $repositoryClassObject));
 		} else {
 			throw new \TYPO3\PackageBuilder\Exception('Class file for repository could not be generated');
 		}
@@ -517,7 +514,7 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 	 * @return string
 	 */
 	public function generateDomainModelTests(Model\DomainObject $domainObject) {
-		return $this->renderFluidTemplate('Tests/DomainModelTest.phpt', array('extension' => $this->extension, 'domainObject' => $domainObject));
+		return $this->renderFluidTemplate('Tests/DomainModelTest.php.tmpl', array('extension' => $this->extension, 'domainObject' => $domainObject));
 	}
 
 	/**
@@ -530,17 +527,17 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 	 * @return string
 	 */
 	public function generateControllerTests($controllerName, Model\DomainObject $domainObject) {
-		return $this->renderFluidTemplate('Tests/ControllerTest.phpt', array('extension' => $this->extension, 'controllerName' => $controllerName, 'domainObject' => $domainObject));
+		return $this->renderFluidTemplate('Tests/ControllerTest.php.tmpl', array('extension' => $this->extension, 'controllerName' => $controllerName, 'domainObject' => $domainObject));
 	}
 
 	/**
-	 * generate a docComment for class files. Add a license haeder if none found
+	 * generate a docComment for class files. Add a license header if none found
 	 * @param unknown_type $classObject
 	 * @param unknown_type $domainObject
 	 */
 	protected function renderDocComment($classObject, $domainObject) {
 		if (!$classObject->hasDocComment()) {
-			$docComment = $this->renderFluidTemplate('Partials/Classes/classDocComment.phpt', array('domainObject' => $domainObject, 'extension' => $this->extension, 'classObject' => $classObject));
+			$docComment = $this->renderFluidTemplate('Partials/Classes/classDocComment.php.tmpl', array('domainObject' => $domainObject, 'extension' => $this->extension, 'classObject' => $classObject));
 		} else {
 			$docComment = $classObject->getDocComment();
 		}
@@ -548,7 +545,7 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 
 		if (empty($precedingBlock) || strpos($precedingBlock, 'GNU General Public License') < 1) {
 
-			$licenseHeader = $this->renderFluidTemplate('Partials/Classes/licenseHeader.phpt', array('persons' => $this->extension->getPersons()));
+			$licenseHeader = $this->renderFluidTemplate('Partials/Classes/licenseHeader.php.tmpl', array('persons' => $this->extension->getPersons()));
 			$docComment = "\n" . $licenseHeader . "\n\n\n" . $docComment;
 		} else {
 			$docComment = $precedingBlock . "\n" . $docComment;
@@ -632,7 +629,7 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 	}
 
 	public function generateTCA( Model\DomainObject $domainObject) {
-		return $this->renderFluidTemplate('Configuration/TCA/domainObject.phpt', array('extension' => $this->extension, 'domainObject' => $domainObject, 'locallangFileFormat' => $this->locallangFileFormat));
+		return $this->renderFluidTemplate('Configuration/TCA/domainObject.php.tmpl', array('extension' => $this->extension, 'domainObject' => $domainObject, 'locallangFileFormat' => $this->locallangFileFormat));
 	}
 
 	public function generateYamlSettings() {
@@ -678,7 +675,7 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 			'settings' => $this->settings
 		);
 
-		$methodBody = $this->renderFluidTemplate('Partials/Classes/' . $classType . '/Methods/' . $methodName . 'MethodBody.phpt', $variables);
+		$methodBody = $this->renderFluidTemplate('Partials/Classes/' . $classType . '/Methods/' . $methodName . 'MethodBody.php.tmpl', $variables);
 		return $methodBody;
 	}
 

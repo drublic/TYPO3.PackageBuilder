@@ -100,7 +100,7 @@ $TCA['{domainObject.databaseTableName}'] = array(
 			'exclude' => <f:if condition="{property.excludeField}"><f:then>1</f:then><f:else>0</f:else></f:if>,
 			'label' => 'LLL:EXT:{extension.extensionKey}/Resources/Private/Language/locallang_db.{locallangFileFormat}:{property.labelNamespace}',
 			'config' => array(
-				<pb:format.indent indentation="4"><pb:render partial="{property.dataType}.phpt" arguments="{property: property,extension:extension,settings:settings,locallangFileFormat:locallangFileFormat}" /></pb:format.indent>
+				<pb:format.indent indentation="4"><pb:render partial="TCA/{property.dataType}.php.tmpl" arguments="{property: property,extension:extension,settings:settings,locallangFileFormat:locallangFileFormat}" /></pb:format.indent>
 			),<f:if condition="{property.useRTE}">
 			'defaultExtras' => 'richtext[]',</f:if>
 		),</f:for><f:for each="{pb:typo3.listForeignKeyRelations(extension: extension, domainObject: domainObject)}" as="relation">
@@ -113,7 +113,7 @@ $TCA['{domainObject.databaseTableName}'] = array(
 );
 
 <f:if condition="{domainObject.childObjects}">
-<pb:render partial="TypeField.phpt" arguments="{domainObject:domainObject, settings:settings}" />
+<pb:render partial="TypeField.php.tmpl" arguments="{domainObject:domainObject, settings:settings}" />
 </f:if>
 
 </f:else></f:if>

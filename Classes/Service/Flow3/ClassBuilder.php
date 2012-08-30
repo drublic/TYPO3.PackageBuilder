@@ -101,10 +101,10 @@ class ClassBuilder {
 			if ($domainObject->isEntity()) {
 				$parentClass = $domainObject->getParentClass();
 				if(empty($parentClass)) {
-					$parentClass = $this->configurationManager->getParentClassForEntityObject($this->extension->getExtensionKey());
+					$parentClass = $this->packageConfigurationManager->getParentClassForEntityObject($this->extension->getExtensionKey());
 				}
 			} else {
-				$parentClass = $this->configurationManager->getParentClassForValueObject($this->extension->getExtensionKey());
+				$parentClass = $this->packageConfigurationManager->getParentClassForValueObject($this->extension->getExtensionKey());
 			}
 			$this->classObject->setParentClass($parentClass);
 		}

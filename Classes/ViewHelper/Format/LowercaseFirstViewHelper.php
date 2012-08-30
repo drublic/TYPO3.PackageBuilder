@@ -47,7 +47,7 @@ class LowercaseFirstViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractView
 	 */
 	public function render() {
 		$content = $this->renderChildren();
-		return t3lib_div::lcfirst($content);
+		return \TYPO3\PackageBuilder\Utility\Tools::lcfirst($content);
 	}
 }
 

@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\PackageBuilder\ViewHelper;
+namespace TYPO3\PackageBuilder\ViewHelper\Format;
 
 /*                                                                        *
  * This script belongs to the TYPO3 package "Extension Builder".                  *
@@ -28,7 +28,7 @@ namespace TYPO3\PackageBuilder\ViewHelper;
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License, version 3 or later
  * @scope prototype
  */
-class Format_RemoveMultipleNewlinesViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractViewHelper {
+class RemoveMultipleNewlinesViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Uppercase first character

@@ -289,7 +289,8 @@ abstract class AbstractClassObject {
 		$modifierNames = array();
 		if (is_array($modifiers)) {
 			foreach ($modifiers as $modifier) {
-				$modifierNames[] = array_shift(\Reflection::getModifierNames($modifier));
+				$allModifierNames = \Reflection::getModifierNames($modifier);
+				$modifierNames[] = array_shift($allModifierNames);
 			}
 		} else {
 			$modifierNames = \Reflection::getModifierNames($modifiers);

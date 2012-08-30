@@ -25,14 +25,11 @@ class ClassBuilder extends \TYPO3\PackageBuilder\Service\AbstractClassBuilder {
 
 	/**
 	 * @var \TYPO3\PackageBuilder\Configuration\TYPO3\ConfigurationManager
+	 * @FLOW3\Inject
+	 *
 	 */
 	protected $packageConfigurationManager;
 
-	/**
-	 * This line is added to the constructor if there are storage objects to initialize
-	 * @var string
-	 */
-	protected $initStorageObjectCall = "//Do not remove the next line: It would break the functionality\n\$this->initStorageObjects();";
 
 	/**
 	 *
@@ -91,12 +88,13 @@ class ClassBuilder extends \TYPO3\PackageBuilder\Service\AbstractClassBuilder {
 			if ($domainObject->isEntity()) {
 				$parentClass = $domainObject->getParentClass();
 				if (empty($parentClass)) {
-					$parentClass = $this->configurationManager->getParentClassForEntityObject($this->package->getKey());
+					$parentClass = $this->packageConfigurationManager->getParentClassForEntityObject($this->package->getKey());
 				}
 			} else {
-				$parentClass = $this->configurationManager->getParentClassForValueObject($this->package->getKey());
+				$parentClass = $this->packageConfigurationManager->getParentClassForValueObject($this->package->getKey());
 			}
 			$this->classObject->setParentClass($parentClass);
+			$this->classObject->setNameSpace($this->package->getNameSpace() . '\\Domain\\Model');
 		}
 
 		if (!$this->classObject->hasDescription()) {
@@ -113,12 +111,12 @@ class ClassBuilder extends \TYPO3\PackageBuilder\Service\AbstractClassBuilder {
 			if ($this->classObject->propertyExists($propertyName)) {
 				$classProperty = $this->classObject->getProperty($propertyName);
 					// $classPropertyTags = $classProperty->getTags();
-					// t3lib_div::devLog('Property found: ' . $propertyName . ':' . $domainProperty->getTypeForComment(), 'extension_builder', 1, (array)$classProperty);
+					// $this->logger->log('Property found: ' . $propertyName . ':' . $domainProperty->getTypeForComment(), 'extension_builder', 1, (array)$classProperty);
 			} else {
 				$classProperty = new Model\ClassObject\Property($propertyName);
 				$classProperty->setTag('var', $domainProperty->getTypeForComment());
 				$classProperty->addModifier('protected');
-					// t3lib_div::devLog('New property: ' . $propertyName . ':' . $domainProperty->getTypeForComment(), 'extension_builder', 1);
+					// $this->logger->log('New property: ' . $propertyName . ':' . $domainProperty->getTypeForComment(), 'extension_builder', 1);
 			}
 
 			$classProperty->setAssociatedDomainObjectProperty($domainProperty);
@@ -177,7 +175,7 @@ class ClassBuilder extends \TYPO3\PackageBuilder\Service\AbstractClassBuilder {
 			}
 				// initStorageObjects
 			$initStorageObjectsMethod = new Model\ClassObject\Method('initStorageObjects');
-			$initStorageObjectsMethod->setDescription('Initializes all Tx_Extbase_Persistence_ObjectStorage properties.');
+			$initStorageObjectsMethod->setDescription('Initializes all ObjectStorage properties.');
 			$methodBody = "/**\n* Do not modify this method!\n* It will be rewritten on each save in the extension builder\n* You may modify the constructor of this class instead\n*/\n";
 			foreach ($anyToManyRelationProperties as $relationProperty) {
 				$methodBody .= '\$this->' . $relationProperty->getName() . ' = new Tx_Extbase_Persistence_ObjectStorage();' . PHP_EOL;
@@ -411,7 +409,7 @@ class ClassBuilder extends \TYPO3\PackageBuilder\Service\AbstractClassBuilder {
 			if (in_array($actionName, array('create', 'new'))) {
 				$parameterName = 'new' . $domainObject->getName();
 			} else {
-				$parameterName = t3lib_div::lcfirst($domainObject->getName());
+				$parameterName = \TYPO3\PackageBuilder\Utility\Tools::lcfirst($domainObject->getName());
 			}
 			$parameter = new Model\ClassObject\MethodParameter($parameterName);
 			$parameter->setTypeHint($domainObject->getClassName());
@@ -516,7 +514,7 @@ class ClassBuilder extends \TYPO3\PackageBuilder\Service\AbstractClassBuilder {
 			try {
 				$this->classObject = $this->roundTripService->getControllerClass($domainObject);
 			} catch (Exception $e) {
-				t3lib_div::devLog('Class ' . $className . ' could not be imported: ' . $e->getMessage(), 'extension_builder');
+				$this->logger->log('Class ' . $className . ' could not be imported: ' . $e->getMessage());
 			}
 		}
 
@@ -531,7 +529,7 @@ class ClassBuilder extends \TYPO3\PackageBuilder\Service\AbstractClassBuilder {
 		}
 
 		if ($domainObject->isAggregateRoot()) {
-			$propertyName = t3lib_div::lcfirst($domainObject->getName()) . 'Repository';
+			$propertyName = \TYPO3\PackageBuilder\Utility\Tools::lcfirst($domainObject->getName()) . 'Repository';
 			// now add the property to class Object (or update an existing class Object property)
 			if (!$this->classObject->propertyExists($propertyName)) {
 				$classProperty = new Model\ClassObject\Property($propertyName);
@@ -542,7 +540,7 @@ class ClassBuilder extends \TYPO3\PackageBuilder\Service\AbstractClassBuilder {
 
 			$injectMethodName = 'inject' . $domainObject->getName() . 'Repository';
 			if (!$this->classObject->methodExists($injectMethodName)) {
-				$repositoryVarName = t3lib_div::lcfirst($domainObject->getName()) . 'Repository';
+				$repositoryVarName = \TYPO3\PackageBuilder\Utility\Tools::lcfirst($domainObject->getName()) . 'Repository';
 				$injectMethod = new Model\ClassObject\Method($injectMethodName);
 				$injectMethod->setBody('$this->' . $repositoryVarName . ' = $' . $repositoryVarName . ';');
 				$injectMethod->setTag('param', $domainObject->getDomainRepositoryClassName() . ' $' . $repositoryVarName);
@@ -585,18 +583,20 @@ class ClassBuilder extends \TYPO3\PackageBuilder\Service\AbstractClassBuilder {
 			try {
 				$this->classObject = $this->roundTripService->getRepositoryClass($domainObject);
 			} catch (Exception $e) {
-				t3lib_div::devLog('Class ' . $className . ' could not be imported: ' . $e->getMessage(), 'extension_builder');
+				$this->logger->log('Class ' . $className . ' could not be imported: ' . $e->getMessage());
 			}
 		}
 
 		if ($this->classObject == NULL) {
 			$this->classObject = new Model\ClassObject\ClassObject($className);
+
 			if (isset($this->settings['Repository']['parentClass'])) {
 				$parentClass = $this->settings['Repository']['parentClass'];
 			} else {
-				$parentClass = 'Tx_Extbase_Persistence_Repository';
+				$parentClass = '\\TYPO3\\FLOW3\\Persistence\\Repository';
 			}
 			$this->classObject->setParentClass($parentClass);
+			$this->classObject->setNameSpace($this->package->getNameSpace() . '\\Domain\\Repository');
 		}
 
 		return $this->classObject;

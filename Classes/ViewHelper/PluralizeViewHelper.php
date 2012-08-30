@@ -39,14 +39,6 @@ namespace TYPO3\PackageBuilder\ViewHelper;
  */
 class PluralizeViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractViewHelper {
 
-	/**
-	 * @var Tx_ExtensionBuilder_Utility_Inflector
-	 */
-	protected $inflector;
-
-	public function __construct() {
-		$this->inflector = t3lib_div::makeInstance('Tx_ExtensionBuilder_Utility_Inflector');
-	}
 
 	/**
 	 * Pluralize a word
@@ -56,7 +48,7 @@ class PluralizeViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractViewHelpe
 	 */
 	public function render() {
 		$content = $this->renderChildren();
-		$pluralizedContent = $this->inflector->pluralize($content);
+		$pluralizedContent = \Sho_Inflect::pluralize($content);
 		if($pluralizedContent == $content) {
 			$pluralizedContent .= 's';
 		}

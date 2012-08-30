@@ -1,4 +1,4 @@
-{namespace k=Tx_ExtensionBuilder_ViewHelpers}
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}
 <f:if condition="{domainObject.hasBooleanProperties}">if ($new{domainObject.name} == NULL) { // workaround for fluid bug ##5636
 	$new{domainObject.name} = t3lib_div::makeInstance('{domainObject.className}');
 }</f:if>

@@ -39,14 +39,7 @@ namespace TYPO3\PackageBuilder\ViewHelper;
  */
 class SingularizeViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractViewHelper {
 
-	/**
-	 * @var Tx_ExtensionBuilder_Utility_Inflector
-	 */
-	protected $inflector;
 
-	public function __construct() {
-		$this->inflector = t3lib_div::makeInstance('Tx_ExtensionBuilder_Utility_Inflector');
-	}
 
 	/**
 	 * Singularize a word
@@ -56,7 +49,7 @@ class SingularizeViewHelper extends \TYPO3\Fluid\Core\ViewHelper\AbstractViewHel
 	 */
 	public function render() {
 		$content = $this->renderChildren();
-		return $this->inflector->singularize($content);
+		return \Sho_Inflect::singularize($content);
 	}
 }
 

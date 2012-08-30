@@ -116,7 +116,7 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 */
 	public function createAction() {
 		try {
-			$settingsFile = $this->settings['codeGeneration']['packagesDir']. 'PackageBuilder.json';
+			$settingsFile = $this->settings['codeGeneration']['packagesDir']. 'test.json';
 			if(!file_exists($settingsFile)){
 				die($settingsFile);
 			}

@@ -100,6 +100,11 @@ class ClassObject extends AbstractClassObject {
 	protected $parentClass = NULL;
 
 	/**
+	 * @var string
+	 */
+	protected $nameSpace;
+
+	/**
 	 * constructor of this class
 	 *
 	 * @param string $className
@@ -547,6 +552,20 @@ class ClassObject extends AbstractClassObject {
 		$infoArray['Tags'] = $this->getTags();
 		//$infoArray['Methods'] = count($this->getMethods());
 		return $infoArray;
+	}
+
+	/**
+	 * @param string $nameSpace
+	 */
+	public function setNameSpace($nameSpace) {
+		$this->nameSpace = $nameSpace;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getNameSpace() {
+		return $this->nameSpace;
 	}
 
 }

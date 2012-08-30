@@ -1,0 +1,4 @@
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}
+$this->{domainObject.name -> pb:format.lowercaseFirst()}Repository->add($new{domainObject.name});
+$this->flashMessageContainer->add('Your new {domainObject.name} was created.');
+$this->redirect('list');

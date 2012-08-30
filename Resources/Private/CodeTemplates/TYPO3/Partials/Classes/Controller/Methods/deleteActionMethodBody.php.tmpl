@@ -1,0 +1,4 @@
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}
+$this->{domainObject.name -> pb:format.lowercaseFirst()}Repository->remove(${domainObject.name -> pb:format.lowercaseFirst()});
+$this->flashMessageContainer->add('Your {domainObject.name} was removed.');
+$this->redirect('list');

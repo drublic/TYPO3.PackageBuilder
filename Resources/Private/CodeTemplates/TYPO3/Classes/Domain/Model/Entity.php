@@ -30,4 +30,22 @@
 
 class Entity {
 
+	protected $property;
+
+	protected $relationProperty;
+
+	/**
+	 * constructor
+	 */
+	public function __construct() {
+			// Do not remove this line
+		$this->initStorageObjects();
+	}
+
+	/**
+	 *
+	 */
+	public function initStorageObjects() {
+		$this->relationProperty = new TYPO3\CMS\Extbase\Persistence\Generic\ObjectStorage;
+	}
 }

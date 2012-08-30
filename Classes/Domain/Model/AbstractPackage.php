@@ -305,7 +305,7 @@ class AbstractPackage extends AbstractModel{
 	 * @return string
 	 */
 	public function getNameSpace() {
-		if(empty($this->nameSpace) && !empty($this->key)) {
+		if(!empty($this->key) && (empty($this->nameSpace) || strpos($this->nameSpace,$this->key) < 0)) {
 			$this->nameSpace = str_replace('.', '\\', $this->key);
 		}
 		return $this->nameSpace;

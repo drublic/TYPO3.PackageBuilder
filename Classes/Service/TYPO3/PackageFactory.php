@@ -157,7 +157,7 @@ class PackageFactory extends \TYPO3\PackageBuilder\Service\AbstractPackageFactor
 				//\t3lib_div::devlog((('Relation not found: ' . $localModelName) . '->') . $relationJsonConfiguration['relationName'], 'extension_builder', 2, $relationJsonConfiguration);
 				throw new \TYPO3\PackageBuilder\Exception((('Relation not found: ' . $localModelName) . '->') . $relationJsonConfiguration['relationName']);
 			}
-			// get unique foreign key names for multiple relations to the same foreign class
+				// get unique foreign key names for multiple relations to the same foreign class
 			if (in_array($foreignModelName, $existingRelations[$localModelName])) {
 				if (is_a($relation, '\\TYPO3\\PackageBuilder\\Domain\\Model\\DomainObject\\Relation\\ZeroToManyRelation')) {
 					$relation->setForeignKeyName(strtolower($localModelName) . count($existingRelations[$localModelName]));
@@ -177,16 +177,18 @@ class PackageFactory extends \TYPO3\PackageBuilder\Service\AbstractPackageFactor
 	 * @return void
 	 */
 	protected function setExtensionProperties(&$extension, $propertyConfiguration) {
-		// name
+			// name
 		$extension->setName(trim($propertyConfiguration['name']));
-		// description
+			// namespace
+		$extension->setNameSpace(trim($propertyConfiguration['nameSpace']));
+			// description
 		$extension->setDescription($propertyConfiguration['description']);
-		// extensionKey
+			// extensionKey
 		$extension->setKey(trim($propertyConfiguration['extensionKey']));
 		if ( isset($propertyConfiguration['emConf']['disableVersioning']) && $propertyConfiguration['emConf']['disableVersioning']) {
 			$extension->setSupportVersioning(FALSE);
 		}
-		// various extension properties
+			// various extension properties
 		$extension->setVersion($propertyConfiguration['emConf']['version']);
 		if (!empty($propertyConfiguration['emConf']['dependsOn'])) {
 			$dependencies = array();
