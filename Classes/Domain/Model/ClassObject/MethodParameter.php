@@ -69,30 +69,10 @@ class MethodParameter {
 	/**
 	 * @param $propertyName
 	 * @param $propertyReflection (optional)
-	 * @return unknown_type
+	 * @return void
 	 */
-	public function __construct($parameterName, $parameterReflection = NULL) {
+	public function __construct($parameterName) {
 		$this->name = $parameterName;
-		//TODO the parameter hints (or casts?) are not yet evaluated since the reflection does not recognize the
-		// maybe we can get them by a reg expression from the import tool?
-		if ($parameterReflection && $parameterReflection instanceof \Tx_Extbase_Reflection_ParameterReflection) {
-			foreach ($this as $key => $value) {
-				$setterMethodName = 'set' . ucfirst($key);
-				$getterMethodName = 'get' . ucfirst($key);
-				$getBooleanMethodName = 'is' . ucfirst($key);
-				// map properties of reflection parmeter to this parameter
-				try {
-					if (method_exists($parameterReflection, $getterMethodName) && method_exists($this, $setterMethodName)) {
-						$this->{$setterMethodName}($parameterReflection->{$getterMethodName}());
-					}
-				} catch (ReflectionException $e) {
-
-				}
-				if (method_exists($parameterReflection, $getBooleanMethodName)) {
-					$this->{$key} = $parameterReflection->{$getBooleanMethodName}();
-				}
-			}
-		}
 	}
 
 	/**

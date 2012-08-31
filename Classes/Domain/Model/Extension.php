@@ -19,7 +19,7 @@ use TYPO3\PackageBuilder\Annotations as PackageBuilder;
  *
  * @PackageBuilder\Model
  */
-class Extension extends AbstractPackage  implements PackageInterface{
+class Extension extends AbstractPackage implements PackageInterface{
 
 
 	/**

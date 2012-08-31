@@ -26,6 +26,7 @@ namespace TYPO3\PackageBuilder\Domain\Model\DomainObject;
 /**
  * property representing a "property" in the context of software development
  *
+ * @property bool excludeField
  * @package PackageBuilder
  * @version $ID:$
  */
@@ -72,13 +73,6 @@ abstract class AbstractProperty {
 	protected $needsUploadFolder = FALSE;
 
 	/**
-	 * The domain object this property belongs to.
-	 *
-	 * @var
-	 */
-	protected $class;
-
-	/**
 	 * is set to TRUE, if this property was new added
 	 *
 	 * @var boolean
@@ -93,6 +87,11 @@ abstract class AbstractProperty {
 	protected $useRTE = FALSE;
 
 	/**
+	 * @var \TYPO3\PackageBuilder\Domain\Model\DomainObject
+	 */
+	protected $domnainObject;
+
+	/**
 	 * @param string $propertyName
 	 * @return void
 	 */
@@ -100,24 +99,6 @@ abstract class AbstractProperty {
 		if (!empty($propertyName)) {
 			$this->name = $propertyName;
 		}
-	}
-
-	/**
-	 * DO NOT CALL DIRECTLY! This is being called by addProperty() automatically.
-	 *
-	 * @param Tx_ExtensionBuilder_Domain_Model_Class_Schema $class the class this property belongs to
-	 */
-	public function setClass(\Tx_ExtensionBuilder_Domain_Model_Class_Schema $class) {
-		$this->class = $class;
-	}
-
-	/**
-	 * Get the domain object this property belongs to.
-	 *
-	 * @return Tx_ExtensionBuilder_Domain_Model_Class_Schema
-	 */
-	public function getClass() {
-		return $this->class;
 	}
 
 	/**
@@ -175,7 +156,7 @@ abstract class AbstractProperty {
 	/**
 	 * Set property uniqueIdentifier
 	 *
-	 * @param string Property uniqueIdentifier
+	 * @param string $uniqueIdentifier
 	 */
 	public function setUniqueIdentifier($uniqueIdentifier) {
 		$this->uniqueIdentifier = $uniqueIdentifier;
@@ -233,7 +214,7 @@ abstract class AbstractProperty {
 	public function getFieldName() {
 		$fieldName = \TYPO3\PackageBuilder\Utility\Tools::camelCaseToLowerCaseUnderscored($this->name);
 		if (\TYPO3\PackageBuilder\Domain\Validator\ExtensionValidator::isReservedMYSQLWord($fieldName)) {
-			$fieldName = ($this->domainObject->getExtension()->getShortExtensionKey() . '_') . $fieldName;
+			$fieldName = ($this->domainObject->getPackage()->getShortExtensionKey() . '_') . $fieldName;
 		}
 		return $fieldName;
 	}
@@ -248,7 +229,7 @@ abstract class AbstractProperty {
 	/**
 	 * Template Method which should return the type hinting information
 	being used in PHPDoc Comments.
-	Examples: integer, string, Tx_FooBar_Something, Tx_Extbase_Persistence_ObjectStorage<Tx_FooBar_Something>
+	Examples: integer, string, Tx_FooBar_Something, \TYPO3\CMS\Extbase\Persistence\ObjectStorage<Tx_FooBar_Something>
 	 *
 	 * @return string
 	 */
@@ -256,7 +237,7 @@ abstract class AbstractProperty {
 
 	/**
 	 * Template method which should return the PHP type hint
-	Example: Tx_Extbase_Persistence_ObjectStorage, array, Tx_FooBar_Something
+	Example: \TYPO3\CMS\Extbase\Persistence\ObjectStorage, array, Tx_FooBar_Something
 	 *
 	 * @return string
 	 */
@@ -270,6 +251,8 @@ abstract class AbstractProperty {
 	public function getTypeHintWithTrailingWhiteSpace() {
 		if ($typehint = $this->getTypeHint()) {
 			return $typehint . ' ';
+		} else {
+			return '';
 		}
 	}
 
@@ -361,14 +344,14 @@ abstract class AbstractProperty {
 	/**
 	 * DO NOT CALL DIRECTLY! This is being called by addProperty() automatically.
 	 *
-	 * @param $domainObject the domain object this property belongs to
+	 * @param \TYPO3\PackageBuilder\Domain\Model\DomainObject $domainObject the domain object this property belongs to
 	 */
-	public function setDomainObject($domainObject) {
+	public function setDomainObject(\TYPO3\PackageBuilder\Domain\Model\DomainObject $domainObject) {
 		$this->domainObject = $domainObject;
 	}
 
 	/**
-	 * @return Tx_ExtensionBuilder_Domain_Model_DomainObject $domainObject
+	 * @return \TYPO3\PackageBuilder\Domain\Model\DomainObject $domainObject
 	 */
 	public function getDomainObject() {
 		return $this->domainObject;

@@ -29,7 +29,7 @@ namespace TYPO3\PackageBuilder\Domain\Model\ClassObject;
  * @package PackageBuilder
  * @version $ID:$
  */
-class ClassObject extends AbstractClassObject {
+class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject {
 
 	/**
 	 * constants

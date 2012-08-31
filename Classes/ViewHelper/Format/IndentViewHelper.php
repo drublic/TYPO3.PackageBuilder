@@ -2,7 +2,7 @@
 namespace TYPO3\PackageBuilder\ViewHelper\Format;
 
 /*                                                                        *
- * This script belongs to the TYPO3 package "Extension Builder".                  *
+ * This script belongs to the TYPO3 package "Extension Builder".          *
  *                                                                        *
  * It is free software; you can redistribute it and/or modify it under    *
  * the terms of the GNU Lesser General Public License as published by the *

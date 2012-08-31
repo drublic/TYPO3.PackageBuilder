@@ -21,7 +21,7 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-namespace TYPO3\PackageBuilder\Domain\Model\ClassObject;
+namespace TYPO3\PackageBuilder\Domain\Model;
 
 /**
  * abstract object representing a class, method or property in the context of
@@ -175,7 +175,7 @@ abstract class AbstractClassObject {
 	public function setTag($tagName, $tagValue, $override = TRUE) {
 		if (!$override && isset($this->tags[$tagName])) {
 			if (!is_array($this->tags[$tagName])) {
-				// build an array with the existing value as first element
+					// build an array with the existing value as first element
 				$this->tags[$tagName] = array($this->tags[$tagName]);
 			}
 			$this->tags[$tagName][] = $tagValue;
@@ -191,7 +191,7 @@ abstract class AbstractClassObject {
 	 * @return void
 	 */
 	public function removeTag($tagName) {
-		//TODO: multiple tags with same tagname must be possible (param etc.)
+			// TODO: multiple tags with same tagname must be possible (param etc.)
 		unset($this->tags[$tagName]);
 	}
 
@@ -278,7 +278,7 @@ abstract class AbstractClassObject {
 	/**
 	 * Getter for modifiers
 	 *
-	 * @return int modifiers
+	 * @return int[]
 	 */
 	public function getModifiers() {
 		return $this->modifiers;

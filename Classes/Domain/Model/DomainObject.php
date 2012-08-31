@@ -252,7 +252,7 @@ class DomainObject {
 	/**
 	 * Get all properties
 	 *
-	 * @return _AbstractProperty[]
+	 * @return DomainObject\AbstractProperty[]
 	 */
 	public function getProperties() {
 		return $this->properties;
@@ -261,7 +261,7 @@ class DomainObject {
 	/**
 	 * Get property
 	 *
-	 * @return AbstractProperty
+	 * @return DomainObject\AbstractProperty
 	 */
 	public function getPropertyByName($propertyName) {
 		foreach ($this->properties as $property) {
@@ -275,7 +275,7 @@ class DomainObject {
 	/**
 	 * Get all properties holding relations of type Property_Relation_ZeroToManyRelation
 	 *
-	 * @return Relation|ZeroToManyRelation[]
+	 * @return DomainObject\Relation\ZeroToManyRelation[]
 	 */
 	public function getZeroToManyRelationProperties() {
 		$relationProperties = array();
@@ -290,7 +290,7 @@ class DomainObject {
 	/**
 	 * Get all properties holding relations of type Property_Relation_AnyToManyRelation
 	 *
-	 * @return Relation|AnyToManyRelation[]
+	 * @return DomainObject\Relation\AnyToManyRelation[]
 	 */
 	public function getAnyToManyRelationProperties() {
 		$relationProperties = array();
@@ -318,7 +318,7 @@ class DomainObject {
 	/**
 	 * Get all actions
 	 *
-	 * @return Action[]
+	 * @return DomainObject\Action[]
 	 */
 	public function getActions() {
 		return $this->actions;

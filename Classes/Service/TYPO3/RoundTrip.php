@@ -52,7 +52,7 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 	 *
 	 * @var string path
 	 */
-	protected $extensionDirectory;
+	protected $packageDirectory;
 
 	/**
 	 * if an extension was renamed this property keeps the old key
@@ -114,21 +114,21 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 	 * @param \TYPO3\PackageBuilder\Domain\Model\Extension $extension
 	 */
 	public function initialize(\TYPO3\PackageBuilder\Domain\Model\Extension $extension) {
-		$this->extension = $extension;
-		$this->extensionDirectory = $this->extension->getExtensionDir();
-		$this->extClassPrefix = 'Tx_' . \t3lib_div::underscoredToUpperCamelCase($this->extension->getExtensionKey());
+		$this->package = $extension;
+		$this->packageDirectory = $this->package->getExtensionDir();
+		$this->extClassPrefix = $this->package->getExtensionKey();
 		if (!$this->classParser instanceof \TYPO3\PackageBuilder\Utility\ClassParser) {
 			$this->injectClassParser(\t3lib_div::makeInstance('TYPO3\\PackageBuilder\\Utility\\ClassParser'));
 		}
 		$this->settings = $this->configurationManager->getExtensionBuilderSettings();
 		// defaults
-		$this->previousExtensionDirectory = $this->extensionDirectory;
-		$this->previousExtensionKey = $this->extension->getExtensionKey();
+		$this->previousExtensionDirectory = $this->packageDirectory;
+		$this->previousExtensionKey = $this->package->getExtensionKey();
 		if ($extension->isRenamed()) {
 			$this->previousExtensionDirectory = $extension->getPreviousExtensionDirectory();
 			$this->previousExtensionKey = $extension->getOriginalExtensionKey();
-			$this->extensionRenamed = TRUE;
-			\t3lib_div::devlog((('Extension renamed: ' . $this->previousExtensionKey) . ' => ') . $this->extension->getExtensionKey(), 'extension_builder', 1, array('$previousExtensionDirectory ' => $this->previousExtensionDirectory));
+			$this->packageRenamed = TRUE;
+			\t3lib_div::devlog((('Extension renamed: ' . $this->previousExtensionKey) . ' => ') . $this->package->getExtensionKey(), 'extension_builder', 1, array('$previousExtensionDirectory ' => $this->previousExtensionDirectory));
 		}
 		// Rename the old kickstarter.json file to ExtensionBuilder.json
 		if (file_exists($this->previousExtensionDirectory . 'kickstarter.json')) {
@@ -148,7 +148,7 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 			// relationProperties (property->getForeignModel)
 			// we also build an array with the new unique identifiers to detect deleting of domainObjects
 			$currentDomainsObjects = array();
-			foreach ($this->extension->getDomainObjects() as $domainObject) {
+			foreach ($this->package->getDomainObjects() as $domainObject) {
 				if (isset($this->oldDomainObjects[$domainObject->getUniqueIdentifier()])) {
 					if ($this->oldDomainObjects[$domainObject->getUniqueIdentifier()]->getName() != $domainObject->getName()) {
 						$renamedDomainObjects[$domainObject->getUniqueIdentifier()] = $domainObject;
@@ -189,8 +189,8 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 				$className = $oldDomainObject->getClassName();
 				$this->classObject = $this->classParser->parse($className);
 				//t3lib_div::devlog('Model class methods','extension_builder',0,$this->classObject->getMethods());
-				if ($oldDomainObject->getName() != $currentDomainObject->getName() || $this->extensionRenamed) {
-					if (!$this->extensionRenamed) {
+				if ($oldDomainObject->getName() != $currentDomainObject->getName() || $this->packageRenamed) {
+					if (!$this->packageRenamed) {
 						\t3lib_div::devlog((('domainObject renamed. old: ' . $oldDomainObject->getName()) . ' new: ') . $currentDomainObject->getName(), 'extension_builder');
 					}
 					$newClassName = $currentDomainObject->getClassName();
@@ -221,19 +221,19 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 					if (!empty($oldParentClass)) {
 						// the old object had a parent class setting, but it's removed now
 						if ($currentDomainObject->isEntity()) {
-							$parentClass = $this->configurationManager->getParentClassForEntityObject($this->extension->getExtensionKey());
+							$parentClass = $this->configurationManager->getParentClassForEntityObject($this->package->getExtensionKey());
 						} else {
-							$parentClass = $this->configurationManager->getParentClassForValueObject($this->extension->getExtensionKey());
+							$parentClass = $this->configurationManager->getParentClassForValueObject($this->package->getExtensionKey());
 						}
 						$this->classObject->setParentClass($parentClass);
 					}
 				}
 				if ($currentDomainObject->isEntity() && !$oldDomainObject->isEntity()) {
 					// the object type was changed in the modeler
-					$this->classObject->setParentClass($this->configurationManager->getParentClassForEntityObject($this->extension->getExtensionKey()));
+					$this->classObject->setParentClass($this->configurationManager->getParentClassForEntityObject($this->package->getExtensionKey()));
 				} elseif (!$currentDomainObject->isEntity() && $oldDomainObject->isEntity()) {
 					// the object type was changed in the modeler
-					$this->classObject->setParentClass($this->configurationManager->getParentClassForValueObject($this->extension->getExtensionKey()));
+					$this->classObject->setParentClass($this->configurationManager->getParentClassForValueObject($this->package->getExtensionKey()));
 				}
 				return $this->classObject;
 			} else {
@@ -241,7 +241,7 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 			}
 		} else {
 			\t3lib_div::devlog('domainObject not identified:' . $currentDomainObject->getName(), 'extension_builder', 0, $this->oldDomainObjects);
-			$fileName = (CodeGenerator::getFolderForClassFile($this->extensionDirectory, 'Model', FALSE) . $currentDomainObject->getName()) . '.php';
+			$fileName = (CodeGenerator::getFolderForClassFile($this->packageDirectory, 'Model', FALSE) . $currentDomainObject->getName()) . '.php';
 			if (file_exists($fileName)) {
 				// import the classObject from the existing file
 				include_once $fileName;
@@ -269,7 +269,7 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 				$className = $oldDomainObject->getControllerName();
 				$this->classObject = $this->classParser->parse($className);
 				//t3lib_div::devlog('Controller class methods','extension_builder',0,$this->classObject->getMethods());
-				if ($oldDomainObject->getName() != $currentDomainObject->getName() || $this->extensionRenamed) {
+				if ($oldDomainObject->getName() != $currentDomainObject->getName() || $this->packageRenamed) {
 					$this->mapOldControllerToCurrentClassObject($oldDomainObject, $currentDomainObject);
 				} else {
 					if ($oldDomainObject->isAggregateRoot() && !$currentDomainObject->isAggregateRoot()) {
@@ -403,7 +403,7 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 				include_once $fileName;
 				$className = $oldDomainObject->getDomainRepositoryClassName();
 				$this->classObject = $this->classParser->parse($className);
-				if ($oldDomainObject->getName() != $currentDomainObject->getName() || $this->extensionRenamed) {
+				if ($oldDomainObject->getName() != $currentDomainObject->getName() || $this->packageRenamed) {
 					$newClassName = $currentDomainObject->getDomainRepositoryClassName();
 					$this->classObject->setName($newClassName);
 					$this->classObject->setFileName($currentDomainObject->getName() . '_Repository.php');
@@ -522,7 +522,7 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 	 * @return boolean
 	 */
 	protected function relatedMethodsNeedUpdate($oldProperty, $newProperty) {
-		if ($this->extensionRenamed) {
+		if ($this->packageRenamed) {
 			return TRUE;
 		}
 		if ($newProperty->getName() != $oldProperty->getName()) {
@@ -550,10 +550,10 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 	 * @return unknown_type
 	 */
 	protected function updateExtensionKey($stringToParse) {
-		if (!$this->extensionRenamed) {
+		if (!$this->packageRenamed) {
 			return $stringToParse;
 		}
-		return str_replace(('_' . ucfirst($this->previousExtensionKey)) . '_', ('_' . ucfirst($this->extension->getExtensionKey())) . '_', $stringToParse);
+		return str_replace(('_' . ucfirst($this->previousExtensionKey)) . '_', ('_' . ucfirst($this->package->getExtensionKey())) . '_', $stringToParse);
 	}
 
 	/**
@@ -699,8 +699,8 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 			$this->cleanUp(CodeGenerator::getFolderForClassFile($this->previousExtensionDirectory, 'Controller', FALSE), $domainObject->getName() . 'Controller.php');
 		}
 		// other files
-		$iconsDirectory = $this->extensionDirectory . 'Resources/Public/Icons/';
-		$languageDirectory = $this->extensionDirectory . 'Resources/Private/Language/';
+		$iconsDirectory = $this->packageDirectory . 'Resources/Public/Icons/';
+		$languageDirectory = $this->packageDirectory . 'Resources/Private/Language/';
 		$locallang_cshFile = (($languageDirectory . 'locallang_csh_') . $domainObject->getDatabaseTableName()) . '.xml';
 		$iconFile = ($iconsDirectory . $domainObject->getDatabaseTableName()) . '.gif';
 		if (file_exists($locallang_cshFile)) {
@@ -722,7 +722,7 @@ class RoundTrip extends \TYPO3\PackageBuilder\Service\AbstractRoundTrip {
 	 * @return unknown_type
 	 */
 	public function cleanUp($path, $fileName) {
-		if ($this->extensionRenamed) {
+		if ($this->packageRenamed) {
 			// wo won't delete the old extension!
 			return;
 		}

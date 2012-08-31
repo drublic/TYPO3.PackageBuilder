@@ -40,11 +40,11 @@ class ZeroToManyRelation extends AnyToManyRelation {
 	protected $foreignKeyName;
 
 	public function getTypeForComment() {
-		return ('Tx_Extbase_Persistence_ObjectStorage<' . $this->getForeignClassName()) . '>';
+		return ('\\TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<' . $this->getForeignClassName()) . '>';
 	}
 
 	public function getTypeHint() {
-		return 'Tx_Extbase_Persistence_ObjectStorage';
+		return '\\TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage';
 	}
 
 	public function getForeignKeyName() {

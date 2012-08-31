@@ -40,7 +40,7 @@ class ManyToManyRelation extends AnyToManyRelation {
 	 * @return string The type.
 	 */
 	public function getTypeForComment() {
-		return ('Tx_Extbase_Persistence_ObjectStorage<' . $this->getForeignClassName()) . '>';
+		return ('\\TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<' . $this->getForeignClassName()) . '>';
 	}
 
 	/**
@@ -49,7 +49,7 @@ class ManyToManyRelation extends AnyToManyRelation {
 	 * @return string The type hint.
 	 */
 	public function getTypeHint() {
-		return 'Tx_Extbase_Persistence_ObjectStorage';
+		return '\\TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage';
 	}
 
 	/**

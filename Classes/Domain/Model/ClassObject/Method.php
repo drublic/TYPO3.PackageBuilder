@@ -29,7 +29,7 @@ namespace TYPO3\PackageBuilder\Domain\Model\ClassObject;
  * @package PackageBuilder
  * @version $ID:$
  */
-class Method extends AbstractClassObject {
+class Method extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject {
 
 	/**
 	 * body
@@ -41,30 +41,12 @@ class Method extends AbstractClassObject {
 	public $defaultIndent = '		';
 
 	/**
-	 * @var array
+	 * @var MethodParameter[]
 	 */
 	protected $parameters;
 
-	public function __construct($methodName, $methodReflection = NULL) {
+	public function __construct($methodName) {
 		$this->setName($methodName);
-		if ($methodReflection instanceof \TYPO3\PackageBuilder\Reflection\MethodReflection) {
-			$methodReflection->getTagsValues();
-			// just to initialize the docCommentParser
-			foreach ($this as $key => $value) {
-				$setterMethodName = 'set' . \t3lib_div::underscoredToUpperCamelCase($key);
-				$getterMethodName = 'get' . \t3lib_div::underscoredToUpperCamelCase($key);
-				// map properties of reflection class to this class
-				if (method_exists($methodReflection, $getterMethodName) && method_exists($this, $setterMethodName)) {
-					$this->{$setterMethodName}($methodReflection->{$getterMethodName}());
-				}
-			}
-			if (empty($this->tags)) {
-				// strange behaviour in php ReflectionProperty->getDescription(). A backslash is added to the description
-				$this->description = str_replace('
-/', '', $this->description);
-				$this->description = trim($this->description);
-			}
-		}
 	}
 
 	/**
@@ -74,7 +56,7 @@ class Method extends AbstractClassObject {
 	 * @return void
 	 */
 	public function setBody($body) {
-		// keep or set the indent
+			// keep or set the indent
 		if (strpos($body, $this->defaultIndent) !== 0) {
 			$lines = explode('
 ', $body);
@@ -124,23 +106,22 @@ class Method extends AbstractClassObject {
 	/**
 	 * adder for parameters
 	 *
-	 * @param array $parameters of type Tx_ExtensionBuilder_Reflection_ParameterReflection
+	 * @param MethodParameter[]
 	 * @return void
 	 */
 	public function setParameters($parameters) {
 		foreach ($parameters as $parameter) {
-			$methodParameter = new MethodParameter($parameter->getName(), $parameter);
-			$this->parameters[$methodParameter->getPosition()] = $methodParameter;
+			$this->parameters[$parameter->getPosition()] = $parameter;
 		}
 	}
 
 	/**
 	 * setter for a single parameter
 	 *
-	 * @param array $parameter
+	 * @param MethodParameter
 	 * @return void
 	 */
-	public function setParameter($parameter) {
+	public function setParameter(MethodParameter $parameter) {
 		if (!in_array($parameter->getName(), $this->getParameterNames())) {
 			$this->parameters[$parameter->getPosition()] = $parameter;
 		}
@@ -149,24 +130,24 @@ class Method extends AbstractClassObject {
 	/**
 	 * replace a single parameter, depending on position
 	 *
-	 * @param array $parameter
+	 * @param MethodParameter $parameter
 	 * @return void
 	 */
-	public function replaceParameter($parameter) {
+	public function replaceParameter(MethodParameter $parameter) {
 		$this->parameters[$parameter->getPosition()] = $parameter;
 	}
 
 	/**
 	 * removes a parameter
 	 *
-	 * @param $parameterName
-	 * @param $parameterSortingIndex
+	 * @param string $parameterName
+	 * @param int $parameterSortingIndex
 	 * @return boolean TRUE (if successfull removed)
 	 */
 	public function removeParameter($parameterName, $parameterPosition) {
-		//TODO: Not yet tested
-		if (isset($this->parameter[$parameterPosition]) && $this->parameter[$parameterPosition]->getName() == $parameterName) {
-			unset($this->parameter[$parameterPosition]);
+			// TODO: Not yet tested
+		if (isset($this->parameters[$parameterPosition]) && $this->parameters[$parameterPosition]->getName() == $parameterName) {
+			unset($this->parameters[$parameterPosition]);
 			return TRUE;
 		} else {
 			return FALSE;
@@ -174,17 +155,17 @@ class Method extends AbstractClassObject {
 	}
 
 	/**
-	 * @param $parameterName
-	 * @param $parameterSortingIndex
+	 * @param string $parameterName
+	 * @param string $parameterSortingIndex
 	 * @return boolean TRUE (if successfull removed)
 	 */
 	public function renameParameter($oldName, $newName, $parameterPosition) {
-		//TODO: Not yet tested
-		if (isset($this->parameter[$parameterPosition])) {
-			$parameter = $this->parameter[$parameterPosition];
+			// TODO: Not yet tested
+		if (isset($this->parameters[$parameterPosition])) {
+			$parameter = $this->parameters[$parameterPosition];
 			if ($parameter->getName() == $oldName) {
 				$parameter->setName($newName);
-				$this->parameter[$parameterPosition] = $parameter;
+				$this->parameters[$parameterPosition] = $parameter;
 				return TRUE;
 			}
 		}
@@ -201,7 +182,7 @@ class Method extends AbstractClassObject {
 			foreach ($this->parameters as $parameter) {
 				$varType = $parameter->getVarType();
 				if (in_array(strtolower($varType), array('string', 'boolean', 'integer', 'doubler', 'float'))) {
-					$varType = strtolower(strtolower);
+					$varType = strtolower($varType);
 				}
 				$paramTags[] = (('param ' . $varType) . ' $') . $parameter->getName();
 			}
@@ -215,3 +196,4 @@ class Method extends AbstractClassObject {
 
 }
 
+?>

@@ -518,7 +518,7 @@ abstract class AbstractConfigurationManager  {
 		if (isset($settings['classBuilder']['Model']['AbstractValueObject']['parentClass'])) {
 			$parentClass = $settings['classBuilder']['Model']['AbstractValueObject']['parentClass'];
 		} else {
-			$parentClass = 'Tx_Extbase_DomainObject_AbstractValueObject';
+			$parentClass = '\\TYPO3\\CMS\\Extbase\\DomainObject\\AbstractValueObject';
 		}
 		return $parentClass;
 	}
@@ -528,7 +528,7 @@ abstract class AbstractConfigurationManager  {
 		if (isset($settings['classBuilder']['Model']['AbstractEntity']['parentClass'])) {
 			$parentClass = $settings['classBuilder']['Model']['AbstractEntity']['parentClass'];
 		} else {
-			$parentClass = 'Tx_Extbase_DomainObject_AbstractEntity';
+			$parentClass = '\\TYPO3\\CMS\\Extbase\\DomainObject\\AbstractEntity';
 		}
 		return $parentClass;
 	}
