@@ -1,5 +1,5 @@
 /*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
-/*globals console, Query, $, TYPO3, Ember */
+/*globals console, jQuery, $, TYPO3, Ember */
 (function () {
 
 	// Init PackageBuilder and PackageBuilder.Modeller
@@ -30,6 +30,8 @@
 
 	$(document).ready( function () {
 		TYPO3.PackageBuilder.Modeller.generateLocalStore();
+
+		$('.component').zoom();
 	});
 
 }());
