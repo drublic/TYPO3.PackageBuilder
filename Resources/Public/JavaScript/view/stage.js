@@ -73,6 +73,7 @@
 	TYPO3.PackageBuilder.Modeller.ComponentView = Ember.View.extend({
 		templateName: 'Modeller-Component',
 		classNames: ["component"],
+		classNameBindings: ['root:component-root:'],
 
 		didInsertElement: function () {
 			var el = $('#' + this.get('elementId'));

@@ -25,6 +25,10 @@
   border-color: #ff8700;
 }
 
+.component-root {
+  background: #f7ebd0;
+}
+
 .components--button {
   float: right;
   text-indent: -999em;

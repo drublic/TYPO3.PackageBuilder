@@ -118,6 +118,11 @@ TYPO3:
               propertyPath: 'label'
               sorting: 120
               viewName: 'TYPO3.Ice.View.Editor.TextEditor'
+            root:
+              label: 'Aggregate Root'
+              propertyPath: 'root'
+              sorting: 120
+              viewName: 'TYPO3.Ice.View.Editor.CheckboxEditor'
 
       'TYPO3.PackageBuilder:Plugin':
         superTypes: ['TYPO3.PackageBuilder:ProjectElement']
