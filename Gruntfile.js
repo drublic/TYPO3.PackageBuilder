@@ -12,12 +12,16 @@ module.exports = function (grunt) {
 		lint: {
 			all: [
 				'Gruntfile.js',
+				'Resources/Public/JavaScript/*.js',
 				'Resources/Public/JavaScript/modeller/models/**/*.js',
 				'Resources/Public/JavaScript/modeller/views/**/*.js',
 				'Resources/Public/JavaScript/modeller/init.js',
 				'Resources/Public/JavaScript/panels/**/*.js',
 				'Resources/Public/JavaScript/view/**/*.js'
-			]
+			],
+			options: {
+				options: '<json:.jshintrc>',
+			}
 		},
 		concat: {
 			deploy: {
@@ -79,7 +83,7 @@ module.exports = function (grunt) {
 				tasks: 'rubysass:dev'
 			},
 			js: {
-				files: '<config.lint.all>',
+				files: '<config:lint.all>',
 				tasks: 'lint'
 			}
 		}
