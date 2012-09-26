@@ -1,4 +1,12 @@
+
+$highlight-color: #ff8700;
+
 @import "mixins";
+
+
+#typo3-ice-rightSidebar {
+	@import "elementOptions";
+}
 
 
 
@@ -39,7 +47,7 @@
 		@include x-box-shadow(0 0 10px rgba(0,0,0,.4));
 
 		z-index: 100;
-		border-color: #ff8700;
+		border-color: $highlight-color;
 	}
 }
 

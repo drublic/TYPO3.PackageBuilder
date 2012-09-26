@@ -1,3 +1,7 @@
+#typo3-ice-rightSidebar .domainobject.is-active h2 {
+  background: #ff8700;
+}
+
 .component {
   -webkit-transition: -webkit-transform .2s ease-out;
   -ms-transition: -ms-transform .2s ease-out;
@@ -210,6 +214,9 @@
 }
 .connector--label:hover {
   border-color: #5d94a6;
+}
+.connector--label.hidden {
+  display: none;
 }
 
 .zoom-out {
