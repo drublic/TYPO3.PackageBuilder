@@ -10,8 +10,8 @@
 		// Generate a new relation after saving
 		save: function (val) {
 			TYPO3.PackageBuilder.Modeller.Connection.create({
-				source: TYPO3.PackageBuilder.Modeller.connect.start,
-				target: TYPO3.PackageBuilder.Modeller.connect.end,
+				source: TYPO3.PackageBuilder.modellerBuild.get('connect.start'),
+				target: TYPO3.PackageBuilder.modellerBuild.get('connect.end'),
 				label: {
 					title: val.filterProperty("name", "connector--title")[0].value + ', ' + val.filterProperty("name", "connector--relationtype")[0].value
 				}
@@ -22,8 +22,8 @@
 
 		// Reset connection
 		reset: function () {
-			TYPO3.PackageBuilder.Modeller.connect.start = null;
-			TYPO3.PackageBuilder.Modeller.connect.end = null;
+			TYPO3.PackageBuilder.modellerBuild.set('connect.start', null);
+			TYPO3.PackageBuilder.modellerBuild.set('connect.end', null);
 		},
 
 		// Render a connection

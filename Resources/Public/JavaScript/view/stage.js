@@ -120,15 +120,15 @@
 
 			// Set element
 			// @ TODO use property-id instead of component
-			TYPO3.PackageBuilder.Modeller.connect.start = this.get('elementId');
+			TYPO3.PackageBuilder.modellerBuild.set('connect.start', this.get('elementId'));
 		},
 
 		// End the relation and create it
 		endRelation: function () {
 			TYPO3.PackageBuilder.Modeller.Collection.derelationable();
-			$('#' + TYPO3.PackageBuilder.Modeller.connect.start).find('.components--property.is-active').removeClass('is-active');
+			$('#' + TYPO3.PackageBuilder.modellerBuild.get('connect.start')).find('.components--property.is-active').removeClass('is-active');
 
-			TYPO3.PackageBuilder.Modeller.connect.end = this.get('elementId');
+			TYPO3.PackageBuilder.modellerBuild.set('connect.end', this.get('elementId'));
 
 			TYPO3.PackageBuilder.Modeller.DialogueView.create().appendTo('body');
 		},

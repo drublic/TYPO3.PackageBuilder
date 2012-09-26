@@ -66,7 +66,7 @@
 			};
 		};
 
-		return new Store(TYPO3.PackageBuilder.Modeller.settings.localStorage);
+		return new Store(TYPO3.PackageBuilder.modellerBuild.get('settings.localStorage'));
 	}());
 
 }());
