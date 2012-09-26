@@ -1,5 +1,6 @@
-/*globals module */
 module.exports = function (grunt) {
+
+	'use strict';
 
 	// Project configuration.
 	grunt.initConfig({
@@ -17,26 +18,6 @@ module.exports = function (grunt) {
 				'Resources/Public/JavaScript/panels/**/*.js',
 				'Resources/Public/JavaScript/view/**/*.js'
 			]
-		},
-		jshint: {
-			options: {
-				curly: true,
-				eqeqeq: true,
-				immed: true,
-				latedef: true,
-				newcap: true,
-				noarg: true,
-				sub: true,
-				undef: true,
-				boss: true,
-				eqnull: true,
-				browser: true
-			},
-			globals: {
-				jQuery: true,
-				$: true,
-				TYPO3: true
-			}
 		},
 		concat: {
 			deploy: {
@@ -87,7 +68,7 @@ module.exports = function (grunt) {
 		copy: {
 			deploy: {
 				files: {
-					"public/img": "theme/img/*.svg"
+					'public/img': 'theme/img/*.svg'
 				}
 			}
 		},
