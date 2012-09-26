@@ -31,9 +31,9 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 		defaultValues = this.getPath('projectElementType.options.predefinedDefaults') || {};
 		identifier = this.getNextFreeIdentifier();
 		newElement = TYPO3.Ice.Model.Element.create($.extend({
-			type:this.getPath('projectElementType.key'),
-			identifier:identifier,
-			label:identifier
+			type: this.getPath('projectElementType.key'),
+			identifier: identifier,
+			label: identifier
 		}, defaultValues));
 
 		// If we deal with Modeller
