@@ -274,6 +274,10 @@ $highlight-color: #ff8700;
 	&:hover {
 		border-color: #5d94a6;
 	}
+
+	&.hidden {
+		display: none;
+	}
 }
 
 

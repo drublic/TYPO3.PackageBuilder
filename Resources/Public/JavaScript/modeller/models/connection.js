@@ -10,6 +10,8 @@
 			title : null
 		},
 
+		showLabelsBinding: 'TYPO3.PackageBuilder.modellerBuild.settings.showRelationLabels',
+
 		// Render a connection
 		render: function () {
 			var item = this;
@@ -32,7 +34,7 @@
 				overlays : [
 					["Label", {
 						cssClass: "connector--label",
-						label : item.get('label').title
+						label: item.get('label').title
 					}],
 					["PlainArrow", {
 						location: 1,
@@ -43,7 +45,15 @@
 			});
 
 			return this;
-		}
+		},
+
+		showLabelsChange: function () {
+			if (!this.showLabels) {
+				$('.connector--label').addClass('hidden');
+			} else {
+				$('.connector--label').removeClass('hidden');
+			}
+		}.observes('showLabels')
 
 	});
 
