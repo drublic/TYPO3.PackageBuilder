@@ -1,5 +1,7 @@
-/*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
-/*globals console, jQuery, $, TYPO3 */
+(function () {
+
+	"use strict";
+
 TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsPanelClass.Element.extend({
 	enabled: function () {
 		if (this.getPath('projectElementType.options._isTopLevel') ||
@@ -95,3 +97,5 @@ window.setTimeout( function () {
 		TYPO3.Ice.Model.Project.set('projectDefinition', TYPO3.Ice.Model.Element.create(_default));
 	}
 }, 200);
+
+}());

@@ -1,6 +1,6 @@
-/*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
-/*globals console, Query, $, TYPO3, Ember */
 (function() {
+
+	'use strict';
 
 	TYPO3.Ice.Model.Project.reopen({
 		projectElementBinding: 'TYPO3.Ice.Model.Project.currentlySelectedElement',

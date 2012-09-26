@@ -1,6 +1,6 @@
-/*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
-/*globals console, jQuery, $, TYPO3, Ember */
 (function () {
+
+	"use strict";
 
 	// Init PackageBuilder and PackageBuilder.Modeller
 	TYPO3.PackageBuilder = {};
@@ -16,7 +16,7 @@
 			var models = window.localStorage[TYPO3.PackageBuilder.Modeller.settings.localStorage];
 			if (models !== null) {
 				models = $.parseJSON(models);
-				$.each(models, function (el) {
+				$.each(models, function () {
 					// @TODO Generate models
 				});
 			}
