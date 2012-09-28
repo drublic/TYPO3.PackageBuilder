@@ -72,10 +72,6 @@
 
 		zoomBinding: "TYPO3.PackageBuilder.modellerBuild.settings.zoom",
 
-		canZoom: function () {
-			this.rerender();
-		}.observes('zoom'),
-
 		didInsertElement: function () {
 
 		}
