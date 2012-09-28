@@ -44,6 +44,11 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 
 			// and append it to the collection
 			TYPO3.PackageBuilder.Modeller.Collection.createModel(newElement);
+
+		// Creating a relation
+		} else if (this.getPath('projectElementType.label') === "Relation") {
+			var element = $('.component > [data-identifier="' + currentlySelectedElement.get('identifier') + '"]').parent();
+			element.children('.components--relation').trigger('click');
 		}
 
 		if (this.getPath('projectElementType.group') === 'packageElements') {
