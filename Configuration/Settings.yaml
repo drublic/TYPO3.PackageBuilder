@@ -2,6 +2,14 @@ TYPO3:
   PackageBuilder:
     panels:
       right:
+        ElementOptionsPanel:
+          header: Options Panel
+          elementId: elementOptionsPanel
+          emberViewClass: TYPO3.Ice.View.ElementOptionsPanelClass
+          javascripts:
+            sorting: 120
+            files:
+
         ConfigurationPanel:
           header: Configuration
           elementId: configurationPanel
