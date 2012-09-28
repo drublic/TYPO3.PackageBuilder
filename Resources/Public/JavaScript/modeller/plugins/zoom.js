@@ -16,15 +16,7 @@
 		},
 
 		events: function (element) {
-			$(document).on('dblclick', element, function () {
-				if (TYPO3.PackageBuilder.modellerBuild.get('settings.zoom')) {
-					if ($(this).hasClass('zoom-in')) {
-						$(this).removeClass('zoom-in');
-					} else {
-						$(this).addClass('zoom-in');
-					}
-				}
-			});
+			element = null;
 		}
 	};
 
