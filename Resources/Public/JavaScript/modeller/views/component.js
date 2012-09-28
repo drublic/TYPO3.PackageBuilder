@@ -87,6 +87,11 @@
 
 			domainObject.get('children').pushObject(newElement);
 
+			// Show properties if not opened
+			if (!$('#' + this.get('elementId')).find('.components--more').hasClass('is-active')) {
+				this.showMore();
+			}
+
 			return window.setTimeout(function () {
 				return TYPO3.Ice.Model.Project.set('currentlySelectedElement', newElement);
 			}, 10);
