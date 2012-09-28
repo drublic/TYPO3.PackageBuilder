@@ -1,9 +1,15 @@
 (function () {
 	"use strict";
 
-	TYPO3.PackageBuilder.Modeller.ErrorView = Ember.View.extend({
+	// Generic view for messages
+	TYPO3.PackageBuilder.Modeller.MessageView = Ember.View.extend({
+
+		// Class names and their bindings
 		classNames: ["message"],
 		classNameBindings: ["type"],
+
+		templateName: "Modeller-Message",
+
 		title: "Error:",
 		message: "",
 

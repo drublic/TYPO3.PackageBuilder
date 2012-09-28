@@ -2,13 +2,13 @@
 	@include x-box-sizing;
 
 	position: absolute;
-	top: 0;
+	top: 50px;
 	left: 50%;
 
 	width: 600px;
 	margin-left: -300px;
 
-	padding: 8px 35px 8px 14px;
+	padding: 0 35px 0 14px;
 
 	color: #c09853;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
@@ -28,4 +28,12 @@
 	color: #b94a48;
 	background-color: #f2dede;
 	border-color: #eed3d7;
+}
+
+
+.message-close {
+	position: absolute;
+	right: 15px;
+	border: 0;
+	background: none;
 }
