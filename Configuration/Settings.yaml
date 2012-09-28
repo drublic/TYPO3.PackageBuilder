@@ -27,8 +27,10 @@ TYPO3:
       packageBuilder:
         files:
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/init.js'
+
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/vendor/jsplumb/jquery.jsplumb.min.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/vendor/jsplumb/init.js'
+
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/vendor/tooltip.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/vendor/popover.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/plugins/zoom.js'
@@ -38,10 +40,12 @@ TYPO3:
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/panels/elementOptionsPanel.js'
 
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/view/stage.js'
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/views/component.js'
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/views/dialogue.js'
+
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/plugins/ember.storage.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/models/model.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/models/connection.js'
-          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/views/dialogue.js'
         sorting: 200
 
     stylesheets:
