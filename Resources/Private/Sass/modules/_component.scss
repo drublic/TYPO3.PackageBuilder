@@ -38,6 +38,8 @@
 
 // Info-button
 .components--button {
+	display: none;
+
 	float: right;
 	text-indent: -999em;
 
@@ -46,17 +48,24 @@
 	margin: 4px 2px 0;
 
 	background: url(../Images/glyphicons-halflings.png) -120px -96px;
+
+	.is-active & {
+		display: block;
+	}
 }
 
 
 // Extends .components--button
 .components--acceptor {
-	display: none;
 	position: absolute;
 	top: -24px;
 	left: -4px;
 
 	background-position: -143px -95px;
+
+	.is-active & {
+		display: none;
+	}
 
 	.is-relationable & {
 		display: block;
