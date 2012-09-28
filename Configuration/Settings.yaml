@@ -42,6 +42,7 @@ TYPO3:
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/view/stage.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/views/component.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/views/dialogue.js'
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/views/message.js'
 
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/plugins/ember.storage.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/models/model.js'

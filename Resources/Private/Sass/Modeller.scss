@@ -6,6 +6,9 @@ $highlight-color: #ff8700;
 // Components
 @import "modules/component";
 
+// Messages
+@import "modules/message";
+
 
 #typo3-ice-rightSidebar {
 	@import "elementOptions";
