@@ -10,7 +10,14 @@
 		// Some settings
 		settings: {
 			'localStorage': 't3_modeller',
-			'showRelationLabels': true
+			'showRelationLabels': true,
+			'zoom': false
+		},
+
+		// Connection Cache
+		connect: {
+			start: null,
+			end: null
 		},
 
 		// LocalStorage
@@ -22,11 +29,6 @@
 					// @TODO Generate models
 				});
 			}
-		},
-
-		connect: {
-			start: null,
-			end: null
 		}
 	});
 
