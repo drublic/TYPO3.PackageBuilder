@@ -1,18 +1,3 @@
-<div class="accordion-wrap">
-	<h2 class="accordion-header">Settings</h2>
-	<div class="accordion-body">
-		<div class="field">
-			<label>Show relation labels?</label>
-			<input type="checkbox" {{bindAttr checked="relationLabels"}} {{action "relationLabelsChange"}}>
-		</div>
-
-		<div class="field">
-			<label>Activate zoom</label>
-			<input type="checkbox">
-		</div>
-	</div>
-</div>
-
 {{#collection contentBinding="TYPO3.PackageBuilder.Modeller.Collection"
 		itemClass="domainobject"
 		itemClassBinding="content.isActive"}}
