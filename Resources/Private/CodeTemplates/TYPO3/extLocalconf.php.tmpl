@@ -1,11 +1,11 @@
-{namespace k=\TYPO3\PackageBuilder\ViewHelpers}<?php
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}<?php
 if (!defined('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 <f:for each="{extension.plugins}" as="plugin">
 Tx_Extbase_Utility_Extension::configurePlugin(
 	$_EXTKEY,
-	'<k:format.uppercaseFirst>{plugin.key}</k:format.uppercaseFirst>',
+	'<pb:format.uppercaseFirst>{plugin.key}</pb:format.uppercaseFirst>',
 	array(<f:if condition="{plugin.controllerActionCombinations}"><f:then>
 		<f:for each="{plugin.controllerActionCombinations}" as="actionNames" key="controllerName">'{controllerName}' => '<f:for each="{actionNames}" as="actionName" iteration="i">{actionName}<f:if condition="{i.isLast} == 0">, </f:if></f:for>',
 		</f:for></f:then><f:else>

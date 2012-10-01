@@ -76,7 +76,7 @@ class Extension extends AbstractPackage implements PackageInterface{
 	private $backendModules;
 
 	/**
-	 * @var full (absolute) path to extension dir
+	 * @var string full (absolute) path to extension dir
 	 */
 	protected $extensionDir;
 
@@ -106,16 +106,16 @@ class Extension extends AbstractPackage implements PackageInterface{
 	 *
 	 * @return string
 	 */
-	public function getOriginalExtensionKey() {
-		return $this->originalExtensionKey;
+	public function getOriginalKey() {
+		return $this->originalKey;
 	}
 
 	/**
 	 *
 	 * @param string $extensionKey
 	 */
-	public function setOriginalExtensionKey($extensionKey) {
-		$this->originalExtensionKey = $extensionKey;
+		public function setOriginalKey($key) {
+		$this->originalKey = $key;
 	}
 
 
@@ -129,8 +129,9 @@ class Extension extends AbstractPackage implements PackageInterface{
 
 		if (isset($this->settings['emConf'])) {
 			return $this->settings['emConf'];
+		} else {
+			return $this->emConfDefaults;
 		}
-		else return $this->emConfDefaults;
 	}
 
 	/**
@@ -226,6 +227,12 @@ class Extension extends AbstractPackage implements PackageInterface{
 		}
 	}
 
+	/**
+	 * @param DomainObject $domainObject1
+	 * @param DomainObject $domainObject2
+	 * @param array $classHierarchy
+	 * @return bool
+	 */
 	protected function isParentOf($domainObject1, $domainObject2, $classHierarchy) {
 		if (isset($classHierarchy[$domainObject1->getClassName()])) {
 			foreach ($classHierarchy[$domainObject1->getClassName()] as $subClass) {
@@ -451,9 +458,9 @@ class Extension extends AbstractPackage implements PackageInterface{
 	 */
 	public function getPreviousExtensionDirectory() {
 		if ($this->isRenamed()) {
-			$originalExtensionKey = $this->getOriginalExtensionKey();
-			$this->previousExtensionDirectory = PATH_typo3conf . 'ext/' . $originalExtensionKey . '/';
-			$this->previousExtensionKey = $originalExtensionKey;
+			$originalKey = $this->getOriginalKey();
+			$this->previousExtensionDirectory = PATH_typo3conf . 'ext/' . $originalKey . '/';
+			$this->previousExtensionKey = $originalKey;
 			return $this->previousExtensionDirectory;
 		}
 		else {
@@ -466,7 +473,7 @@ class Extension extends AbstractPackage implements PackageInterface{
 	 * @return boolean
 	 */
 	public function isRenamed() {
-		$originalExtensionKey = $this->getOriginalExtensionKey();
+		$originalExtensionKey = $this->getOriginalKey();
 		if (!empty($originalExtensionKey) && $originalExtensionKey != $this->getExtensionKey()) {
 			$this->renamed = TRUE;
 		}
@@ -481,8 +488,7 @@ class Extension extends AbstractPackage implements PackageInterface{
 	public function getNeedsUploadFolder() {
 		if ($this->needsUploadFolder) {
 			return 1;
-		}
-		else {
+		} else {
 			return 0;
 		}
 	}

@@ -41,7 +41,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 	/**
 	 * properties
 	 *
-	 * @var Tx_ExtensionBuilder_Domain_Model_Class_Property[]
+	 * @var Property[]
 	 */
 	protected $properties = array();
 
@@ -55,7 +55,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 	/**
 	 * methods
 	 *
-	 * @var Tx_ExtensionBuilder_Domain_Model_Class_Method[]
+	 * @var Method[]
 	 */
 	protected $methods = array();
 
@@ -108,7 +108,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 	 * constructor of this class
 	 *
 	 * @param string $className
-	 * @return unknown_type
+	 * @return void
 	 */
 	public function __construct($className) {
 		$this->name = $className;
@@ -208,7 +208,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 	/**
 	 * Getter for methods
 	 *
-	 * @return Tx_ExtensionBuilder_Domain_Model_Class_Method[]
+	 * @return Method[]
 	 */
 	public function getMethods() {
 		return $this->methods;
@@ -217,7 +217,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 	/**
 	 * Getter for method
 	 *
-	 * @return Tx_ExtensionBuilder_Domain_Model_Class_Method
+	 * @return Method
 	 */
 	public function getMethod($methodName) {
 		if ($this->methodExists($methodName)) {
@@ -275,7 +275,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 	/**
 	 * returns all methods starting with "get"
 	 *
-	 * @return Tx_ExtensionBuilder_Domain_Model_Class_Method[]
+	 * @return Method[]
 	 */
 	public function getGetters() {
 		$getterMethods = array();
@@ -294,7 +294,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 	/**
 	 * returnes all methods starting with "set"
 	 *
-	 * @return Tx_ExtensionBuilder_Domain_Model_Class_Method[]
+	 * @return Method[]
 	 */
 	public function getSetters() {
 		$setterMethods = array();
@@ -314,7 +314,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 	 * Getter for property
 	 *
 	 * @param string $propertyName the name of the property
-	 * @return Tx_ExtensionBuilder_Reflection_PropertyReflection
+	 * @return Property
 	 */
 	public function getProperty($propertyName) {
 		if ($this->propertyExists($propertyName)) {
@@ -327,7 +327,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 	/**
 	 * Setter for properties
 	 *
-	 * @param select $properties properties
+	 * @param Properties[]
 	 * @return void
 	 */
 	public function setProperties($properties) {
@@ -337,7 +337,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 	/**
 	 * Getter for properties
 	 *
-	 * @return Tx_ExtensionBuilder_Domain_Model_Class_Property[]
+	 * @return Property[]
 	 */
 	public function getProperties() {
 		return $this->properties;
@@ -431,6 +431,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 		if (!$this->propertyExists($classProperty->getName())) {
 			$this->propertyNames[] = $classProperty->getName();
 			$this->properties[$classProperty->getName()] = $classProperty;
+			return TRUE;
 		} else {
 			return FALSE;
 		}
@@ -451,7 +452,7 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 	 * @param Property
 	 * @return boolean success
 	 */
-	public function setProperty($classProperty) {
+	public function setProperty(Property $classProperty) {
 		$this->properties[$classProperty->getName()] = $classProperty;
 	}
 
@@ -542,15 +543,15 @@ class ClassObject extends \TYPO3\PackageBuilder\Domain\Model\AbstractClassObject
 			);
 		}
 		$infoArray['Methods'] = $methodArray;
-		//$infoArray['Inherited Methods'] = count($this->getInheritedMethods());
-		//$infoArray['Not inherited Methods'] = count($this->getNotInheritedMethods());
+			// $infoArray['Inherited Methods'] = count($this->getInheritedMethods());
+			// $infoArray['Not inherited Methods'] = count($this->getNotInheritedMethods());
 		$infoArray['Properties'] = $this->getProperties();
-		//$infoArray['Inherited Properties'] = count($this->getInheritedProperties());
-		//$infoArray['Not inherited Properties'] = count($this->getNotInheritedProperties());
+			// $infoArray['Inherited Properties'] = count($this->getInheritedProperties());
+			// $infoArray['Not inherited Properties'] = count($this->getNotInheritedProperties());
 		$infoArray['Constants'] = $this->getConstants();
 		$infoArray['Modifiers'] = $this->getModifierNames();
 		$infoArray['Tags'] = $this->getTags();
-		//$infoArray['Methods'] = count($this->getMethods());
+			// $infoArray['Methods'] = count($this->getMethods());
 		return $infoArray;
 	}
 

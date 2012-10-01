@@ -33,6 +33,12 @@ class AbstractPackage extends AbstractModel{
 	protected $key;
 
 	/**
+	 * The original package key (if the package was renamed
+	 * @var string
+	 */
+	protected $originalKey;
+
+	/**
 	 * @var string
 	 */
 	protected $nameSpace;
@@ -75,7 +81,6 @@ class AbstractPackage extends AbstractModel{
 	 */
 	protected $category;
 
-
 	/**
 	 * The package's state. One of the STATE_* constants.
 	 * @var integer
@@ -90,7 +95,7 @@ class AbstractPackage extends AbstractModel{
 
 	/**
 	 * All domain objects
-	 * @var array<\TYPO3\PackageBuilder\Domain\Model\DomainObject>
+	 * @var DomainObject[]
 	 */
 	protected $domainObjects = array();
 
@@ -111,12 +116,17 @@ class AbstractPackage extends AbstractModel{
 	 */
 	private $dependencies = array();
 
+	/**
+	 * @var string
+	 */
+	protected $targetVersion;
+
 
 	/**
-	 *
+	 * @return DomainObject[]
 	 */
-	public function getDomainObjects(){
-        return $this->domainObjects;
+	public function getDomainObjects() {
+		return $this->domainObjects;
 	}
 
 
@@ -187,8 +197,8 @@ class AbstractPackage extends AbstractModel{
 	 * @return string
 	 */
 	public function getPackageDir() {
-		if(empty($this->packageDir)) {
-			if(empty($this->baseDir)) {
+		if (empty($this->packageDir)) {
+			if (empty($this->baseDir)) {
 				throw new \TYPO3\PackageBuilder\Exception\ConfigurationError('No base package dir configured');
 			}
 			$this->packageDir = $this->baseDir . $this->key;
@@ -305,7 +315,7 @@ class AbstractPackage extends AbstractModel{
 	 * @return string
 	 */
 	public function getNameSpace() {
-		if(!empty($this->key) && (empty($this->nameSpace) || strpos($this->nameSpace,$this->key) < 0)) {
+		if (!empty($this->key) && (empty($this->nameSpace) || strpos($this->nameSpace, $this->key) < 0)) {
 			$this->nameSpace = str_replace('.', '\\', $this->key);
 		}
 		return $this->nameSpace;
