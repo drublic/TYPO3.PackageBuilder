@@ -1,17 +1,17 @@
-{namespace k=Tx_ExtensionBuilder_ViewHelpers}
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}
 <table class="{extension.cssClassName}" >
-	<k:format.removeMultipleNewlines>
+	<pb:format.removeMultipleNewlines>
 	<f:for each="{domainObject.properties}" as="property">
 		<f:if condition="{property.isDisplayable}">
 	<tr>
 		<td>
-			<k:openingTag>f:translate key="{property.labelNamespace}" /</k:openingTag>
+			<pb:openingTag>f:translate key="{property.labelNamespace}" /</pb:openingTag>
 		</td>
 		<td>
-			<k:curlyBrackets>{domainObject.name -> k:format.lowercaseFirst()}.{property.nameToBeDisplayedInFluidTemplate}</k:curlyBrackets>
+			<pb:curlyBrackets>{domainObject.name -> pb:format.lowercaseFirst()}.{property.nameToBeDisplayedInFluidTemplate}</pb:curlyBrackets>
 		</td>
 	</tr>
 		</f:if>
 	</f:for>
-	</k:format.removeMultipleNewlines>
+	</pb:format.removeMultipleNewlines>
 </table>

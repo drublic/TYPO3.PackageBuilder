@@ -1,4 +1,4 @@
-{namespace k=Tx_ExtensionBuilder_ViewHelpers}
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}
 t3lib_div::loadTCA('{domainObject.databaseTableName}');
 if (!isset($TCA['{domainObject.databaseTableName}']['ctrl']['type'])) {
 	// no type field defined, so we define it here. This will only happen the first time the extension is installed!!

@@ -1,4 +1,4 @@
-{namespace k=Tx_ExtensionBuilder_ViewHelpers}
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}
 <div class="{extension.cssClassName}">
-	<k:openingTag>f:render section="main" /</k:openingTag>
+	<pb:openingTag>f:render section="main" /</pb:openingTag>
 </div>

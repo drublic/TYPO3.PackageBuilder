@@ -42,14 +42,14 @@ if (TYPO3_MODE === 'BE') {
 t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript', '<pb:format.quoteString>{extension.name}</pb:format.quoteString>');
 
 <f:for each="{extension.domainObjects}" as="domainObject">
-	<pb:typo3.mapping renderCondition="needsTypeField" domainObject="{domainObject}">
+	<pb:TYPO3.mapping renderCondition="needsTypeField" domainObject="{domainObject}">
 <f:render partial="TCA/TypeField.phpt" arguments="{domainObject:domainObject, settings:settings, locallangFileFormat:locallangFileFormat}" />
-	</pb:typo3.mapping>
+	</pb:TYPO3.mapping>
 	<f:if condition="{domainObject.mapToTable}">
 		<f:then>
-			<pb:typo3.mapping domainObject="{domainObject}" renderCondition="isMappedToExternalTable">
+			<pb:TYPO3.mapping domainObject="{domainObject}" renderCondition="isMappedToExternalTable">
 <f:render partial="TCA/Columns.phpt" arguments="{domainObject:domainObject, settings:settings, locallangFileFormat:locallangFileFormat}" />
-			</pb:typo3.mapping>
+			</pb:TYPO3.mapping>
 		</f:then>
 		<f:else>
 t3lib_extMgm::addLLrefForTCAdescr('{domainObject.databaseTableName}', 'EXT:{extension.extensionKey}/Resources/Private/Language/locallang_csh_{domainObject.databaseTableName}.{locallangFileFormat}');

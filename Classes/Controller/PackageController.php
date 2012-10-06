@@ -65,6 +65,7 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 	 * @return void
 	 */
 	public function initializeAction() {
+
 		if ($this->request->hasArgument('frameWork')) {
 			$this->targetFrameWork = $this->request->getArgument('frameWork');
 		} elseif (!isset($this->settings['codeGeneration']['frameWork']) OR $this->settings['codeGeneration']['frameWork'] == 'FLOW3') {
@@ -82,18 +83,21 @@ class PackageController extends \TYPO3\Ice\Controller\StandardController {
 				$this->settings
 			);
 		}
-		if(!class_exists('\\TYPO3\\PackageBuilder\\Service\\' . $this->targetFrameWork. '\\CodeGenerator')) {
-			throw new \TYPO3\PackageBuilder\Exception\MissingComponentException('No CodeGenerator class for target framework ' . $this->targetFrameWork . ' found');
-		}
-		$this->codeGenerator = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Service\\' . $this->targetFrameWork. '\\CodeGenerator');
-		$this->packageRepository = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Domain\\Repository\\' . $this->targetFrameWork. '\\PackageRepository');
-		$this->packageFactory = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Service\\' . $this->targetFrameWork. '\\PackageFactory');
-		$this->packageConfigurationManager = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Configuration\\' . $this->targetFrameWork. '\\ConfigurationManager');
-
 		$this->logger =  \TYPO3\FLOW3\Log\LoggerFactory::create('PackageBuilderLogger','\\TYPO3\\PackageBuilder\\Log\\FileLogger','\\TYPO3\\FLOW3\\Log\\Backend\\FileBackend', $this->settings['log']['backendOptions']);
-		$this->codeGenerator->injectLogger($this->logger);
-		$this->packageRepository->injectLogger($this->logger);
-		$this->packageFactory->injectLogger($this->logger);
+
+		if($this->actionMethodName == 'createAction') {
+			if(!class_exists('\\TYPO3\\PackageBuilder\\Service\\' . $this->targetFrameWork. '\\CodeGenerator')) {
+				throw new \TYPO3\PackageBuilder\Exception\MissingComponentException('No CodeGenerator class for target framework ' . $this->targetFrameWork . ' found');
+			}
+			$this->codeGenerator = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Service\\' . $this->targetFrameWork. '\\CodeGenerator');
+			$this->packageRepository = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Domain\\Repository\\' . $this->targetFrameWork. '\\PackageRepository');
+			$this->packageFactory = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Service\\' . $this->targetFrameWork. '\\PackageFactory');
+			$this->packageConfigurationManager = $this->objectManager->get('\\TYPO3\\PackageBuilder\\Configuration\\' . $this->targetFrameWork. '\\ConfigurationManager');
+
+			$this->codeGenerator->injectLogger($this->logger);
+			$this->packageRepository->injectLogger($this->logger);
+			$this->packageFactory->injectLogger($this->logger);
+		}
 	}
 
 

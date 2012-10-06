@@ -1,4 +1,4 @@
-{namespace k=Tx_ExtensionBuilder_ViewHelpers}
+{namespace pb=TYPO3\PackageBuilder\ViewHelper}
 	persistence {
 		classes {<f:for each="{extension.domainObjectsThatNeedMappingStatements}" as="domainObject">
 			{domainObject.className} {

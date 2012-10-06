@@ -276,7 +276,6 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 			$this->classBuilder->initialize($this->extension, $this->editModeEnabled);
 				// Generate Domain Model
 			try {
-
 				$domainModelDirectory = 'Classes/Domain/Model/';
 				$this->createDirectoryRecursively($this->extensionDirectory . $domainModelDirectory);
 
@@ -288,7 +287,6 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 
 				$this->createDirectoryRecursively($this->extensionDirectory . 'Tests/Unit/Controller');
 				$crudEnabledControllerTestsDirectory = $this->extensionDirectory . 'Tests/Unit/Controller/';
-
 				foreach ($this->extension->getDomainObjects() as $domainObject) {
 					$destinationFile = $domainModelDirectory . $domainObject->getName() . '.php';
 					if ($this->editModeEnabled && RoundTrip::getOverWriteSettingForPath($destinationFile, $this->extension) > 0) {
@@ -307,7 +305,6 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 					} else {
 						$iconFileName = 'value_object.gif';
 					}
-
 					$this->copy($this->codeTemplateRootPath . 'Resources/Private/Icons/' . $iconFileName, $this->iconsDirectory . $domainObject->getDatabaseTableName() . '.gif');
 					if ($domainObject->isAggregateRoot()) {
 						$destinationFile = $domainRepositoryDirectory . $domainObject->getName() . 'Repository.php';
@@ -321,7 +318,6 @@ class CodeGenerator extends \TYPO3\PackageBuilder\Service\AbstractCodeGenerator 
 						$this->logger->log('Generated ' . $domainObject->getName() . 'Repository.php', 'extension_builder', 0);
 						$this->extension->setMD5Hash($this->extensionDirectory . $destinationFile);
 					}
-
 					// Generate basic UnitTests
 					$fileContents = $this->generateDomainModelTests($domainObject);
 					$this->writeFile($domainModelTestsDirectory . $domainObject->getName() . 'Test.php', $fileContents);

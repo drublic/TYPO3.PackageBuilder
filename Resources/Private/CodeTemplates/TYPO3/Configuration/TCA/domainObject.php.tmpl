@@ -3,9 +3,9 @@ if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 <f:if condition="{domainObject.mapToTable}"><f:then>
-<pb:typo3.mapping domainObject="{domainObject}" renderCondition="isMappedToInternalTable">
+<pb:TYPO3.mapping domainObject="{domainObject}" renderCondition="isMappedToInternalTable">
 <pb:render partial="Columns.phpt" arguments="{domainObject:domainObject, settings:settings}" />
-</pb:typo3.mapping></f:then><f:else>
+</pb:TYPO3.mapping></f:then><f:else>
 $TCA['{domainObject.databaseTableName}'] = array(
 	'ctrl' => $TCA['{domainObject.databaseTableName}']['ctrl'],
 	'interface' => array(

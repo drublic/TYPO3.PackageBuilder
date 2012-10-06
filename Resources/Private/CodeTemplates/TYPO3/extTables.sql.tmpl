@@ -7,13 +7,13 @@ CREATE TABLE {domainObject.databaseTableName} (
 <f:if condition="{domainObject.mapToTable}"><f:then></f:then><f:else>
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,</f:else></f:if>
-<f:for each="{pb:typo3.listForeignKeyRelations(extension: extension, domainObject:domainObject)}" as="relation">
+<f:for each="{pb:TYPO3.listForeignKeyRelations(extension: extension, domainObject:domainObject)}" as="relation">
 	{relation.foreignKeyName} int(11) unsigned DEFAULT '0' NOT NULL,</f:for>
 <f:for each="{domainObject.properties}" as="property">
 	{property.sqlDefinition}</f:for>
-<pb:typo3.mapping renderCondition="needsTypeField" domainObject="{domainObject}">
+<pb:TYPO3.mapping renderCondition="needsTypeField" domainObject="{domainObject}">
 	tx_extbase_type varchar(255) DEFAULT '' NOT NULL,
-</pb:typo3.mapping>
+</pb:TYPO3.mapping>
 <f:if condition="{domainObject.mapToTable}"><f:then></f:then><f:else>
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
