@@ -1,0 +1,26 @@
+{
+	"name": "typo3packagebuilder",
+	"title": "TYPO3.PackageBuilder",
+	"description": "",
+	"version": "0.1.0",
+	"homepage": "",
+	"author": {
+		"name": "",
+		"url": ""
+	},
+	"repository": {
+		"type": "git",
+		"url": ""
+	},
+	"bugs": {
+		"url": ""
+	},
+	"license": "MIT",
+	"dependencies": {},
+	"devDependencies": {
+		"grunt": "~0.3.9",
+		"grunt-css": "~0.2.0",
+		"grunt-sass": "0.1.0"
+	},
+	"keywords": []
+}

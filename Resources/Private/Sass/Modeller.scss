@@ -1,0 +1,49 @@
+
+// Stage - is supposed to carry everything that has to do with the modeller
+.modeller-stage {
+	padding: 10px;
+
+	// Each model is a component
+	.component {
+		position: absolute;
+		top: 30%;
+		left: 50%;
+		z-index: 20;
+		border: 2px solid #346789;
+		padding: .5em;
+		width: 10em;
+		height: 8em;
+		background: rgba(255,255,255,.8);
+		font: .8em sans-serif;
+		color: black;
+
+		h3 {
+			margin: 0;
+		}
+	}
+
+}
+
+
+
+// Labels for connections
+.label {
+	position: relative;
+	z-index: 1;
+	background: rgba(255,255,255,.8);
+	border: 1px solid #346789;
+	padding: .2em;
+	font-size: .9em;
+
+	&:hover {
+		border-color:#5d94a6;
+	}
+}
+
+
+
+
+
+
+
+
