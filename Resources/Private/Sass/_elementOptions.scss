@@ -1,0 +1,12 @@
+.domainobject {
+
+
+	// When domain-object is activated
+	&.is-active {
+
+		h2 {
+			background: $highlight-color;
+		}
+	}
+
+}

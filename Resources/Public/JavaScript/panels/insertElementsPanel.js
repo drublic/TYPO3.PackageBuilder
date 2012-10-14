@@ -1,5 +1,7 @@
-/*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
-/*globals console, jQuery, $, TYPO3 */
+(function () {
+
+	"use strict";
+
 TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsPanelClass.Element.extend({
 	enabled: function () {
 		if (this.getPath('projectElementType.options._isTopLevel') ||
@@ -29,9 +31,9 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 		defaultValues = this.getPath('projectElementType.options.predefinedDefaults') || {};
 		identifier = this.getNextFreeIdentifier();
 		newElement = TYPO3.Ice.Model.Element.create($.extend({
-			type:this.getPath('projectElementType.key'),
-			identifier:identifier,
-			label:identifier
+			type: this.getPath('projectElementType.key'),
+			identifier: identifier,
+			label: identifier
 		}, defaultValues));
 
 		// If we deal with Modeller
@@ -42,6 +44,11 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 
 			// and append it to the collection
 			TYPO3.PackageBuilder.Modeller.Collection.createModel(newElement);
+
+		// Creating a relation
+		} else if (this.getPath('projectElementType.label') === "Relation") {
+			var element = $('.component > [data-identifier="' + currentlySelectedElement.get('identifier') + '"]').parent();
+			element.children('.components--relation').trigger('click');
 		}
 
 		if (this.getPath('projectElementType.group') === 'packageElements') {
@@ -95,3 +102,5 @@ window.setTimeout( function () {
 		TYPO3.Ice.Model.Project.set('projectDefinition', TYPO3.Ice.Model.Element.create(_default));
 	}
 }, 200);
+
+}());

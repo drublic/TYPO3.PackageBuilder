@@ -1,35 +1,43 @@
-/*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
-/*globals console, Query, $, TYPO3, Ember */
 (function () {
+
+	"use strict";
 
 	// Init PackageBuilder and PackageBuilder.Modeller
 	TYPO3.PackageBuilder = {};
-	TYPO3.PackageBuilder.Modeller = {
+	TYPO3.PackageBuilder.Modeller = {};
+	TYPO3.PackageBuilder.Modeller.Build = Ember.Object.extend({
 
 		// Some settings
 		settings: {
-			'localStorage': 't3_modeller'
+			'localStorage': 't3_modeller',
+			'showRelationLabels': true,
+			'zoom': false
+		},
+
+		// Connection Cache
+		connect: {
+			start: null,
+			end: null
 		},
 
 		// LocalStorage
 		generateLocalStore: function () {
-			var models = window.localStorage[TYPO3.PackageBuilder.Modeller.settings.localStorage];
+			var models = window.localStorage[this.get('settings.localStorage')];
 			if (models !== null) {
 				models = $.parseJSON(models);
-				$.each(models, function (el) {
+				$.each(models, function () {
 					// @TODO Generate models
 				});
 			}
-		},
-
-		connect: {
-			start: null,
-			end: null
 		}
-	};
+	});
+
+	TYPO3.PackageBuilder.modellerBuild = TYPO3.PackageBuilder.Modeller.Build.create();
 
 	$(document).ready( function () {
-		TYPO3.PackageBuilder.Modeller.generateLocalStore();
+		TYPO3.PackageBuilder.modellerBuild.generateLocalStore();
+
+		$('.component').zoom();
 	});
 
 }());

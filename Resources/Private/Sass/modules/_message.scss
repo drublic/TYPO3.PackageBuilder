@@ -1,0 +1,39 @@
+.message {
+	@include x-box-sizing;
+
+	position: absolute;
+	top: 50px;
+	left: 50%;
+
+	width: 600px;
+	margin-left: -300px;
+
+	padding: 0 35px 0 14px;
+
+	color: #c09853;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+
+	background-color: #fcf8e3;
+	border: 1px solid #fbeed5;
+	border-radius: 4px;
+}
+
+.message-success {
+	color: #468847;
+	background-color: #dff0d8;
+	border-color: #d6e9c6;
+}
+
+.message-error {
+	color: #b94a48;
+	background-color: #f2dede;
+	border-color: #eed3d7;
+}
+
+
+.message-close {
+	position: absolute;
+	right: 15px;
+	border: 0;
+	background: none;
+}

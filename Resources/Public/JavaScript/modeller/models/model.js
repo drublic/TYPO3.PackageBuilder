@@ -1,6 +1,7 @@
-/*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
-/*globals console, Query, $, TYPO3, Ember */
 (function() {
+
+	"use strict";
+
 	var timestamp = 0;
 
 	TYPO3.PackageBuilder.Modeller.Model = Ember.Object.extend({

@@ -1,6 +1,6 @@
-/*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
-/*globals console, Query, $, TYPO3, Ember */
 (function() {
+
+	"use strict";
 
 	// Connections
 	TYPO3.PackageBuilder.Modeller.Connection = Ember.Object.extend({
@@ -9,6 +9,8 @@
 		label: {
 			title : null
 		},
+
+		showLabelsBinding: 'TYPO3.PackageBuilder.modellerBuild.settings.showRelationLabels',
 
 		// Render a connection
 		render: function () {
@@ -32,7 +34,7 @@
 				overlays : [
 					["Label", {
 						cssClass: "connector--label",
-						label : item.get('label').title
+						label: item.get('label').title
 					}],
 					["PlainArrow", {
 						location: 1,
@@ -43,7 +45,15 @@
 			});
 
 			return this;
-		}
+		},
+
+		showLabelsChange: function () {
+			if (!this.showLabels) {
+				$('.connector--label').addClass('hidden');
+			} else {
+				$('.connector--label').removeClass('hidden');
+			}
+		}.observes('showLabels')
 
 	});
 

@@ -1,9 +1,14 @@
 .component {
+  -webkit-transition: width 0.2s, font-size 0.2s, margin 0.2s;
+  -moz-transition: width 0.2s, font-size 0.2s, margin 0.2s;
+  -o-transition: width 0.2s, font-size 0.2s, margin 0.2s;
+  -ms-transition: width 0.2s, font-size 0.2s, margin 0.2s;
+  transition: width 0.2s, font-size 0.2s, margin 0.2s;
   position: absolute;
   top: 30%;
   left: 50%;
   z-index: 20;
-  min-width: 200px;
+  width: 220px;
   border: 2px solid #346789;
   background: rgba(255, 255, 255, 0.8);
   font: .8em sans-serif;
@@ -25,7 +30,12 @@
   border-color: #ff8700;
 }
 
+.component-root {
+  background: #f7ebd0;
+}
+
 .components--button {
+  display: none;
   float: right;
   text-indent: -999em;
   width: 16px;
@@ -33,13 +43,18 @@
   margin: 4px 2px 0;
   background: url(../Images/glyphicons-halflings.png) -120px -96px;
 }
+.is-active .components--button {
+  display: block;
+}
 
 .components--acceptor {
-  display: none;
   position: absolute;
   top: -24px;
   left: -4px;
   background-position: -143px -95px;
+}
+.is-active .components--acceptor {
+  display: none;
 }
 .is-relationable .components--acceptor {
   display: block;
@@ -59,6 +74,45 @@
 
 .components--add {
   background-position: -408px -96px;
+}
+
+.message {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  width: 600px;
+  margin-left: -300px;
+  padding: 0 35px 0 14px;
+  color: #c09853;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  background-color: #fcf8e3;
+  border: 1px solid #fbeed5;
+  border-radius: 4px;
+}
+
+.message-success {
+  color: #468847;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+}
+
+.message-error {
+  color: #b94a48;
+  background-color: #f2dede;
+  border-color: #eed3d7;
+}
+
+.message-close {
+  position: absolute;
+  right: 15px;
+  border: 0;
+  background: none;
+}
+
+#typo3-ice-rightSidebar .domainobject.is-active h2 {
+  background: #ff8700;
 }
 
 .popover {
@@ -201,4 +255,17 @@
 }
 .connector--label:hover {
   border-color: #5d94a6;
+}
+.connector--label.hidden {
+  display: none;
+}
+
+.is-zoomable .component {
+  width: 180px;
+  font-size: .6em;
+}
+
+.is-zoomable .is-active .component {
+  width: 300px;
+  font-size: 1em;
 }

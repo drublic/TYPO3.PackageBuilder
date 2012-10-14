@@ -20,6 +20,14 @@ TYPO3:
 
     panels:
       right:
+        ElementOptionsPanel:
+          header: Options Panel
+          elementId: elementOptionsPanel
+          emberViewClass: TYPO3.Ice.View.ElementOptionsPanelClass
+          javascripts:
+            sorting: 120
+            files:
+
         ConfigurationPanel:
           header: Configuration
           elementId: configurationPanel
@@ -36,24 +44,35 @@ TYPO3:
     javaScripts:
       packageBuilder:
         files:
-
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/init.js'
+
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/vendor/jsplumb/jquery.jsplumb.min.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/vendor/jsplumb/init.js'
+
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/vendor/tooltip.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/vendor/popover.js'
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/plugins/zoom.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/panels/insertElementsPanel.js'
+
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/view/settings.js'
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/panels/elementOptionsPanel.js'
+
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/view/stage.js'
-          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/ember.storage.js'
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/views/component.js'
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/views/dialogue.js'
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/views/message.js'
+
+          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/plugins/ember.storage.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/models/model.js'
           - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/models/connection.js'
-          - 'resource://TYPO3.PackageBuilder/Public/JavaScript/modeller/views/dialogue.js'
         sorting: 200
 
     stylesheets:
       packageBuilder:
         sorting: 10
-        files: ['resource://TYPO3.PackageBuilder/Public/Css/PackageBuilder.css', 'resource://TYPO3.PackageBuilder/Public/Css/Modeller.css']
+        files:
+          - 'resource://TYPO3.PackageBuilder/Public/Css/PackageBuilder.css'
+          - 'resource://TYPO3.PackageBuilder/Public/Css/Modeller.css'
 
     backport:
       targetFolder:
@@ -141,6 +160,11 @@ TYPO3:
               propertyPath: 'label'
               sorting: 120
               viewName: 'TYPO3.Ice.View.Editor.TextEditor'
+            root:
+              label: 'Aggregate Root'
+              propertyPath: 'root'
+              sorting: 120
+              viewName: 'TYPO3.Ice.View.Editor.CheckboxEditor'
 
       'TYPO3.PackageBuilder:Plugin':
         superTypes: ['TYPO3.PackageBuilder:ProjectElement']

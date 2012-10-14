@@ -1,91 +1,23 @@
-@import "mixins";
 
+$highlight-color: #ff8700;
+
+@import "helper/mixins";
+
+// Components
+@import "modules/component";
+
+// Messages
+@import "modules/message";
+
+
+#typo3-ice-rightSidebar {
+	@import "elementOptions";
+}
 
 
 // Stage - is supposed to carry everything that has to do with the modeller
 .modeller-stage {
 }
-
-// Each model is a component
-.component {
-	position: absolute;
-	top: 30%;
-	left: 50%;
-	z-index: 20;
-	min-width: 200px;
-	border: 2px solid #346789;
-	background: rgba(255,255,255,.8);
-	font: .8em sans-serif;
-	color: black;
-	cursor: move;
-
-	h3 {
-		margin: 5px 0 0;
-		padding: 0 5px;
-	}
-
-	p {
-		margin: 0;
-		padding: 0 5px;
-	}
-
-	.is-active & {
-		@include x-box-shadow(0 0 10px rgba(0,0,0,.4));
-
-		z-index: 100;
-		border-color: #ff8700;
-	}
-}
-
-// Info-button
-.components--button {
-	float: right;
-	text-indent: -999em;
-
-	width: 16px;
-	height: 16px;
-	margin: 4px 2px 0;
-
-	background: url(../Images/glyphicons-halflings.png) -120px -96px;
-}
-
-// Extends .components--button
-.components--acceptor {
-	display: none;
-	position: absolute;
-	top: -24px;
-	left: -4px;
-
-	background-position: -143px -95px;
-
-	.is-relationable & {
-		display: block;
-	}
-}
-
-
-// Activate Header
-.components--activate {
-	color: #000;
-	text-decoration: none;
-
-	&:visited,
-	&:active,
-	&:hover {
-		color: #000;
-	}
-}
-
-// Extends .components--button
-.components--relation {
-	background-position: -144px -96px;
-}
-
-// Extends .components--button
-.components--add {
-	background-position: -408px -96px;
-}
-
 
 
 
@@ -256,8 +188,36 @@
 	&:hover {
 		border-color: #5d94a6;
 	}
+
+	&.hidden {
+		display: none;
+	}
 }
 
+
+
+
+// Zoom-Stuff
+%zoom-out {
+	width: 180px;
+	font-size: .6em;
+}
+%zoom-in {
+	width: 300px;
+	font-size: 1em;
+}
+
+.is-zoomable {
+	.component {
+		@extend %zoom-out;
+	}
+
+	.is-active {
+		.component {
+			@extend %zoom-in;
+		}
+	}
+}
 
 
 
