@@ -130,6 +130,34 @@
 			TYPO3.PackageBuilder.Modeller.connect.end = this.get('elementId');
 
 			TYPO3.PackageBuilder.Modeller.DialogueView.create().appendTo('body');
+		},
+
+		// Add a new property to the model
+		addProperty: function () {
+			// @TODO Select element as currentlySelectedElement before adding property
+			var currentlySelectedElement = TYPO3.Ice.Model.Project.currentlySelectedElement;
+			var identifier = 'someIdentifier123';
+			var newElement = TYPO3.Ice.Model.Element.create({
+				type: "TYPO3.PackageBuilder:Property",
+				identifier: identifier,
+				label: identifier
+			});
+
+			var domainObject = currentlySelectedElement;
+
+			if (currentlySelectedElement.get('type') !== "TYPO3.PackageBuilder:DomainObject") {
+				domainObject = currentlySelectedElement.get('parentElement');
+
+				if (domainObject.get('type') !== "TYPO3.PackageBuilder:DomainObject") {
+					new Error('Uups');
+				}
+			}
+
+			domainObject.get('children').pushObject(newElement);
+
+			return window.setTimeout(function () {
+				return TYPO3.Ice.Model.Project.set('currentlySelectedElement', newElement);
+			}, 10);
 		}
 	});
 

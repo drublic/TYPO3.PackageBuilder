@@ -9,7 +9,7 @@
 
 		// Generate a new relation after saving
 		save: function (val) {
-			var relation = TYPO3.PackageBuilder.Modeller.Connection.create({
+			TYPO3.PackageBuilder.Modeller.Connection.create({
 				source: TYPO3.PackageBuilder.Modeller.connect.start,
 				target: TYPO3.PackageBuilder.Modeller.connect.end,
 				label: {
