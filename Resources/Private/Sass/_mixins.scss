@@ -1,0 +1,57 @@
+@mixin x-border-radius ($values) {
+	-webkit-border-radius: $values;
+		 -moz-border-radius: $values;
+					border-radius: $values;
+}
+
+@mixin x-box-shadow ($xx) {
+	-webkit-box-shadow: $xx;
+	        box-shadow: $xx;
+}
+
+
+@mixin x-linear-gradient($from, $to, $ie: $useIEFilters) {
+	background-color: $to;
+	background-image: -webkit-gradient(linear, left top, left bottom, from($from), to($to));
+	background-image: -webkit-linear-gradient(top, $from, $to);
+	background-image:    -moz-linear-gradient(top, $from, $to);
+	background-image:     -ms-linear-gradient(top, $from, $to);
+	background-image:      -o-linear-gradient(top, $from, $to);
+	background-image:         linear-gradient(to bottom, $from, $to);
+
+	@if $ie == 1 {
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$from}', endColorstr='#{$to}');
+	}
+}
+
+@mixin x-transform ($values) {
+	-webkit-transform: #{$values};
+		 -moz-transform: #{$values};
+			 -o-transform: #{$values};
+			-ms-transform: #{$values};
+					transform: #{$values};
+}
+
+@mixin x-transition ($value) {
+	-webkit-transition: $value;
+	   -moz-transition: $value;
+	     -o-transition: $value;
+	    -ms-transition: $value;
+	        transition: $value;
+}
+
+
+// box-sizing
+@mixin x-box-sizing ($type: border-box) {
+	-moz-box-sizing: $type;
+			 box-sizing: $type;
+}
+
+
+// Hardware Xalleration
+@mixin x-xallerate ($values: '') {
+	@include transform(translate3d(0,0,0) #{$values});
+}
+
+
+

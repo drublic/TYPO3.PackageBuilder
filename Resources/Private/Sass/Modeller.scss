@@ -1,33 +1,249 @@
+@import "mixins";
+
+
 
 // Stage - is supposed to carry everything that has to do with the modeller
 .modeller-stage {
-	padding: 10px;
+}
 
-	// Each model is a component
-	.component {
-		position: absolute;
-		top: 30%;
-		left: 50%;
-		z-index: 20;
-		border: 2px solid #346789;
-		padding: .5em;
-		width: 10em;
-		height: 8em;
-		background: rgba(255,255,255,.8);
-		font: .8em sans-serif;
-		color: black;
+// Each model is a component
+.component {
+	position: absolute;
+	top: 30%;
+	left: 50%;
+	z-index: 20;
+	min-width: 200px;
+	border: 2px solid #346789;
+	background: rgba(255,255,255,.8);
+	font: .8em sans-serif;
+	color: black;
+	cursor: move;
 
-		h3 {
-			margin: 0;
+	h3 {
+		margin: 5px 0 0;
+		padding: 0 5px;
+	}
+
+	p {
+		margin: 0;
+		padding: 0 5px;
+	}
+
+	.is-active & {
+		@include x-box-shadow(0 0 10px rgba(0,0,0,.4));
+
+		z-index: 100;
+		border-color: #ff8700;
+	}
+}
+
+// Info-button
+.components--button {
+	float: right;
+	text-indent: -999em;
+
+	width: 16px;
+	height: 16px;
+	margin: 4px 2px 0;
+
+	background: url(../Images/glyphicons-halflings.png) -120px -96px;
+}
+
+// Extends .components--button
+.components--acceptor {
+	display: none;
+	position: absolute;
+	top: -24px;
+	left: -4px;
+
+	background-position: -143px -95px;
+
+	.is-relationable & {
+		display: block;
+	}
+}
+
+
+// Activate-button
+// Extends .components--button
+.components--activate {
+	background-position: -384px 0;
+
+	.is-active & {
+		display: none;
+	}
+}
+
+
+
+
+
+// Popover
+
+.popover {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1010;
+	display: none;
+	padding: 5px;
+
+	&.top {
+		margin-top: -5px;
+
+		.arrow {
+			bottom: 0;
+			left: 50%;
+			margin-left: -5px;
+			border-left: 5px solid transparent;
+			border-right: 5px solid transparent;
+			border-top: 5px solid #000;
 		}
+	}
+
+	&.right {
+		margin-left: 5px;
+
+		.arrow {
+			top: 50%;
+			left: 0;
+			margin-top: -5px;
+			border-top: 5px solid transparent;
+			border-bottom: 5px solid transparent;
+			border-right: 5px solid #000;
+		}
+	}
+
+	&.bottom {
+		margin-top: 5px;
+
+		.arrow {
+			top: 0;
+			left: 50%;
+			margin-left: -5px;
+			border-left: 5px solid transparent;
+			border-right: 5px solid transparent;
+			border-bottom: 5px solid #000;
+		}
+	}
+
+	&.left {
+		margin-left: -5px;
+
+		.arrow {
+			top: 50%;
+			right: 0;
+			margin-top: -5px;
+			border-top: 5px solid transparent;
+			border-bottom: 5px solid transparent;
+			border-left: 5px solid #000;
+		}
+	}
+
+	.arrow {
+		position: absolute;
+		width: 0;
+		height: 0;
+	}
+}
+
+.popover-inner {
+	padding: 3px;
+	width: 280px;
+	overflow: hidden;
+	background: #000;
+	background: rgba(0, 0, 0, 0.8);
+	box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+}
+
+.popover-title {
+	margin: 0;
+}
+
+.popover-content {
+	padding: 5px;
+	background-color: #fff;
+
+	p,
+	ul,
+	ol {
+		margin: 0;
 	}
 
 }
 
 
 
+// Generic Class for showing content
+.is-shown {
+	display: block !important;
+}
+
+
+
+// Components: show-properties-button
+.components--more {
+	@include x-transition(all .3s);
+
+	display: block;
+
+	width: 21px;
+	height: 20px;
+	margin: 0 auto;
+
+	background: url(../Images/glyphicons-halflings.png) -309px -115px;
+
+	text-indent: -100em;
+	overflow: hidden;
+
+	&.is-active {
+		@include x-transform(rotate(180deg));
+	}
+}
+
+// Hide properties by default
+.components--properties {
+	display: none;
+}
+
+.components--property {
+	position: relative;
+	padding: 5px;
+	background: #f5f5f5;
+	border-top: 1px solid #ccc;
+
+	&.is-active {
+		background-color: lighten(#ff8700, 40);
+	}
+}
+
+.components--property-title {
+	margin: 0;
+	font-weight: bold;
+}
+
+.components--property-type {
+	margin: 0;
+}
+
+// Extends .components--button
+.components--relation {
+	position: absolute;
+	top: 50%;
+	right: 0;
+	margin-top: -8px;
+
+	background-position: -144px -96px;
+}
+
+
+
+
+
+
+
 // Labels for connections
-.label {
+.connector--label {
 	position: relative;
 	z-index: 1;
 	background: rgba(255,255,255,.8);
@@ -36,9 +252,11 @@
 	font-size: .9em;
 
 	&:hover {
-		border-color:#5d94a6;
+		border-color: #5d94a6;
 	}
 }
+
+
 
 
 

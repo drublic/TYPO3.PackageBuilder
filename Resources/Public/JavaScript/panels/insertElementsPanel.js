@@ -1,6 +1,6 @@
 
 /*jshint curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, sub: true, undef: true, boss: true, eqnull: true, browser: true */
-/*globals jQuery, $, TYPO3 */
+/*globals console, jQuery, $, TYPO3 */
 TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsPanelClass.Element.extend({
 	enabled: function () {
 		if (this.getPath('projectElementType.options._isTopLevel') ||
@@ -14,7 +14,8 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 		return false;
 
 	}.property('projectElementType', 'currentlySelectedElement').cacheable(),
-	click:function () {
+
+	click: function () {
 		var currentlySelectedElement, defaultValues, identifier, indexInParent,
 			newElement, parentElementsArray, referenceElement, topLevelContainer,
 			_this = this;
@@ -33,6 +34,17 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 			identifier:identifier,
 			label:identifier
 		}, defaultValues));
+
+		// If we deal with Modeller
+		if (this.getPath('projectElementType.label') === "DomainObject") {
+
+			// Activate last element
+			newElement.set('isActive', true);
+
+			// and append it to the collection
+			TYPO3.PackageBuilder.Modeller.Collection.createModel(newElement);
+		}
+
 		if (this.getPath('projectElementType.group') === 'packageElements') {
 			topLevelContainer = this.addTopLevelContainer(this.getPath('projectElementType.label'));
 			topLevelContainer.get('children').pushObject(newElement);
@@ -47,11 +59,13 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 				}
 			}
 		}
+
 		return window.setTimeout(function () {
 			return _this.set('currentlySelectedElement', newElement);
 		}, 10);
 	},
-	addTopLevelContainer:function (containerIdentifier) {
+
+	addTopLevelContainer: function (containerIdentifier) {
 		var newContainer,
 			topLevelContainers = TYPO3.Ice.Model.Project.get('projectDefinition').get('children');
 
@@ -61,9 +75,9 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 			}
 		}
 		newContainer = TYPO3.Ice.Model.Element.create($.extend({
-			type:'TYPO3.PackageBuilder:Container',
-			identifier:containerIdentifier,
-			label:containerIdentifier + 's'
+			type: 'TYPO3.PackageBuilder:Container',
+			identifier: containerIdentifier,
+			label: containerIdentifier + 's'
 		}, {}));
 
 		TYPO3.Ice.Model.Project.get('projectDefinition').get('children').pushObject(newContainer);
@@ -71,26 +85,14 @@ TYPO3.Ice.View.InsertElementsPanelClass.Element = TYPO3.Ice.View.InsertElementsP
 	}
 });
 
-window.setTimeout(
-	function () {
-		window.console.log('Setting empty default package');
+window.setTimeout( function () {
+	var _default = {
+		identifier:'package-init',
+		label:'My Package',
+		type:'TYPO3.PackageBuilder:Package'
+	};
 
-		var _default = {
-			identifier:'package1',
-			label:'My Package',
-			type:'TYPO3.PackageBuilder:Package'
-		};
-
-		if (!TYPO3.Ice.Model.Project.get('projectDefinition')) {
-			TYPO3.Ice.Model.Project.set('projectDefinition', TYPO3.Ice.Model.Element.create(_default));
-			/**
-			var projectDefinition =  TYPO3.Ice.Store.createRecord(IceModel.Project,{identifier:'package1', label:'My Package'});
-			//, type:'TYPO3.PackageBuilder:Package'
-			console.log(projectDefinition);
-			TYPO3.Ice.Model.Project.set('projectDefinition',projectDefinition);
-			*/
-
-		}
-	},
-	200
-);
+	if (!TYPO3.Ice.Model.Project.get('projectDefinition')) {
+		TYPO3.Ice.Model.Project.set('projectDefinition', TYPO3.Ice.Model.Element.create(_default));
+	}
+}, 200);

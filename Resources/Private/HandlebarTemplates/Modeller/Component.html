@@ -1,0 +1,25 @@
+
+<div class="components--data" {{bindAttr data-identifier="identifier"}}></div>
+
+<a href="#" class="components--button components--acceptor" {{action "endRelation" on="click"}}>Acceptor</a>
+
+<a href="#" class="components--button components--info" rel="popover" data-content="##Content##">Info</a>
+<a href="#" class="components--button components--activate" title="Active this DomainObject" {{action "onActivate" on="click"}}>Activate</a>
+
+<h3>{{label}}</h3>
+<p><i>{{identifier}}</i></p>
+
+<a href="#" {{action "showMore" on="click"}} class="components--more">Show more</a>
+<div class="components--properties">
+	{{#each children}}
+		<div class="components--property" {{bindAttr id="label"}}>
+			<p class="components--property-title">{{label}}</p>
+			<div class="components--property-details">
+				<p class="components--property-type">{{propertyType}}</p>
+			</div>
+
+			<a href="#" title="Create Relation" class="components--button components--relation"
+				{{bindAttr data-target="label"}} {{action "startRelation" on="click"}}>Create Relation</a>
+		</div>
+	{{/each}}
+</div>

@@ -1,26 +1,203 @@
-.modeller-stage {
-  padding: 10px; }
-  .modeller-stage .component {
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    z-index: 20;
-    border: 2px solid #346789;
-    padding: .5em;
-    width: 10em;
-    height: 8em;
-    background: rgba(255, 255, 255, 0.8);
-    font: .8em sans-serif;
-    color: black; }
-    .modeller-stage .component h3 {
-      margin: 0; }
+.component {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  z-index: 20;
+  min-width: 200px;
+  border: 2px solid #346789;
+  background: rgba(255, 255, 255, 0.8);
+  font: .8em sans-serif;
+  color: black;
+  cursor: move;
+}
+.component h3 {
+  margin: 5px 0 0;
+  padding: 0 5px;
+}
+.component p {
+  margin: 0;
+  padding: 0 5px;
+}
+.is-active .component {
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  border-color: #ff8700;
+}
 
-.label {
+.components--button {
+  float: right;
+  text-indent: -999em;
+  width: 16px;
+  height: 16px;
+  margin: 4px 2px 0;
+  background: url(../Images/glyphicons-halflings.png) -120px -96px;
+}
+
+.components--acceptor {
+  display: none;
+  position: absolute;
+  top: -24px;
+  left: -4px;
+  background-position: -143px -95px;
+}
+.is-relationable .components--acceptor {
+  display: block;
+}
+
+.components--activate {
+  background-position: -384px 0;
+}
+.is-active .components--activate {
+  display: none;
+}
+
+.popover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1010;
+  display: none;
+  padding: 5px;
+}
+.popover.top {
+  margin-top: -5px;
+}
+.popover.top .arrow {
+  bottom: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #000;
+}
+.popover.right {
+  margin-left: 5px;
+}
+.popover.right .arrow {
+  top: 50%;
+  left: 0;
+  margin-top: -5px;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 5px solid #000;
+}
+.popover.bottom {
+  margin-top: 5px;
+}
+.popover.bottom .arrow {
+  top: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #000;
+}
+.popover.left {
+  margin-left: -5px;
+}
+.popover.left .arrow {
+  top: 50%;
+  right: 0;
+  margin-top: -5px;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid #000;
+}
+.popover .arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.popover-inner {
+  padding: 3px;
+  width: 280px;
+  overflow: hidden;
+  background: #000;
+  background: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+}
+
+.popover-title {
+  margin: 0;
+}
+
+.popover-content {
+  padding: 5px;
+  background-color: #fff;
+}
+.popover-content p,
+.popover-content ul,
+.popover-content ol {
+  margin: 0;
+}
+
+.is-shown {
+  display: block !important;
+}
+
+.components--more {
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  -ms-transition: all 0.3s;
+  transition: all 0.3s;
+  display: block;
+  width: 21px;
+  height: 20px;
+  margin: 0 auto;
+  background: url(../Images/glyphicons-halflings.png) -309px -115px;
+  text-indent: -100em;
+  overflow: hidden;
+}
+.components--more.is-active {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+.components--properties {
+  display: none;
+}
+
+.components--property {
+  position: relative;
+  padding: 5px;
+  background: #f5f5f5;
+  border-top: 1px solid #ccc;
+}
+.components--property.is-active {
+  background-color: #ffe7cc;
+}
+
+.components--property-title {
+  margin: 0;
+  font-weight: bold;
+}
+
+.components--property-type {
+  margin: 0;
+}
+
+.components--relation {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-top: -8px;
+  background-position: -144px -96px;
+}
+
+.connector--label {
   position: relative;
   z-index: 1;
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid #346789;
   padding: .2em;
-  font-size: .9em; }
-  .label:hover {
-    border-color: #5d94a6; }
+  font-size: .9em;
+}
+.connector--label:hover {
+  border-color: #5d94a6;
+}
